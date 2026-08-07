@@ -3,38 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IAA项目 - Applovin Max收入数据处理工具</title>
+    <title>IAA Project Data Engine</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: white; border-radius: 16px; padding: 36px; width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; }
-        h2 { margin-top: 0; color: #1d1d1f; font-size: 22px; }
-        p { color: #86868b; font-size: 14px; margin-bottom: 24px; }
-        .drop-zone { border: 2px dashed #0066cc; border-radius: 12px; padding: 32px 16px; background: #f0f7ff; cursor: pointer; transition: 0.2s; }
-        .drop-zone:hover, .drop-zone.over { background: #e1f0ff; border-color: #004499; }
-        .file-list { text-align: left; margin-top: 20px; font-size: 13px; color: #333; }
-        .file-item { display: flex; justify-content: space-between; margin-bottom: 6px; padding: 6px 10px; background: #f8f9fa; border-radius: 6px; }
-        .status-ok { color: #28a745; font-weight: bold; }
-        .btn { background: #0066cc; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; width: 100%; margin-top: 20px; cursor: pointer; font-weight: 500; display: none; }
-        .btn:hover { background: #004499; }
-        #error-msg { margin-top: 15px; color: #dc3545; font-size: 13px; text-align: left; white-space: pre-wrap; display: none; background: #fdf2f2; padding: 10px; border-radius: 6px; border: 1px solid #fecdca; }
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(18, 24, 38, 0.75);
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --accent: #7000ff;
+            --text-main: #f0f6fc;
+            --text-sub: #8b949e;
+            --border-color: rgba(0, 242, 254, 0.2);
+            --border-hover: rgba(0, 242, 254, 0.8);
+            --success: #00ffe0;
+            --danger: #ff4757;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 动态科技背景与网格 */
+        .bg-grid {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: rotate(-12deg) translateY(-20%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glow-orb-1, .glow-orb-2 {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .glow-orb-1 { width: 400px; height: 400px; background: var(--accent); top: -100px; left: -100px; }
+        .glow-orb-2 { width: 500px; height: 500px; background: var(--secondary); bottom: -150px; right: -150px; }
+
+        /* 主卡片（玻璃拟态） */
+        .container {
+            position: relative;
+            z-index: 10;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 48px 40px;
+            width: 520px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 242, 254, 0.1);
+            text-align: center;
+        }
+
+        .brand-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .brand-sub {
+            color: var(--text-sub);
+            font-size: 13px;
+            margin-bottom: 32px;
+            letter-spacing: 0.5px;
+        }
+
+        /* 拖拽区域 */
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drop-zone:hover, .drop-zone.over {
+            border-color: var(--border-hover);
+            background: rgba(0, 242, 254, 0.05);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2) inset;
+        }
+
+        .icon-box {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 16px;
+            background: rgba(0, 242, 254, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+        }
+
+        .icon-box svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--primary);
+        }
+
+        .drop-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .drop-hint {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        .drop-hint code {
+            color: var(--primary);
+            background: rgba(0, 242, 254, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        /* 文件解析列表 */
+        .file-list {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--text-main);
+        }
+
+        .status-ok {
+            color: var(--success);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+        }
+
+        /* 按钮风格 */
+        .btn {
+            width: 100%;
+            margin-top: 28px;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 242, 254, 0.4);
+            display: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 242, 254, 0.6);
+        }
+
+        /* 报错弹窗结构 */
+        #error-msg {
+            margin-top: 16px;
+            color: var(--danger);
+            font-size: 12px;
+            text-align: left;
+            white-space: pre-wrap;
+            display: none;
+            background: rgba(255, 71, 87, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(ff, 71, 87, 0.3);
+        }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>MAX账号每月对账表格处理</h2>
-    <p>拖入或一次性选择 <b>max.csv</b>, <b>tgaado.csv</b>, <b>find.xlsx</b></p>
+<div class="bg-grid"></div>
+<div class="glow-orb-1"></div>
+<div class="glow-orb-2"></div>
+
+<div class="container">
+    <div class="brand-title">IAA AUTOMATION</div>
+    <div class="brand-sub">Applovin Max 收入数据智能整合引擎</div>
     
     <div class="drop-zone" id="dropZone">
-        将 3 个文件拖到此处，或点击上传
+        <div class="icon-box">
+            <svg viewBox="0 0 24 24">
+                <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+            </svg>
+        </div>
+        <div class="drop-title">拖入或点击上传源文件</div>
+        <div class="drop-hint">必须包含 <code>max.csv</code> <code>tgaado.csv</code> <code>find.xlsx</code></div>
         <input type="file" id="fileInput" multiple accept=".csv, .xlsx" style="display: none;">
     </div>
 
     <div class="file-list" id="fileList"></div>
     <div id="error-msg"></div>
-    <button class="btn" id="processBtn">处理并下载 Excel</button>
+    
+    <button class="btn" id="processBtn">EXECUTE COMBINE & DOWNLOAD</button>
 </div>
 
 <script>
@@ -68,7 +277,7 @@
         
         targets.forEach(t => {
             if (filesMap[t.key]) {
-                html += `<div class="file-item"><span>${t.label}</span><span class="status-ok">✔ 已就绪</span></div>`;
+                html += `<div class="file-item"><span>${t.label}</span><span class="status-ok">✔ READY</span></div>`;
                 readyCount++;
             }
         });
@@ -86,7 +295,6 @@
             r.readAsArrayBuffer(file);
         });
 
-        // 解析源数据
         const wb1 = XLSX.read(await readAsArrayBuffer(filesMap['max']), {type: 'array'});
         const wb2 = XLSX.read(await readAsArrayBuffer(filesMap['tgaado']), {type: 'array'});
         const wb3 = XLSX.read(await readAsArrayBuffer(filesMap['find']), {type: 'array'});
@@ -95,17 +303,14 @@
         let data2 = XLSX.utils.sheet_to_json(wb2.Sheets[wb2.SheetNames[0]], {header: 1});
         let data3 = XLSX.utils.sheet_to_json(wb3.Sheets[wb3.SheetNames[0]], {header: 1});
 
-        // 查找表构建 Lookup Map
         let mapE1 = {}, mapG1 = {}, mapH1 = {};
         let mapE2 = {}, mapG2 = {}, mapH2 = {};
 
         data3.forEach(row => {
             if (!row) return;
-            // Sheet1 Match: D->I(Index 8), E->J(Index 9) | F->L(Index 11), G->M(Index 12), H->N(Index 13)
             if (row[8]) mapE1[row[8]] = row[9];
             if (row[11]) { mapG1[row[11]] = row[12]; mapH1[row[11]] = row[13]; }
 
-            // Sheet2 Match: D->A(Index 0), E->B(Index 1) | F->D(Index 3), G->E(Index 4), H->F(Index 5)
             if (row[0]) mapE2[row[0]] = row[1];
             if (row[3]) { mapG2[row[3]] = row[4]; mapH2[row[3]] = row[5]; }
         });
@@ -114,7 +319,6 @@
 
         function processRows(rows, isSheet1, sheetName) {
             if (!rows || rows.length === 0) return rows;
-            // 表头处理
             let header = rows[0];
             header.splice(4, 0, "游戏原名");
             header.splice(6, 0, "渠道", "收款账户");
@@ -123,19 +327,17 @@
                 let r = rows[i];
                 if (!r || r.length === 0) continue;
                 
-                let keyD = r[3]; // D列值
+                let keyD = r[3];
                 let valE = isSheet1 ? mapE1[keyD] : mapE2[keyD];
 
-                let keyF = r[4]; // 插列前的 F 列原始值变更为 index 4
+                let keyF = r[4];
                 let valG = isSheet1 ? mapG1[keyF] : mapG2[keyF];
                 let valH = isSheet1 ? mapH1[keyF] : mapH2[keyF];
 
-                // 记录缺失
                 if (!valE) missingList.push(`【${sheetName}】第 ${i+1} 行 E列(游戏原名)`);
                 if (!valG) missingList.push(`【${sheetName}】第 ${i+1} 行 G列(渠道)`);
                 if (!valH) missingList.push(`【${sheetName}】第 ${i+1} 行 H列(收款账户)`);
 
-                // 插列填充
                 r.splice(4, 0, valE || "");
                 r.splice(6, 0, valG || "", valH || "");
             }
@@ -145,37 +347,31 @@
         let processedData1 = processRows(data1, true, "MAX-YOURMAX账号");
         let processedData2 = processRows(data2, false, "MAX-Togaado账号");
 
-        // 转换为新 Sheet
         const newWs1 = XLSX.utils.aoa_to_sheet(processedData1);
         const newWs2 = XLSX.utils.aoa_to_sheet(processedData2);
 
-        // 设置表头 E1, G1, H1 黄色高亮样式（注意：标准应用打开支持）
         ["E1", "G1", "H1"].forEach(cell => {
             if (newWs1[cell]) newWs1[cell].s = { fill: { fgColor: { rgb: "FFFF00" } } };
             if (newWs2[cell]) newWs2[cell].s = { fill: { fgColor: { rgb: "FFFF00" } } };
         });
 
-        // 组装新工作簿
         const newWb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(newWb, newWs1, "MAX-YOURMAX账号");
         XLSX.utils.book_append_sheet(newWb, newWs2, "MAX-Togaado账号");
         XLSX.utils.book_append_sheet(newWb, wb3.Sheets[wb3.SheetNames[0]], "打款进度");
 
-        // 提示缺失信息
         if (missingList.length > 0) {
-            let showMsg = "处理完成，但发现以下单元格数据匹配空缺：\n" + missingList.slice(0, 8).join("\n");
+            let showMsg = "匹配完成，发现以下数据空缺：\n" + missingList.slice(0, 8).join("\n");
             if (missingList.length > 8) showMsg += `\n...等共 ${missingList.length} 处`;
             errorMsg.innerText = showMsg;
             errorMsg.style.display = 'block';
         }
 
-        // 动态计算文件名：IAA项目 - Applovin Max收入数据 - X月份.xlsx
         let d = new Date();
         d.setMonth(d.getMonth() - 1);
         let monthStr = (d.getMonth() + 1) + "月份";
         let outName = `IAA项目 - Applovin Max收入数据 - ${monthStr}.xlsx`;
 
-        // 导出文件
         XLSX.writeFile(newWb, outName);
     };
 </script>
