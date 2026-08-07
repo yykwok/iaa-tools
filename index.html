@@ -3,262 +3,314 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IAA Project Data Engine</title>
+    <title>Ben helps you with...</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #0b0f19;
-            --card-bg: rgba(18, 24, 38, 0.75);
-            --primary: #00f2fe;
-            --secondary: #4facfe;
-            --accent: #7000ff;
-            --text-main: #f0f6fc;
-            --text-sub: #8b949e;
-            --border-color: rgba(0, 242, 254, 0.2);
-            --border-hover: rgba(0, 242, 254, 0.8);
-            --success: #00ffe0;
-            --danger: #ff4757;
-        }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            background-color: #f7f7f8;
+            color: #1d1d1f;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
             overflow: hidden;
-            position: relative;
         }
 
-        /* 动态科技背景与网格 */
-        .bg-grid {
+        /* 背景平铺虚化卡片网格 */
+        .bg-watermark-grid {
             position: absolute;
-            width: 200%;
-            height: 200%;
-            background-image: 
-                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            transform: rotate(-12deg) translateY(-20%);
-            z-index: 0;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            opacity: 0.22;
+            filter: blur(2.5px);
             pointer-events: none;
+            z-index: 1;
         }
 
-        .glow-orb-1, .glow-orb-2 {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            z-index: 0;
-            opacity: 0.5;
-            pointer-events: none;
-        }
-
-        .glow-orb-1 { width: 400px; height: 400px; background: var(--accent); top: -100px; left: -100px; }
-        .glow-orb-2 { width: 500px; height: 500px; background: var(--secondary); bottom: -150px; right: -150px; }
-
-        /* 主卡片（玻璃拟态） */
-        .container {
-            position: relative;
-            z-index: 10;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 48px 40px;
-            width: 520px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 242, 254, 0.1);
-            text-align: center;
-        }
-
-        .brand-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-
-        .brand-sub {
-            color: var(--text-sub);
-            font-size: 13px;
-            margin-bottom: 32px;
-            letter-spacing: 0.5px;
-        }
-
-        /* 拖拽区域 */
-        .drop-zone {
-            border: 2px dashed var(--border-color);
+        .bg-card {
+            background: #ffffff;
             border-radius: 16px;
-            padding: 40px 20px;
-            background: rgba(255, 255, 255, 0.02);
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .drop-zone:hover, .drop-zone.over {
-            border-color: var(--border-hover);
-            background: rgba(0, 242, 254, 0.05);
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2) inset;
-        }
-
-        .icon-box {
-            width: 56px;
-            height: 56px;
-            margin: 0 auto 16px;
-            background: rgba(0, 242, 254, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(0, 242, 254, 0.3);
-        }
-
-        .icon-box svg {
-            width: 28px;
-            height: 28px;
-            fill: var(--primary);
-        }
-
-        .drop-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 6px;
-        }
-
-        .drop-hint {
-            font-size: 12px;
-            color: var(--text-sub);
-        }
-
-        .drop-hint code {
-            color: var(--primary);
-            background: rgba(0, 242, 254, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-        }
-
-        /* 文件解析列表 */
-        .file-list {
-            margin-top: 24px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
-        .file-item {
+        .bg-card-title { font-size: 13px; font-weight: 600; color: #333; }
+        .bg-card-desc { font-size: 11px; color: #888; line-height: 1.5; }
+
+        /* 居中主浮窗卡片 */
+        .agent-modal {
+            position: relative;
+            z-index: 10;
+            background: #ffffff;
+            border-radius: 28px;
+            width: 440px;
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Header 区域 */
+        .agent-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            font-size: 13px;
-            color: var(--text-main);
         }
 
-        .status-ok {
-            color: var(--success);
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e5e5ea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .user-name { font-size: 15px; font-weight: 700; color: #1c1c1e; }
+        .user-sub { font-size: 12px; color: #8e8e93; }
+        .more-icon { color: #c7c7cc; font-size: 18px; cursor: pointer; }
+
+        /* 消息对话区域 */
+        .chat-body {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 4px;
+        }
+
+        /* 拟态黑色对话气泡 */
+        .chat-bubble-black {
+            background: #232326;
+            color: #ffffff;
+            padding: 16px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+            letter-spacing: -0.1px;
+            align-self: flex-end;
+            max-width: 90%;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+        }
+
+        /* AI 提示回复文案 */
+        .ai-response {
+            font-size: 13px;
+            color: #3a3a3c;
+            line-height: 1.6;
+            padding: 0 4px;
+        }
+
+        /* 文件上传/下载卡片组件 */
+        .file-card-box {
+            background: #f2f2f7;
+            border-radius: 16px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .file-card-box:hover {
+            background: #e5e5ea;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .file-icon {
+            width: 32px;
+            height: 32px;
+            background: #ffffff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .file-name { font-size: 13px; font-weight: 600; color: #1c1c1e; }
+        .file-status { font-size: 11px; color: #8e8e93; }
+
+        .btn-action {
+            background: #232326;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 600;
+            cursor: pointer;
             display: flex;
             align-items: center;
             gap: 4px;
-            font-size: 12px;
+            transition: opacity 0.2s;
         }
 
-        /* 按钮风格 */
-        .btn {
-            width: 100%;
-            margin-top: 28px;
-            padding: 16px;
+        .btn-action:hover { opacity: 0.85; }
+
+        /* 输入框区域 */
+        .input-bar {
+            background: #f2f2f7;
+            border-radius: 24px;
+            padding: 8px 8px 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .input-placeholder {
+            color: #8e8e93;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .send-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #232326;
+            color: white;
             border: none;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-            color: #000;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0, 242, 254, 0.4);
-            display: none;
+            font-size: 14px;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 242, 254, 0.6);
+        .error-tips {
+            font-size: 11px;
+            color: #ff3b30;
+            background: #ffe5e5;
+            padding: 8px 12px;
+            border-radius: 10px;
+            display: none;
+            line-height: 1.4;
         }
 
-        /* 报错弹窗结构 */
-        #error-msg {
-            margin-top: 16px;
-            color: var(--danger);
-            font-size: 12px;
-            text-align: left;
-            white-space: pre-wrap;
-            display: none;
-            background: rgba(255, 71, 87, 0.1);
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(ff, 71, 87, 0.3);
+        .footer-note {
+            text-align: center;
+            font-size: 10px;
+            color: #c7c7cc;
+            margin-top: -4px;
         }
     </style>
 </head>
 <body>
 
-<div class="bg-grid"></div>
-<div class="glow-orb-1"></div>
-<div class="glow-orb-2"></div>
+<!-- 背景淡化卡片（游戏发行与数据对账主题） -->
+<div class="bg-watermark-grid">
+    <div class="bg-card"><div class="bg-card-title">🎮 Applovin MAX 变现收益对账</div><div class="bg-card-desc">自动解析双账号 CSV 报表，匹配打款进度表，快速生成月度 IAA 广告收入汇总表...</div></div>
+    <div class="bg-card"><div class="bg-card-title">🔥 绝区零 (Zenless Zone Zero) 海外数据</div><div class="bg-card-desc">拉取 Google Play 与 App Store 欧美及日韩地区 ROAS 监控数据，导入多维表格...</div></div>
+    <div class="bg-card"><div class="bg-card-title">⚔️ 王者荣耀 / Honor of Kings 出海对账</div><div class="bg-card-desc">汇总海外多渠道打款数据，自动对齐不同主体账号的结算列与代扣税信息...</div></div>
+    <div class="bg-card"><div class="bg-card-title">📈 Unity Ads / LevelPlay 广告数据整合</div><div class="bg-card-desc">拉取休闲游戏各广告位 eCPM 与 LTV 表现，格式化整理并一键导出对账单...</div></div>
+    <div class="bg-card"><div class="bg-card-title">🧱 Roblox / Coin Master 变现趋势分析</div><div class="bg-card-desc">自动汇总各地区激励视频与插屏广告收入占比，生成多维数据对比分析表...</div></div>
+    <div class="bg-card"><div class="bg-card-title">🚀 休闲游戏(Casual Games) 广告收入对账</div><div class="bg-card-desc">匹配各地区游戏原名、收款账户与渠道名称，自动填充并检测空缺单元格...</div></div>
+</div>
 
-<div class="container">
-    <div class="brand-title">IAA AUTOMATION</div>
-    <div class="brand-sub">Applovin Max 收入数据智能整合引擎</div>
-    
-    <div class="drop-zone" id="dropZone">
-        <div class="icon-box">
-            <svg viewBox="0 0 24 24">
-                <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
-            </svg>
+<!-- 居中 Agent 卡片 -->
+<div class="agent-modal">
+    <div class="agent-header">
+        <div class="user-info">
+            <div class="avatar">👨🏻‍💻</div>
+            <div>
+                <div class="user-name">Ben</div>
+                <div class="user-sub">Ben helps you with...</div>
+            </div>
         </div>
-        <div class="drop-title">拖入或点击上传源文件</div>
-        <div class="drop-hint">必须包含 <code>max.csv</code> <code>tgaado.csv</code> <code>find.xlsx</code></div>
-        <input type="file" id="fileInput" multiple accept=".csv, .xlsx" style="display: none;">
+        <div class="more-icon">•••</div>
     </div>
 
-    <div class="file-list" id="fileList"></div>
-    <div id="error-msg"></div>
-    
-    <button class="btn" id="processBtn">EXECUTE COMBINE & DOWNLOAD</button>
+    <div class="chat-body">
+        <!-- 暗色对话气泡 -->
+        <div class="chat-bubble-black">
+            自动读取并合并 max.csv、tgaado.csv 与 find.xlsx，自动插入匹配列并按月份命名导出。
+        </div>
+
+        <!-- 提示回复 -->
+        <div class="ai-response" id="aiStatusText">
+            搞定了～请一次性拖入或选择 **max.csv**、**tgaado.csv** 和 **find.xlsx** 三个源文件，系统将自动进行数据比对与处理。
+        </div>
+
+        <!-- 上传/下载交互卡片 -->
+        <div class="file-card-box" id="dropZone">
+            <div class="file-info">
+                <div class="file-icon">📊</div>
+                <div>
+                    <div class="file-name" id="fileNameText">拖入或点击上传 3 个源文件</div>
+                    <div class="file-status" id="fileStatusText">等待文件就绪...</div>
+                </div>
+            </div>
+            <button class="btn-action" id="actionBtn" style="display: none;">下载结果</button>
+            <input type="file" id="fileInput" multiple accept=".csv, .xlsx" style="display: none;">
+        </div>
+
+        <div class="error-tips" id="errorMsg"></div>
+    </div>
+
+    <!-- 底部输入框造型 -->
+    <div class="input-bar">
+        <div class="input-placeholder">
+            <span>📎</span>
+            <span>想处理什么...</span>
+        </div>
+        <button class="send-btn">↑</button>
+    </div>
+
+    <div class="footer-note">✨ Ben 仅供快速数据比对，处理完全在本地完成</div>
 </div>
 
 <script>
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
-    const fileList = document.getElementById('fileList');
-    const processBtn = document.getElementById('processBtn');
-    const errorMsg = document.getElementById('error-msg');
+    const fileNameText = document.getElementById('fileNameText');
+    const fileStatusText = document.getElementById('fileStatusText');
+    const actionBtn = document.getElementById('actionBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    const aiStatusText = document.getElementById('aiStatusText');
+
     let filesMap = {};
 
-    dropZone.onclick = () => fileInput.click();
+    dropZone.onclick = (e) => {
+        if (e.target !== actionBtn) fileInput.click();
+    };
+
     fileInput.onchange = (e) => handleFiles(e.target.files);
-    dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('over'); };
-    dropZone.ondragleave = () => dropZone.classList.remove('over');
-    dropZone.ondrop = (e) => { e.preventDefault(); dropZone.classList.remove('over'); handleFiles(e.dataTransfer.files); };
+    dropZone.ondragover = (e) => e.preventDefault();
+    dropZone.ondrop = (e) => {
+        e.preventDefault();
+        handleFiles(e.dataTransfer.files);
+    };
 
     function handleFiles(files) {
         for (let file of files) {
@@ -267,31 +319,28 @@
             else if (name.includes('tgaado')) filesMap['tgaado'] = file;
             else if (name.includes('find')) filesMap['find'] = file;
         }
-        renderFileList();
-    }
-
-    function renderFileList() {
-        let html = '';
-        const targets = [{key:'max', label:'max.csv'}, {key:'tgaado', label:'tgaado.csv'}, {key:'find', label:'find.xlsx'}];
-        let readyCount = 0;
         
-        targets.forEach(t => {
-            if (filesMap[t.key]) {
-                html += `<div class="file-item"><span>${t.label}</span><span class="status-ok">✔ READY</span></div>`;
-                readyCount++;
-            }
-        });
-        fileList.innerHTML = html;
-        if (readyCount === 3) processBtn.style.display = 'block';
+        let count = Object.keys(filesMap).length;
+        if (count > 0) {
+            fileNameText.innerText = `已读取 ${count} / 3 个文件`;
+            fileStatusText.innerText = Object.keys(filesMap).map(k => filesMap[k].name).join(', ');
+        }
+
+        if (count === 3) {
+            fileStatusText.innerText = "所有文件已就绪，可开始处理";
+            actionBtn.style.display = "flex";
+            actionBtn.innerText = "⚡ 开始合并";
+        }
     }
 
-    processBtn.onclick = async () => {
+    actionBtn.onclick = async (e) => {
+        e.stopPropagation();
         errorMsg.style.display = 'none';
-        errorMsg.innerText = '';
+        aiStatusText.innerText = "正在为您进行插列比对与数据匹配，请稍候...";
 
         const readAsArrayBuffer = file => new Promise(res => {
             const r = new FileReader();
-            r.onload = e => res(e.target.result);
+            r.onload = ev => res(ev.target.result);
             r.readAsArrayBuffer(file);
         });
 
@@ -334,9 +383,9 @@
                 let valG = isSheet1 ? mapG1[keyF] : mapG2[keyF];
                 let valH = isSheet1 ? mapH1[keyF] : mapH2[keyF];
 
-                if (!valE) missingList.push(`【${sheetName}】第 ${i+1} 行 E列(游戏原名)`);
-                if (!valG) missingList.push(`【${sheetName}】第 ${i+1} 行 G列(渠道)`);
-                if (!valH) missingList.push(`【${sheetName}】第 ${i+1} 行 H列(收款账户)`);
+                if (!valE) missingList.push(`【${sheetName}】第 ${i+1} 行 E列`);
+                if (!valG) missingList.push(`【${sheetName}】第 ${i+1} 行 G列`);
+                if (!valH) missingList.push(`【${sheetName}】第 ${i+1} 行 H列`);
 
                 r.splice(4, 0, valE || "");
                 r.splice(6, 0, valG || "", valH || "");
@@ -361,9 +410,7 @@
         XLSX.utils.book_append_sheet(newWb, wb3.Sheets[wb3.SheetNames[0]], "打款进度");
 
         if (missingList.length > 0) {
-            let showMsg = "匹配完成，发现以下数据空缺：\n" + missingList.slice(0, 8).join("\n");
-            if (missingList.length > 8) showMsg += `\n...等共 ${missingList.length} 处`;
-            errorMsg.innerText = showMsg;
+            errorMsg.innerText = "⚠️ 匹配完成但存在数据空缺：\n" + missingList.slice(0, 5).join("、") + (missingList.length > 5 ? ` 等共 ${missingList.length} 处` : '');
             errorMsg.style.display = 'block';
         }
 
@@ -373,6 +420,8 @@
         let outName = `IAA项目 - Applovin Max收入数据 - ${monthStr}.xlsx`;
 
         XLSX.writeFile(newWb, outName);
+        aiStatusText.innerText = `处理完毕！文件已自动导出下载：${outName}`;
+        actionBtn.innerText = "⬇️ 重新下载";
     };
 </script>
 </body>
