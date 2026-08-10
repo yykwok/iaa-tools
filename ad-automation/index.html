@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>广告位 ID 自动化配置工具</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f9; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        
+        .nav-header { position: absolute; top: 20px; left: 20px; }
+        .back-link { text-decoration: none; color: #0066cc; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+        .back-link:hover { text-decoration: underline; }
+
+        .card { background: white; border-radius: 16px; padding: 36px; width: 480px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        h2 { margin-top: 0; color: #1d1d1f; font-size: 22px; text-align: center; }
+        p { color: #86868b; font-size: 14px; margin-bottom: 24px; text-align: center; }
+        
+        .form-group { margin-bottom: 18px; text-align: left; }
+        label { font-size: 13px; color: #333; font-weight: 600; display: block; margin-bottom: 6px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #d2d2d7; border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; }
+        input:focus, select:focus { border-color: #0066cc; box-shadow: 0 0 0 3px rgba(0,102,204,0.15); }
+        
+        .btn { background: #0066cc; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; width: 100%; margin-top: 10px; cursor: pointer; font-weight: 500; }
+        .btn:hover { background: #004499; }
+        
+        #result-box { margin-top: 20px; display: none; padding: 12px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e5e5ea; font-size: 13px; word-break: break-all; text-align: left; }
+    </style>
+</head>
+<body>
+
+<div class="nav-header">
+    <a href="/" class="back-link">&larr; 返回控制台主页</a>
+</div>
+
+<div class="card">
+    <h2>广告位 ID 自动生成</h2>
+    <p>输入应用基础信息，批量请求各平台并绑定至 MAX</p>
+    
+    <form id="adForm" onsubmit="return false;">
+        <div class="form-group">
+            <label>应用名称 (App Name)</label>
+            <input type="text" id="appName" placeholder="例如: My Super Game" required>
+        </div>
+        <div class="form-group">
+            <label>应用包名 (Package Name / Bundle ID)</label>
+            <input type="text" id="packageName" placeholder="例如: com.company.game" required>
+        </div>
+        <div class="form-group">
+            <label>目标平台 (Platform)</label>
+            <select id="platform">
+                <option value="android">Android</option>
+                <option value="ios">iOS</option>
+            </select>
+        </div>
+        
+        <button type="button" class="btn" id="submitBtn">生成广告 ID 并同步至 MAX</button>
+    </form>
+
+    <div id="result-box"></div>
+</div>
+
+<script>
+    document.getElementById('submitBtn').onclick = function() {
+        const appName = document.getElementById('appName').value.trim();
+        const packageName = document.getElementById('packageName').value.trim();
+        const platform = document.getElementById('platform').value;
+
+        if (!appName || !packageName) {
+            alert("请完整填写应用名称和包名！");
+            return;
+        }
+
+        const resultBox = document.getElementById('result-box');
+        resultBox.style.display = 'block';
+        resultBox.innerHTML = `<b>[前端演示界面]</b><br>已接收参数：<br>• 应用名：${appName}<br>• 包名：${packageName}<br>• 平台：${platform}<br><br><span style="color:#86868b;">(下一步将接入后端 API 实际调用 Pangle / MTG / Unity 并返回真实 ID)</span>`;
+    };
+</script>
+
+</body>
+</html>
