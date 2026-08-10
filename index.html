@@ -1,363 +1,273 @@
 <!DOCTYPE html>
-<html lang="zh-CN" style="background-color:#0f172a">
+<html lang="en" style="background-color:#F8FAFC" class="landing-page">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>kimeeru - 业务自动化控制台</title>
-    <!-- 引入字体与 Three.js 3D 引擎 -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>kimeeru - Empty Inbox, Full Day</title>
+    
+    <!-- 引入 kimeeru 官方同款字体 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS  CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js 3D 渲染引擎 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif'],
+                        heading: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        background: '#F8FAFC',
+                        foreground: '#0f172a',
+                        muted: { foreground: '#64748b' },
+                        border: '#e2e8f0'
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        * { box-sizing: border-box; }
         body {
-            font-family: 'DM Sans', -apple-system, sans-serif;
-            background-color: #0b0f19;
-            color: #f8fafc;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-family: 'DM Sans', sans-serif;
+            background-color: #F8FAFC;
+            color: #0f172a;
             overflow-x: hidden;
         }
 
-        /* 3D Canvas 鼠标跟随全屏背景 */
-        #webgl-canvas {
+        /* 全屏 Three.js 3D Canvas 背景 */
+        #landing-canvas-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
             z-index: 0;
-            pointer-events: none; /* 穿透鼠标点击事件 */
+            pointer-events: none;
         }
 
-        /* 顶部毛玻璃导航栏 */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 64px;
-            background: rgba(11, 15, 25, 0.6);
+        /* 官方 Glassmorphism 毛玻璃导航栏 */
+        .glass-navbar {
+            background: rgba(248, 250, 252, 0.75);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .nav-container {
-            width: 100%;
-            max-width: 1100px;
-            padding: 0 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
         }
 
-        .brand-logo {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 20px;
-            color: #ffffff;
-            text-decoration: none;
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .brand-badge {
-            font-size: 11px;
-            font-weight: 600;
-            background: rgba(37, 99, 235, 0.2);
-            color: #60a5fa;
-            padding: 2px 8px;
-            border-radius: 9999px;
-            text-transform: uppercase;
-            border: 1px solid rgba(96, 165, 250, 0.3);
-        }
-
-        /* 主体内容 */
-        main {
-            position: relative;
-            z-index: 10;
-            margin-top: 140px;
-            margin-bottom: 80px;
-            width: 100%;
-            max-width: 900px;
-            padding: 0 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-        .hero-tag {
-            display: inline-block;
-            font-size: 13px;
-            font-weight: 700;
-            color: #60a5fa;
-            background: rgba(37, 99, 235, 0.15);
-            padding: 6px 16px;
-            border-radius: 9999px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 24px;
-            border: 1px solid rgba(96, 165, 250, 0.2);
-            box-shadow: 0 0 20px rgba(37, 99, 235, 0.2);
-        }
-
-        h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 48px;
-            line-height: 1.15;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            margin: 0 0 16px 0;
-        }
-
-        @media (min-width: 768px) {
-            h1 { font-size: 64px; }
-        }
-
+        /* 官方渐变文字样式 */
         .text-gradient {
-            background: linear-gradient(135deg, #60a5fa 0%, #a855f7 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .hero-desc {
-            font-size: 18px;
-            color: #94a3b8;
-            margin: 0 0 48px 0;
-            font-weight: 400;
-        }
-
-        /* 3D 浮动卡片 */
-        .grid-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
-            width: 100%;
-        }
-
-        @media (min-width: 640px) {
-            .grid-container { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        .feature-card {
-            background: rgba(15, 23, 42, 0.65);
+        /* 3D 视差倾斜卡片 (Perspective Tilt) */
+        .feature-card-tilt {
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
             border-radius: 24px;
-            padding: 36px 32px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            text-align: left;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.15s ease-out, box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
 
-        .feature-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            border-color: rgba(96, 165, 250, 0.5);
-            box-shadow: 0 30px 60px rgba(37, 99, 235, 0.25);
-            background: rgba(15, 23, 42, 0.85);
-        }
-
-        .card-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
-            background: rgba(37, 99, 235, 0.2);
-            color: #60a5fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(96, 165, 250, 0.2);
-        }
-
-        .card-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 22px;
-            font-weight: 700;
-            color: #ffffff;
-            margin: 0 0 12px 0;
-            letter-spacing: -0.02em;
-        }
-
-        .card-desc {
-            font-size: 14px;
-            color: #94a3b8;
-            line-height: 1.6;
-            margin: 0;
-        }
-
-        .card-btn {
-            margin-top: 28px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-            color: #ffffff;
-            font-weight: 600;
-            font-size: 14px;
-            padding: 10px 20px;
-            border-radius: 9999px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
-            width: fit-content;
-        }
-
-        .feature-card:hover .card-btn {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
-        }
-
-        footer {
-            position: relative;
-            z-index: 10;
-            margin-top: auto;
-            padding: 32px;
-            color: #64748b;
-            font-size: 13px;
-            width: 100%;
-            text-align: center;
+        .feature-card-tilt:hover {
+            box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.12);
+            border-color: #93c5fd;
         }
     </style>
 </head>
-<body>
+<body class="font-sans antialiased bg-background text-foreground landing-page">
 
-<!-- Three.js 3D 粒子背景 -->
-<canvas id="webgl-canvas"></canvas>
-
-<header>
-    <div class="nav-container">
-        <a href="/" class="brand-logo">
-            kimeeru <span class="brand-badge">Console</span>
-        </a>
+    <!-- 1. 3D WebGL Canvas 背景层 -->
+    <div id="landing-canvas-container">
+        <canvas id="three-canvas"></canvas>
     </div>
-</header>
 
-<main>
-    <div class="hero-tag">Next-Generation Operation Portal</div>
-    
-    <h1>
-        <span class="text-gradient">Automate Tasks.</span><br>
-        Full Efficiency.
-    </h1>
-    
-    <p class="hero-desc">智能海外游戏发行业务自动化中心，一键搞定财务对账与广告配置</p>
+    <!-- 2. 吸顶毛玻璃 Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-navbar">
+        <nav class="container mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2">
+                <span class="font-heading font-bold text-xl text-blue-600 tracking-tight">kimeeru</span>
+                <span class="text-xs font-semibold bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full border border-blue-100">Console</span>
+            </a>
 
-    <div class="grid-container">
-        <a href="/reconciliation/" class="feature-card">
-            <div>
-                <div class="card-icon">📊</div>
-                <h3 class="card-title">MAX 收入数据对账</h3>
-                <p class="card-desc">自动读取解析 max.csv、tgaado.csv 与 find.xlsx，智能比对数据并一键导出月度财务报表。</p>
+            <div class="hidden md:flex items-center gap-8">
+                <a href="/reconciliation/" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">对账系统</a>
+                <a href="/ad-automation/" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">广告配置</a>
             </div>
-            <div class="card-btn">进入对账系统 &rarr;</div>
-        </a>
 
-        <a href="/ad-automation/" class="feature-card">
-            <div>
-                <div class="card-icon">⚡</div>
-                <h3 class="card-title">广告位 ID 自动化配置</h3>
-                <p class="card-desc">输入应用包名，自动调用 Pangle、MTG、Unity 生成 ID 并自动关联推送至 MAX Waterfall。</p>
+            <div class="flex items-center gap-3">
+                <a href="/reconciliation/">
+                    <button class="inline-flex items-center justify-center text-sm font-medium transition-all h-9 rounded-full px-5 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-200">
+                        立即使用
+                    </button>
+                </a>
             </div>
-            <div class="card-btn">进入配置工具 &rarr;</div>
-        </a>
-    </div>
-</main>
+        </nav>
+    </header>
 
-<footer>
-    © 2026 kimeeru Console. Internal Operation System.
-</footer>
+    <!-- 3. Main Hero 区域 -->
+    <main class="relative z-10 pt-32 pb-20">
+        <section class="landing-section items-center text-center px-4">
+            <div class="max-w-3xl mx-auto flex flex-col items-center">
+                <!-- Top Tag Badge -->
+                <h2 class="text-blue-600 font-bold tracking-wide uppercase text-xs mb-6 bg-blue-50 px-4 py-1.5 rounded-full border border-blue-100">
+                    Next-Generation Operation Portal
+                </h2>
+                
+                <!-- Main Title -->
+                <h1 class="text-5xl md:text-7xl font-heading font-bold tracking-tight mb-6 leading-tight">
+                    <span class="block text-gradient">Automate Tasks.</span>
+                    <span class="block text-gradient">Full Day Efficiency.</span>
+                </h1>
+                
+                <p class="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto mb-12 font-normal">
+                    AI 驱动海外游戏发行业务自动化，一键生成广告 ID 与财务对账。
+                </p>
+            </div>
+        </section>
 
-<!-- 3D 粒子与鼠标滑动跟踪脚本 -->
-<script>
-    const canvas = document.getElementById('webgl-canvas');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        <!-- 4. 3D 悬浮卡片区域 (带有 Mouse Tilt 跟踪) -->
+        <section class="container mx-auto px-6 max-w-5xl mt-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- 卡片 1：对账 -->
+                <a href="/reconciliation/" class="feature-card-tilt p-8 md:p-10 flex flex-col justify-between group">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl mb-6 border border-blue-100">
+                            📊
+                        </div>
+                        <h2 class="text-2xl font-heading font-bold mb-3 text-foreground group-hover:text-blue-600 transition-colors">
+                            MAX 收入数据对账
+                        </h2>
+                        <p class="text-sm md:text-base text-muted-foreground leading-relaxed">
+                            自动拖拽读取解析 max.csv、tgaado.csv 与 find.xlsx，智能匹配并导出月度对账财务 Excel。
+                        </p>
+                    </div>
+                    <div class="mt-8 flex items-center text-sm font-bold text-blue-600">
+                        进入对账工具 <span class="ml-2 transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+                    </div>
+                </a>
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                <!-- 卡片 2：广告自动化 -->
+                <a href="/ad-automation/" class="feature-card-tilt p-8 md:p-10 flex flex-col justify-between group">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl mb-6 border border-blue-100">
+                            ⚡
+                        </div>
+                        <h2 class="text-2xl font-heading font-bold mb-3 text-foreground group-hover:text-blue-600 transition-colors">
+                            广告位 ID 自动化配置
+                        </h2>
+                        <p class="text-sm md:text-base text-muted-foreground leading-relaxed">
+                            输入包名，一键调用 Pangle, MTG, Unity API 生成广告位 ID 并自动关联绑定至 MAX Waterfall。
+                        </p>
+                    </div>
+                    <div class="mt-8 flex items-center text-sm font-bold text-blue-600">
+                        进入配置工具 <span class="ml-2 transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+                    </div>
+                </a>
 
-    // 创建 3D 粒子网格波浪
-    const particlesAmount = 1500;
-    const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particlesAmount * 3);
+            </div>
+        </section>
+    </main>
 
-    for (let i = 0; i < particlesAmount * 3; i += 3) {
-        positions[i] = (Math.random() - 0.5) * 15;     // X
-        positions[i + 1] = (Math.random() - 0.5) * 15; // Y
-        positions[i + 2] = (Math.random() - 0.5) * 15; // Z
-    }
+    <!-- Footer -->
+    <footer class="relative z-10 border-t border-border mt-20 py-8 text-center text-sm text-muted-foreground">
+        <p>© 2026 kimeeru Console. All rights reserved.</p>
+    </footer>
 
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    <!-- 5. 网页互动逻辑：Three.js 3D 背景 + 卡片 3D Tilt 视角跟随 -->
+    <script>
+        // --- 1. Three.js 3D 交互粒子背景 ---
+        const canvas = document.getElementById('three-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
 
-    const material = new THREE.PointsMaterial({
-        size: 0.035,
-        color: 0x3b82f6,
-        transparent: true,
-        opacity: 0.7,
-        blending: THREE.AdditiveBlending
-    });
-
-    const particleSystem = new THREE.Points(geometry, material);
-    scene.add(particleSystem);
-
-    camera.position.z = 5;
-
-    // 鼠标坐标跟踪
-    let mouseX = 0, mouseY = 0;
-    let targetX = 0, targetY = 0;
-
-    window.addEventListener('mousemove', (e) => {
-        mouseX = (e.clientX - window.innerWidth / 2) * 0.001;
-        mouseY = (e.clientY - window.innerHeight / 2) * 0.001;
-    });
-
-    // 动画渲染循环 (缓动跟随鼠标)
-    function animate() {
-        requestAnimationFrame(animate);
-
-        targetX += (mouseX - targetX) * 0.05;
-        targetY += (mouseY - targetY) * 0.05;
-
-        particleSystem.rotation.y = targetX * 1.5;
-        particleSystem.rotation.x = -targetY * 1.5;
-
-        // 缓慢自动自转
-        particleSystem.rotation.z += 0.001;
-
-        renderer.render(scene, camera);
-    }
-    animate();
-
-    // 窗口尺寸自适应
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-</script>
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+        // 建立 3D 网格粒子阵列
+        const count = 1200;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(count * 3);
+
+        for (let i = 0; i < count * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 12;
+            positions[i + 1] = (Math.random() - 0.5) * 12;
+            positions[i + 2] = (Math.random() - 0.5) * 12;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            size: 0.03,
+            color: 0x2563eb,
+            transparent: true,
+            opacity: 0.4
+        });
+
+        const particles = new THREE.Points(geometry, material);
+        scene.add(particles);
+
+        camera.position.z = 4.5;
+
+        // 全局鼠标位置计算
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+        });
+
+        // 渲染循环
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // 背景跟随鼠标旋转
+            particles.rotation.y += (mouseX * 0.5 - particles.rotation.y) * 0.05;
+            particles.rotation.x += (-mouseY * 0.5 - particles.rotation.x) * 0.05;
+            
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // --- 2. 3D 卡片 Perspective Tilt 鼠标倾斜特效 ---
+        const cards = document.querySelectorAll('.feature-card-tilt');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((y - centerY) / centerY) * -10; // 倾斜角度
+                const rotateY = ((x - centerX) / centerX) * 10;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+            });
+        });
+    </script>
 </body>
 </html>
