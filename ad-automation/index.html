@@ -61,7 +61,7 @@
 </div>
 
 <script>
-    document.getElementById('submitBtn').onclick = function() {
+    document.getElementById('submitBtn').onclick = async function() {
         const appName = document.getElementById('appName').value.trim();
         const packageName = document.getElementById('packageName').value.trim();
         const platform = document.getElementById('platform').value;
@@ -73,7 +73,35 @@
 
         const resultBox = document.getElementById('result-box');
         resultBox.style.display = 'block';
-        resultBox.innerHTML = `<b>[前端演示界面]</b><br>已接收参数：<br>• 应用名：${appName}<br>• 包名：${packageName}<br>• 平台：${platform}<br><br><span style="color:#86868b;">(下一步将接入后端 API 实际调用 Pangle / MTG / Unity 并返回真实 ID)</span>`;
+        resultBox.innerHTML = `⏳ 正在请求 API 生成 Pangle 广告位...`;
+
+        try {
+            const response = await fetch('https://api.hiyyk.com', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    app_name: appName,
+                    package_name: packageName,
+                    platform: platform
+                })
+            });
+
+            const res = await response.json();
+            if (res.code === 200) {
+                resultBox.innerHTML = `
+                    <b style="color: #28a745;">✔ Pangle 广告位创建成功！</b><br><br>
+                    • 应用名称：${res.data.app_name}<br>
+                    • 包名：${res.data.package_name}<br>
+                    • 平台：${res.data.platform}<br>
+                    • Pangle App ID：<code>${res.data.pangle_app_id}</code><br>
+                    • Pangle Slot ID：<code>${res.data.pangle_slot_id}</code>
+                `;
+            } else {
+                resultBox.innerHTML = `<b style="color: #dc3545;">❌ 请求失败：</b> ${res.message}`;
+            }
+        } catch (e) {
+            resultBox.innerHTML = `<b style="color: #dc3545;">❌ 网络异常：</b> 无法连接至 api.hiyyk.com，请检查网络或后端配置`;
+        }
     };
 </script>
 
