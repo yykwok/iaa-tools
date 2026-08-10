@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>业务自动化控制台 - Dashboard</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: #f4f6f9; 
+            min-height: 100vh; 
+            margin: 0; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            margin-top: 60px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        header h1 { font-size: 28px; color: #1d1d1f; margin-bottom: 8px; }
+        header p { color: #86868b; font-size: 15px; margin: 0; }
+        
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            width: 100%;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            transition: all 0.25s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+            border-color: #0066cc;
+        }
+
+        .card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #eef5ff;
+            color: #0066cc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 { margin: 0 0 10px 0; font-size: 20px; color: #1d1d1f; }
+        .card p { margin: 0; color: #86868b; font-size: 14px; line-height: 1.5; }
+        .card .action-text {
+            margin-top: 24px;
+            color: #0066cc;
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 30px;
+            color: #86868b;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>海外游戏运营自动化平台</h1>
+    <p>请选择你需要操作的功能模块</p>
+</header>
+
+<div class="container">
+    <!-- 模块 1：MAX 财务对账系统 -->
+    <a href="/reconciliation/" class="card">
+        <div>
+            <div class="icon">📊</div>
+            <h2>MAX 收入数据对账</h2>
+            <p>上传 max.csv、tgaado.csv 与 find.xlsx，一键比对并自动生成本月对账报表。</p>
+        </div>
+        <div class="action-text">进入对账工具 &rarr;</div>
+    </a>
+
+    <!-- 模块 2：广告配置自动化 -->
+    <a href="/ad-automation/" class="card">
+        <div>
+            <div class="icon">⚡</div>
+            <h2>广告位 ID 自动化配置</h2>
+            <p>输入应用包名与基础配置，自动在 Pangle、MTG、Unity 生成 ID 并同步至 MAX。</p>
+        </div>
+        <div class="action-text">进入配置工具 &rarr;</div>
+    </a>
+</div>
+
+<footer>
+    &copy; Internal Operation Portal. All rights reserved.
+</footer>
+
+</body>
+</html>
