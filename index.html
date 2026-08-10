@@ -1,120 +1,280 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" style="background-color:#F8FAFC">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>业务自动化控制台 - Dashboard</title>
+    <title>kimeeru - 业务自动化控制台</title>
+    <!-- 引入 kimeeru 同款科技感字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    
     <style>
         * { box-sizing: border-box; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: #f4f6f9; 
-            min-height: 100vh; 
-            margin: 0; 
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #F8FAFC;
+            color: #0f172a;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-        }
-        header {
-            margin-top: 60px;
-            margin-bottom: 40px;
-            text-align: center;
-        }
-        header h1 { font-size: 28px; color: #1d1d1f; margin-bottom: 8px; }
-        header p { color: #86868b; font-size: 15px; margin: 0; }
-        
-        .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px;
-            width: 100%;
-            max-width: 800px;
-            padding: 0 20px;
+            overflow-x: hidden;
         }
 
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
-            transition: all 0.25s ease;
+        /* 顶部毛玻璃导航栏 */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-container {
+            width: 100%;
+            max-width: 1100px;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            color: #2563eb;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-badge {
+            font-size: 11px;
+            font-weight: 600;
+            background: #eff6ff;
+            color: #2563eb;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            border: 1px solid #dbeafe;
+        }
+
+        /* 主体内容区域 */
+        main {
+            margin-top: 140px;
+            margin-bottom: 80px;
+            width: 100%;
+            max-width: 900px;
+            padding: 0 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* 胶囊型顶部 Tag */
+        .hero-tag {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #2563eb;
+            background-color: #eff6ff;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 24px;
+            border: 1px solid #dbeafe;
+        }
+
+        /* 渐变标题 */
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 48px;
+            line-height: 1.15;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin: 0 0 16px 0;
+            color: #0f172a;
+        }
+
+        @media (min-width: 768px) {
+            h1 { font-size: 64px; }
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            font-size: 18px;
+            color: #64748b;
+            margin: 0 0 48px 0;
+            font-weight: 400;
+        }
+
+        /* 卡片容器与 kimeeru Feature Card 风格保持一致 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            width: 100%;
+        }
+
+        @media (min-width: 640px) {
+            .grid-container { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .feature-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 36px 32px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             color: inherit;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            border: 1px solid rgba(0,0,0,0.03);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
         }
 
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 32px rgba(0,0,0,0.1);
-            border-color: #0066cc;
+        .feature-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            border-color: #93c5fd;
+            box-shadow: 0 20px 35px -10px rgba(37, 99, 235, 0.12), 0 10px 15px -8px rgba(37, 99, 235, 0.06);
         }
 
-        .card .icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            background: #eef5ff;
-            color: #0066cc;
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: #eff6ff;
+            color: #2563eb;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 20px;
             margin-bottom: 20px;
         }
 
-        .card h2 { margin: 0 0 10px 0; font-size: 20px; color: #1d1d1f; }
-        .card p { margin: 0; color: #86868b; font-size: 14px; line-height: 1.5; }
-        .card .action-text {
-            margin-top: 24px;
-            color: #0066cc;
-            font-weight: 500;
+        .card-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 12px 0;
+            letter-spacing: -0.02em;
+        }
+
+        .card-desc {
             font-size: 14px;
-            display: flex;
+            color: #64748b;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .card-btn {
+            margin-top: 28px;
+            display: inline-flex;
             align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: #2563eb;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 10px 20px;
+            border-radius: 9999px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+            width: fit-content;
+        }
+
+        .feature-card:hover .card-btn {
+            background-color: #1d4ed8;
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
         }
 
         footer {
             margin-top: auto;
-            padding: 30px;
-            color: #86868b;
-            font-size: 12px;
+            padding: 32px;
+            color: #94a3b8;
+            font-size: 13px;
+            border-top: 1px solid #f1f5f9;
+            width: 100%;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>海外游戏运营自动化平台</h1>
-    <p>请选择你需要操作的功能模块</p>
+    <div class="nav-container">
+        <a href="/" class="brand-logo">
+            kimeeru <span class="brand-badge">Console</span>
+        </a>
+    </div>
 </header>
 
-<div class="container">
-    <!-- 模块 1：MAX 财务对账系统 -->
-    <a href="/reconciliation/" class="card">
-        <div>
-            <div class="icon">📊</div>
-            <h2>MAX 收入数据对账</h2>
-            <p>上传 max.csv、tgaado.csv 与 find.xlsx，一键比对并自动生成本月对账报表。</p>
-        </div>
-        <div class="action-text">进入对账工具 &rarr;</div>
-    </a>
+<main>
+    <div class="hero-tag">Next-Generation Operation Portal</div>
+    
+    <h1>
+        <span class="text-gradient">Automate Tasks.</span><br>
+        Full Efficiency.
+    </h1>
+    
+    <p class="hero-desc">智能海外游戏发行业务自动化中心，一键搞定财务对账与广告配置</p>
 
-    <!-- 模块 2：广告配置自动化 -->
-    <a href="/ad-automation/" class="card">
-        <div>
-            <div class="icon">⚡</div>
-            <h2>广告位 ID 自动化配置</h2>
-            <p>输入应用包名与基础配置，自动在 Pangle、MTG、Unity 生成 ID 并同步至 MAX。</p>
-        </div>
-        <div class="action-text">进入配置工具 &rarr;</div>
-    </a>
-</div>
+    <div class="grid-container">
+        <!-- 模块 1：MAX 财务对账系统 -->
+        <a href="/reconciliation/" class="feature-card">
+            <div>
+                <div class="card-icon">📊</div>
+                <h3 class="card-title">MAX 收入数据对账</h3>
+                <p class="card-desc">自动读取解析 max.csv、tgaado.csv 与 find.xlsx，智能比对关键列数据并一键导出月度财务对账报表。</p>
+            </div>
+            <div class="card-btn">
+                进入对账系统 &rarr;
+            </div>
+        </a>
+
+        <!-- 模块 2：广告配置自动化 -->
+        <a href="/ad-automation/" class="feature-card">
+            <div>
+                <div class="card-icon">⚡</div>
+                <h3 class="card-title">广告位 ID 自动化配置</h3>
+                <p class="card-desc">输入应用包名与基础配置，自动一键调用 Pangle、MTG、Unity 接口生成广告位 ID 并自动关联推送至 MAX Waterfall。</p>
+            </div>
+            <div class="card-btn">
+                进入配置工具 &rarr;
+            </div>
+        </a>
+    </div>
+</main>
 
 <footer>
-    &copy; Internal Operation Portal. All rights reserved.
+    © 2026 kimeeru Console. Internal Operation System.
 </footer>
 
 </body>
