@@ -9,9 +9,9 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f9; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
         .card { background: white; border-radius: 16px; padding: 36px; width: 480px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
         h2 { margin-top: 0; color: #1d1d1f; font-size: 22px; text-align: center; }
-        .form-group { margin-bottom: 16px; text-align: left; }
+        .form-group { margin-bottom: 14px; text-align: left; }
         label { font-size: 13px; color: #333; font-weight: 600; display: block; margin-bottom: 6px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #d2d2d7; border-radius: 8px; font-size: 14px; outline: none; }
+        input, select { width: 100%; padding: 10px 12px; border: 1px solid #d2d2d7; border-radius: 8px; font-size: 14px; outline: none; }
         .btn { background: #0066cc; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; width: 100%; margin-top: 10px; cursor: pointer; font-weight: 500; }
         #result-box { margin-top: 20px; display: none; padding: 12px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e5e5ea; font-size: 13px; word-break: break-all; }
     </style>
@@ -22,16 +22,20 @@
     <h2>Pangle 广告位自动生成</h2>
     <form id="adForm" onsubmit="return false;">
         <div class="form-group">
-            <label>Pangle User ID (账号 ID)</label>
-            <input type="text" id="userId" placeholder="输入 Pangle 账号的主 User ID" required>
+            <label>Pangle User ID (主账号 ID)</label>
+            <input type="number" id="userId" value="5032451" required>
         </div>
         <div class="form-group">
             <label>应用名称 (App Name)</label>
-            <input type="text" id="appName" placeholder="例如: My Super Game" required>
+            <input type="text" id="appName" placeholder="例如: W999" required>
         </div>
         <div class="form-group">
-            <label>应用包名 (Package Name / Bundle ID)</label>
-            <input type="text" id="packageName" placeholder="例如: com.company.game" required>
+            <label>应用商店链接 (Download URL)</label>
+            <input type="text" id="downloadUrl" placeholder="例如: https://play.google.com/store/apps/details?id=com.demo" required>
+        </div>
+        <div class="form-group">
+            <label>行业二级分类代码 (Industry Code)</label>
+            <input type="number" id="categoryCode" value="120403" placeholder="例如: 游戏类 120403" required>
         </div>
         <div class="form-group">
             <label>目标平台 (Platform)</label>
@@ -49,26 +53,28 @@
     document.getElementById('submitBtn').onclick = async function() {
         const userId = document.getElementById('userId').value.trim();
         const appName = document.getElementById('appName').value.trim();
-        const packageName = document.getElementById('packageName').value.trim();
+        const downloadUrl = document.getElementById('downloadUrl').value.trim();
+        const categoryCode = document.getElementById('categoryCode').value.trim();
         const platform = document.getElementById('platform').value;
 
-        if (!userId || !appName || !packageName) {
+        if (!userId || !appName || !downloadUrl || !categoryCode) {
             alert("请完整填写所有必填字段！");
             return;
         }
 
         const resultBox = document.getElementById('result-box');
         resultBox.style.display = 'block';
-        resultBox.innerHTML = `⏳ 正在通过 Pangle 官方 Management API 建位...`;
+        resultBox.innerHTML = `⏳ 正在请求 Pangle 官方创建 App...`;
 
         try {
             const response = await fetch('https://api.hiyyk.com', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    user_id: userId,
+                    user_id: parseInt(userId),
                     app_name: appName,
-                    package_name: packageName,
+                    download_url: downloadUrl,
+                    app_category_code: parseInt(categoryCode),
                     platform: platform
                 })
             });
@@ -76,18 +82,17 @@
             const res = await response.json();
             if (res.code === 200) {
                 resultBox.innerHTML = `
-                    <b style="color: #28a745;">✔ Pangle 官方创建成功！</b><br><br>
+                    <b style="color: #28a745;">✔ Pangle 官方 App 创建成功！</b><br><br>
                     • 应用名称：${res.data.app_name}<br>
-                    • 包名：${res.data.package_name}<br>
-                    • 平台：${res.data.platform}<br>
+                    • 状态代码：${res.data.status} (Live)<br>
                     • 真实 Pangle App ID：<code>${res.data.pangle_app_id}</code><br>
-                    • 真实 Pangle Slot ID：<code>${res.data.pangle_slot_id}</code>
+                    • Request ID：<code>${res.data.request_id}</code>
                 `;
             } else {
-                resultBox.innerHTML = `<b style="color: #dc3545;">❌ Pangle 接口报错：</b> ${res.message}`;
+                resultBox.innerHTML = `<b style="color: #dc3545;">❌ Pangle 官方报错：</b> [Code ${res.code}] ${res.message}`;
             }
         } catch (e) {
-            resultBox.innerHTML = `<b style="color: #dc3545;">❌ 网络异常：</b> ${e.message}`;
+            resultBox.innerHTML = `<b style="color: #dc3545;">❌ 网络或解析异常：</b> ${e.message}`;
         }
     };
 </script>
