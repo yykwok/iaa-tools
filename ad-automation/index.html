@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pangle 广告位批量生成与智能去重</title>
+    <title>广告位自动化配置工具</title>
     <style>
         * { box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f9; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .card { background: white; border-radius: 16px; padding: 36px; width: 520px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        .card { background: white; border-radius: 16px; padding: 32px; width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
         h2 { margin-top: 0; color: #1d1d1f; font-size: 22px; text-align: center; }
         .form-group { margin-bottom: 14px; text-align: left; }
         label { font-size: 13px; color: #333; font-weight: 600; display: block; margin-bottom: 6px; }
         input, select { width: 100%; padding: 10px 12px; border: 1px solid #d2d2d7; border-radius: 8px; font-size: 14px; outline: none; }
         .btn { background: #0066cc; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; width: 100%; margin-top: 10px; cursor: pointer; font-weight: 500; }
+        .btn:hover { background: #0052a3; }
         #result-box { margin-top: 20px; display: none; padding: 16px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e5e5ea; font-size: 13px; word-break: break-all; }
         .slot-item { background: #ffffff; padding: 10px 12px; border-radius: 6px; border: 1px solid #e0e0e0; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .badge { font-size: 11px; padding: 3px 7px; border-radius: 4px; font-weight: 600; }
+        .badge { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600; white-space: nowrap; }
         .badge-new { background: #e6f4ea; color: #137333; }
         .badge-exist { background: #feefc3; color: #b06000; }
     </style>
@@ -23,25 +24,32 @@
 <body>
 
 <div class="card">
-    <h2>Pangle 广告位智能生成与去重</h2>
+    <h2>广告位智能生成与去重</h2>
     <form id="adForm" onsubmit="return false;">
-        <div class="form-group">
-            <label>Pangle User ID (主账号 ID)</label>
-            <input type="number" id="userId" value="5032451" required>
-        </div>
+        <input type="hidden" id="userId" value="5032451">
+        
         <div class="form-group">
             <label>应用名称 (App Name)</label>
-            <input type="text" id="appName" placeholder="例如: W999" required>
+            <input type="text" id="appName" placeholder="例如: PiggySort" required>
         </div>
         <div class="form-group">
             <label>应用商店链接 (Download URL)</label>
             <input type="text" id="downloadUrl" placeholder="https://apps.apple.com/us/app/..." required>
         </div>
         <div class="form-group">
+            <label>应用类别 (App Category)</label>
+            <select id="categoryCode">
+                <option value="120403" selected>120403（游戏大厅）</option>
+                <option value="120401">120401（休闲游戏）</option>
+                <option value="120402">120402（益智解谜）</option>
+                <option value="120400">120400（通用游戏）</option>
+            </select>
+        </div>
+        <div class="form-group">
             <label>目标平台 (Platform)</label>
             <select id="platform">
-                <option value="android">Android</option>
                 <option value="ios">iOS</option>
+                <option value="android">Android</option>
             </select>
         </div>
         <button type="button" class="btn" id="submitBtn">一键自动化建位与校验</button>
@@ -51,12 +59,15 @@
 
 <script>
     document.getElementById('submitBtn').onclick = async function() {
-        const userId = document.getElementById('userId').value.trim();
+        const userId = document.getElementById('userId').value;
         const appName = document.getElementById('appName').value.trim();
         const downloadUrl = document.getElementById('downloadUrl').value.trim();
+        const categorySelect = document.getElementById('categoryCode');
+        const categoryCode = categorySelect.value;
+        const categoryText = categorySelect.options[categorySelect.selectedIndex].text;
         const platform = document.getElementById('platform').value;
 
-        if (!userId || !appName || !downloadUrl) {
+        if (!appName || !downloadUrl) {
             alert("请完整填写所有必填字段！");
             return;
         }
@@ -73,6 +84,7 @@
                     user_id: parseInt(userId),
                     app_name: appName,
                     download_url: downloadUrl,
+                    app_category_code: parseInt(categoryCode),
                     platform: platform
                 })
             });
@@ -83,17 +95,17 @@
                     ? `<span class="badge badge-exist">⚠ 应用已存在 (已跳过创建)</span>` 
                     : `<span class="badge badge-new">✨ 首次创建应用</span>`;
 
-                function getSlotHtml(title, slot) {
-                    const slotTag = slot.is_new 
+                function renderSlot(title, slot) {
+                    const tag = slot.is_new 
                         ? `<span class="badge badge-new">✨ 首次创建</span>` 
                         : `<span class="badge badge-exist">⚠ 已存在重复 (跳过创建)</span>`;
                     return `
                         <div class="slot-item">
                             <div>
-                                <b>${title} (${slot.name})</b><br>
+                                <b>${title}</b> (<code>${slot.name}</code>)<br>
                                 ID: <code>${slot.id}</code>
                             </div>
-                            <div>${slotTag}</div>
+                            <div>${tag}</div>
                         </div>
                     `;
                 }
@@ -101,14 +113,15 @@
                 resultBox.innerHTML = `
                     <b style="color: #28a745;">✔ 执行完毕！</b><br><br>
                     • 应用名称：<b>${res.data.app_name}</b> ${appTag}<br>
+                    • 应用类别：<b>${categoryText}</b><br>
                     • App ID：<code>${res.data.pangle_app_id}</code><br><br>
                     <b>广告位列表状态：</b>
-                    ${getSlotHtml('🎬 激励视频', res.data.slots.reward)}
-                    ${getSlotHtml('📺 插屏广告', res.data.slots.inter)}
-                    ${getSlotHtml('🏷️ Banner 广告', res.data.slots.banner)}
+                    ${renderSlot('🎬 激励视频', res.data.slots.reward)}
+                    ${renderSlot('📺 插屏广告', res.data.slots.inter)}
+                    ${renderSlot('🏷️ Banner 广告', res.data.slots.banner)}
                 `;
             } else {
-                resultBox.innerHTML = `<b style="color: #dc3545;">❌ 官方响应报错：</b> [Code ${res.code}] ${res.message}`;
+                resultBox.innerHTML = `<b style="color: #dc3545;">❌ 响应报错：</b> [Code ${res.code}] ${res.message}`;
             }
         } catch (e) {
             resultBox.innerHTML = `<b style="color: #dc3545;">❌ 网络或解析异常：</b> ${e.message}`;
