@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="background-color:#F8FAFC" class="landing-page">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>广告平台配置中心 - yyk</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body { font-family: 'DM Sans', sans-serif; background-color: #F8FAFC; color: #0f172a; }
+        .glass-navbar { background: rgba(248, 250, 252, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
+        .feature-card-tilt { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 24px; box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05); transition: transform 0.15s ease-out, box-shadow 0.3s ease; }
+        .feature-card-tilt:hover { box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.12); border-color: #93c5fd; transform: translateY(-4px); }
+    </style>
+</head>
+<body class="font-sans antialiased bg-background text-foreground">
+
+    <header class="fixed top-0 left-0 right-0 z-50 glass-navbar">
+        <nav class="container mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2">
+                <span class="font-heading font-bold text-xl text-blue-600 tracking-tight">yyk</span>
+                <span class="text-xs font-semibold bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full border border-blue-100">Console</span>
+            </a>
+            <a href="/" class="text-sm font-medium text-muted-foreground hover:text-foreground">← 返回主页</a>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 max-w-5xl pt-32 pb-20">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-heading font-bold mb-4">选择广告平台</h1>
+            <p class="text-muted-foreground">请选择您需要自动生成应用与广告位 ID 的平台</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <!-- Pangle 平台卡片 -->
+            <a href="/pangle/" class="feature-card-tilt p-8 flex flex-col justify-between group">
+                <div>
+                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl mb-6 border border-blue-100">
+                        ⚡
+                    </div>
+                    <h2 class="text-2xl font-heading font-bold mb-3 text-foreground group-hover:text-blue-600 transition-colors">
+                        Pangle 广告位生成
+                    </h2>
+                    <p class="text-sm text-muted-foreground leading-relaxed">
+                        一键自动建位与校验，生成 Reward / Inter / Banner 广告位，支持智能查重与全自动化配置。
+                    </p>
+                </div>
+                <div class="mt-8 flex items-center text-sm font-bold text-blue-600">
+                    进入 Pangle 工具 <span class="ml-2 transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+                </div>
+            </a>
+
+            <!-- Vungle 平台卡片 -->
+            <a href="/vungle/" class="feature-card-tilt p-8 flex flex-col justify-between group">
+                <div>
+                    <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl mb-6 border border-purple-100">
+                        🚀
+                    </div>
+                    <h2 class="text-2xl font-heading font-bold mb-3 text-foreground group-hover:text-purple-600 transition-colors">
+                        Vungle (Liftoff) 广告位生成
+                    </h2>
+                    <p class="text-sm text-muted-foreground leading-relaxed">
+                        基于 Bearer Token 动态鉴权，自动创建 Vungle App 与 Placement，实时吐出对应 referenceID。
+                    </p>
+                </div>
+                <div class="mt-8 flex items-center text-sm font-bold text-purple-600">
+                    进入 Vungle 工具 <span class="ml-2 transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+</body>
+</html>
