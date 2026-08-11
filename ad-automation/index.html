@@ -31,11 +31,7 @@
         </div>
         <div class="form-group">
             <label>应用商店链接 (Download URL)</label>
-            <input type="text" id="downloadUrl" placeholder="例如: https://play.google.com/store/apps/details?id=com.demo" required>
-        </div>
-        <div class="form-group">
-            <label>行业二级分类代码 (Industry Code)</label>
-            <input type="number" id="categoryCode" value="120403" placeholder="例如: 游戏类 120403" required>
+            <input type="text" id="downloadUrl" placeholder="https://play.google.com/store/apps/details?id=com.demo" required>
         </div>
         <div class="form-group">
             <label>目标平台 (Platform)</label>
@@ -54,17 +50,16 @@
         const userId = document.getElementById('userId').value.trim();
         const appName = document.getElementById('appName').value.trim();
         const downloadUrl = document.getElementById('downloadUrl').value.trim();
-        const categoryCode = document.getElementById('categoryCode').value.trim();
         const platform = document.getElementById('platform').value;
 
-        if (!userId || !appName || !downloadUrl || !categoryCode) {
+        if (!userId || !appName || !downloadUrl) {
             alert("请完整填写所有必填字段！");
             return;
         }
 
         const resultBox = document.getElementById('result-box');
         resultBox.style.display = 'block';
-        resultBox.innerHTML = `⏳ 正在请求 Pangle 官方创建 App...`;
+        resultBox.innerHTML = `⏳ 正在请求 Pangle 官方 API 建位...`;
 
         try {
             const response = await fetch('https://api.hiyyk.com', {
@@ -74,7 +69,6 @@
                     user_id: parseInt(userId),
                     app_name: appName,
                     download_url: downloadUrl,
-                    app_category_code: parseInt(categoryCode),
                     platform: platform
                 })
             });
@@ -84,7 +78,7 @@
                 resultBox.innerHTML = `
                     <b style="color: #28a745;">✔ Pangle 官方 App 创建成功！</b><br><br>
                     • 应用名称：${res.data.app_name}<br>
-                    • 状态代码：${res.data.status} (Live)<br>
+                    • 行业分类：Games / Game Center<br>
                     • 真实 Pangle App ID：<code>${res.data.pangle_app_id}</code><br>
                     • Request ID：<code>${res.data.request_id}</code>
                 `;
