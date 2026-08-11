@@ -120,8 +120,8 @@
 </div>
 
 <script>
-    // 提示：请将下面的 URL 替换为你在 Cloudflare Worker 上部署的真实 Vungle API 域名/地址
-    const VUNGLE_WORKER_URL = 'https://vungle-api.hiyyk.com';
+    // 已将 URL 替换为你在 Cloudflare Worker 上部署的真实域名
+    const VUNGLE_WORKER_URL = 'https://vungle-auto-api.joeykwok012.workers.dev';
 
     document.getElementById('submitBtn').onclick = async function() {
         const appName = document.getElementById('appName').value.trim();
@@ -140,7 +140,7 @@
         
         submitBtn.disabled = true;
 
-        // 设置 15 秒请求超时中断控制
+        // 设置 15 秒超时保护
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000);
 
@@ -195,9 +195,9 @@
         } catch (e) {
             clearTimeout(timeoutId);
             if (e.name === 'AbortError') {
-                resultBox.innerHTML = `<b style="color: #dc3545;">❌ 请求超时：</b> 连接 Cloudflare Worker 超时，请检查网络或 API 域名配置。`;
+                resultBox.innerHTML = `<b style="color: #dc3545;">❌ 请求超时：</b> 连接 Cloudflare Worker 超时，请检查网络配置。`;
             } else {
-                resultBox.innerHTML = `<b style="color: #dc3545;">❌ 网络或请求异常：</b> ${e.message}<br><small>请检查 Cloudflare Worker 域名设置及跨域 (CORS) 状态。</small>`;
+                resultBox.innerHTML = `<b style="color: #dc3545;">❌ 网络或请求异常：</b> ${e.message}<br><small>请检查 Worker 响应及跨域 (CORS) 状态。</small>`;
             }
         } finally {
             submitBtn.disabled = false;
