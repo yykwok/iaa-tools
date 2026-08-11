@@ -1,18 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" style="background-color:#F8FAFC" class="landing-page">
+<html lang="zh-CN" style="background-color:#F8FAFC" class="landing-page">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>yyk - Empty Inbox, Full Day</title>
     
-    <!-- 引入 kimeeru 官方同款字体 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS  CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Three.js 3D 渲染引擎 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
@@ -35,65 +32,20 @@
     </script>
 
     <style>
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background-color: #F8FAFC;
-            color: #0f172a;
-            overflow-x: hidden;
-        }
-
-        /* 全屏 Three.js 3D Canvas 背景 */
-        #landing-canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* 官方 Glassmorphism 毛玻璃导航栏 */
-        .glass-navbar {
-            background: rgba(248, 250, 252, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-        }
-
-        /* 官方渐变文字样式 */
-        .text-gradient {
-            background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* 3D 视差倾斜卡片 (Perspective Tilt) */
-        .feature-card-tilt {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            border-radius: 24px;
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.15s ease-out, box-shadow 0.3s ease;
-            transform-style: preserve-3d;
-            perspective: 1000px;
-        }
-
-        .feature-card-tilt:hover {
-            box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.12);
-            border-color: #93c5fd;
-        }
+        body { font-family: 'DM Sans', sans-serif; background-color: #F8FAFC; color: #0f172a; overflow-x: hidden; }
+        #landing-canvas-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
+        .glass-navbar { background: rgba(248, 250, 252, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
+        .text-gradient { background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .feature-card-tilt { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 24px; box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05); transition: transform 0.15s ease-out, box-shadow 0.3s ease; transform-style: preserve-3d; perspective: 1000px; }
+        .feature-card-tilt:hover { box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.12); border-color: #93c5fd; }
     </style>
 </head>
 <body class="font-sans antialiased bg-background text-foreground landing-page">
 
-    <!-- 1. 3D WebGL Canvas 背景层 -->
     <div id="landing-canvas-container">
         <canvas id="three-canvas"></canvas>
     </div>
 
-    <!-- 2. 吸顶毛玻璃 Header -->
     <header class="fixed top-0 left-0 right-0 z-50 glass-navbar">
         <nav class="container mx-auto px-6 h-16 flex items-center justify-between">
             <a href="/" class="flex items-center gap-2">
@@ -116,28 +68,23 @@
         </nav>
     </header>
 
-    <!-- 3. Main Hero 区域 -->
     <main class="relative z-10 pt-32 pb-20">
         <section class="landing-section items-center text-center px-4">
             <div class="max-w-3xl mx-auto flex flex-col items-center">
-                <!-- Top Tag Badge -->
                 <h2 class="text-blue-600 font-bold tracking-wide uppercase text-xs mb-6 bg-blue-50 px-4 py-1.5 rounded-full border border-blue-100">
                     Next-Generation Operation Portal
                 </h2>
-                
-                <!-- Main Title -->
                 <h1 class="text-5xl md:text-7xl font-heading font-bold tracking-tight mb-6 leading-tight">
                     <span class="block text-gradient">Automate Tasks.</span>
                     <span class="block text-gradient">Full Day Efficiency.</span>
                 </h1>
-                
                 <p class="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto mb-12 font-normal">
                     AI 驱动海外游戏发行业务自动化，一键生成广告 ID 与财务对账。
                 </p>
             </div>
         </section>
 
-        <!-- 4. 3D 悬浮卡片区域 (带有 Mouse Tilt 跟踪) -->
+        <!-- 2 大核心功能入口卡片 -->
         <section class="container mx-auto px-6 max-w-5xl mt-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
@@ -159,7 +106,7 @@
                     </div>
                 </a>
 
-                <!-- 卡片 2：广告自动化 -->
+                <!-- 卡片 2：广告配置大类入口 -->
                 <a href="/ad-automation/" class="feature-card-tilt p-8 md:p-10 flex flex-col justify-between group">
                     <div>
                         <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl mb-6 border border-blue-100">
@@ -169,11 +116,11 @@
                             广告位 ID 自动化配置
                         </h2>
                         <p class="text-sm md:text-base text-muted-foreground leading-relaxed">
-                            输入包名，一键调用 Pangle, MTG, Unity API 生成广告位 ID 并自动关联绑定至 MAX Waterfall。
+                            输入包名，选择 Pangle、Vungle、Unity 等广告平台，一键自动化生成广告位 ID。
                         </p>
                     </div>
                     <div class="mt-8 flex items-center text-sm font-bold text-blue-600">
-                        进入配置工具 <span class="ml-2 transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+                        选择广告平台 <span class="ml-2 transform group-hover:translate-x-1 transition-transform">&rarr;</span>
                     </div>
                 </a>
 
@@ -181,14 +128,11 @@
         </section>
     </main>
 
-    <!-- Footer -->
     <footer class="relative z-10 border-t border-border mt-20 py-8 text-center text-sm text-muted-foreground">
         <p>© 2026 yyk Console. All rights reserved.</p>
     </footer>
 
-    <!-- 5. 网页互动逻辑：Three.js 3D 背景 + 卡片 3D Tilt 视角跟随 -->
     <script>
-        // --- 1. Three.js 3D 交互粒子背景 ---
         const canvas = document.getElementById('three-canvas');
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -197,7 +141,6 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        // 建立 3D 网格粒子阵列
         const count = 1200;
         const geometry = new THREE.BufferGeometry();
         const positions = new Float32Array(count * 3);
@@ -209,34 +152,21 @@
         }
 
         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
-        const material = new THREE.PointsMaterial({
-            size: 0.03,
-            color: 0x2563eb,
-            transparent: true,
-            opacity: 0.4
-        });
-
+        const material = new THREE.PointsMaterial({ size: 0.03, color: 0x2563eb, transparent: true, opacity: 0.4 });
         const particles = new THREE.Points(geometry, material);
         scene.add(particles);
-
         camera.position.z = 4.5;
 
-        // 全局鼠标位置计算
         let mouseX = 0, mouseY = 0;
         window.addEventListener('mousemove', (e) => {
             mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
             mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
         });
 
-        // 渲染循环
         function animate() {
             requestAnimationFrame(animate);
-            
-            // 背景跟随鼠标旋转
             particles.rotation.y += (mouseX * 0.5 - particles.rotation.y) * 0.05;
             particles.rotation.x += (-mouseY * 0.5 - particles.rotation.x) * 0.05;
-            
             renderer.render(scene, camera);
         }
         animate();
@@ -247,20 +177,16 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // --- 2. 3D 卡片 Perspective Tilt 鼠标倾斜特效 ---
         const cards = document.querySelectorAll('.feature-card-tilt');
         cards.forEach(card => {
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
-                
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
-                
-                const rotateX = ((y - centerY) / centerY) * -10; // 倾斜角度
+                const rotateX = ((y - centerY) / centerY) * -10;
                 const rotateY = ((x - centerX) / centerX) * 10;
-
                 card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
             });
 
