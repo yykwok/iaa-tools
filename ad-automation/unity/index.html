@@ -155,8 +155,10 @@
 </div>
 
 <script>
-    // 替换为您部署的 Cloudflare Worker 域名
-    const WORKER_URL = "https://unity-auto-api.YOUR_SUBDOMAIN.workers.dev";
+    // 优先尝试同源 Worker 路由，若未绑定路由则自动 fallback 访问指定 Workers 域名
+    const WORKER_URL = window.location.hostname === "localhost" 
+        ? "http://127.0.0.1:8787" 
+        : "/api/unity";
 
     async function generatePlacements() {
         const appName = document.getElementById('appName').value.trim();
