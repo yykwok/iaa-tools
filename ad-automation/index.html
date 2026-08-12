@@ -1,81 +1,132 @@
 <!DOCTYPE html>
-<html lang="zh-CN" style="background-color:#F8FAFC" class="landing-page">
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>广告平台配置中心 - yyk</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>广告位自动化生成工具</title>
     <style>
-        body { font-family: 'DM Sans', sans-serif; background-color: #F8FAFC; color: #0f172a; }
-        .glass-navbar { background: rgba(248, 250, 252, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
-        .feature-card-tilt { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 24px; box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05); transition: transform 0.15s ease-out, box-shadow 0.3s ease; }
-        .feature-card-tilt:hover { box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.12); border-color: #93c5fd; transform: translateY(-4px); }
+        :root {
+            --bg: #f4f5f7;
+            --card-bg: #ffffff;
+            --text: #1d1d1f;
+            --border: #e2e8f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 14px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 40px;
+            font-size: 15px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.25s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: #cbd5e1;
+        }
+
+        .card-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        .pangle .card-icon { background: #e0f2fe; color: #0284c7; }
+        .vungle .card-icon { background: #f3e8ff; color: #7e22ce; }
+        .unity .card-icon { background: #f1f5f9; color: #0f172a; }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: #64748b;
+            text-align: center;
+            line-height: 1.4;
+        }
     </style>
 </head>
-<body class="font-sans antialiased bg-background text-foreground">
+<body>
 
-    <header class="fixed top-0 left-0 right-0 z-50 glass-navbar">
-        <nav class="container mx-auto px-6 h-16 flex items-center justify-between">
-            <a href="../" class="flex items-center gap-2">
-                <span class="font-heading font-bold text-xl text-blue-600 tracking-tight">yyk</span>
-                <span class="text-xs font-semibold bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full border border-blue-100">Console</span>
-            </a>
-            <a href="../" class="text-sm font-medium text-muted-foreground hover:text-foreground">← 返回主页</a>
-        </nav>
-    </header>
+<div class="container">
+    <h1>广告平台自动化建位</h1>
+    <p class="subtitle">请选择需要自动生成 App 及广告位的平台</p>
 
-    <main class="container mx-auto px-6 max-w-5xl pt-32 pb-20">
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-heading font-bold mb-4">选择广告平台</h1>
-            <p class="text-muted-foreground">请选择您需要自动生成应用与广告位 ID 的平台</p>
-        </div>
+    <div class="grid">
+        <a href="./pangle/index.html" class="card pangle">
+            <div class="card-icon">P</div>
+            <div class="card-title">Pangle</div>
+            <div class="card-desc">自动创建 Pangle App 及代码位</div>
+        </a>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
-            <!-- Pangle 卡片：直接指定到 pangle/index.html -->
-            <a href="pangle/index.html" class="feature-card-tilt p-8 flex flex-col justify-between group">
-                <div>
-                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl mb-6 border border-blue-100">
-                        ⚡
-                    </div>
-                    <h2 class="text-2xl font-heading font-bold mb-3 text-foreground group-hover:text-blue-600 transition-colors">
-                        Pangle 广告位生成
-                    </h2>
-                    <p class="text-sm text-muted-foreground leading-relaxed">
-                        一键自动建位与校验，生成 Reward / Inter / Banner 广告位，支持智能查重与全自动化配置。
-                    </p>
-                </div>
-                <div class="mt-8 flex items-center text-sm font-bold text-blue-600">
-                    进入 Pangle 工具 <span class="ml-2 transform group-hover:translate-x-1 transition-transform">&rarr;</span>
-                </div>
-            </a>
+        <a href="./vungle/index.html" class="card vungle">
+            <div class="card-icon">V</div>
+            <div class="card-title">Vungle</div>
+            <div class="card-desc">自动创建 Liftoff App 及 Placement</div>
+        </a>
 
-            <!-- Vungle 卡片：直接指定到 vungle/index.html -->
-            <a href="vungle/index.html" class="feature-card-tilt p-8 flex flex-col justify-between group">
-                <div>
-                    <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl mb-6 border border-purple-100">
-                        🚀
-                    </div>
-                    <h2 class="text-2xl font-heading font-bold mb-3 text-foreground group-hover:text-purple-600 transition-colors">
-                        Vungle (Liftoff) 广告位生成
-                    </h2>
-                    <p class="text-sm text-muted-foreground leading-relaxed">
-                        基于 Bearer Token 动态鉴权，自动创建 Vungle App 与 Placement，实时吐出对应 referenceID。
-                    </p>
-                </div>
-                <div class="mt-8 flex items-center text-sm font-bold text-purple-600">
-                    进入 Vungle 工具 <span class="ml-2 transform group-hover:translate-x-1 transition-transform">&rarr;</span>
-                </div>
-            </a>
-
-        </div>
-    </main>
+        <a href="./unity/index.html" class="card unity">
+            <div class="card-icon">U</div>
+            <div class="card-title">Unity Ads</div>
+            <div class="card-desc">自动创建 Unity Project 及 Ad Units</div>
+        </a>
+    </div>
+</div>
 
 </body>
 </html>
