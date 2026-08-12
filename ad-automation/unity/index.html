@@ -155,10 +155,9 @@
 </div>
 
 <script>
-    // 优先尝试同源 Worker 路由，若未绑定路由则自动 fallback 访问指定 Workers 域名
-    const WORKER_URL = window.location.hostname === "localhost" 
-        ? "http://127.0.0.1:8787" 
-        : "/api/unity";
+    // ⚠️ 请填入你部署的 unity-auto-api Worker 真实域名
+    // 如果你在 Cloudflare Pages / Routes 中设置了代理，也可以填 "/api/unity"
+    const WORKER_URL = "https://unity-auto-api.YOUR_SUBDOMAIN.workers.dev";
 
     async function generatePlacements() {
         const appName = document.getElementById('appName').value.trim();
@@ -182,6 +181,11 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ app_name: appName, platform: platform })
             });
+
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error(`请求目标未返回 JSON (HTTP ${response.status})。请检查 WORKER_URL 环境变量或域名配置。`);
+            }
 
             const resData = await response.json();
 
