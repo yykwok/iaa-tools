@@ -1,1 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unity Ads 广告位自动化生成</title>
+    <style>
+        :root {
+            --primary: #000000;
+            --primary-hover: #222222;
+            --bg: #f4f5f7;
+            --card-bg: #ffffff;
+            --text: #1d1d1f;
+            --border: #e2e8f0;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .back-link {
+            color: #64748b;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .result-box {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            font-size: 14px;
+            display: none;
+        }
+
+        .result-box.active {
+            display: block;
+        }
+
+        .item {
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .item label {
+            display: inline;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>Unity Ads 自动化生成</h2>
+        <a href="../index.html" class="back-link">← 返回平台选择</a>
+    </div>
+
+    <div class="form-group">
+        <label>应用名称 (App / Project Name)</label>
+        <input type="text" id="appName" placeholder="例如: piggy_sort">
+    </div>
+
+    <div class="form-group">
+        <label>目标平台 (Platform)</label>
+        <select id="platform">
+            <option value="ios">iOS</option>
+            <option value="android">Android</option>
+        </select>
+    </div>
+
+    <button id="submitBtn" onclick="generatePlacements()">自动生成 Unity Project 及 Ad Units</button>
+
+    <div id="resultBox" class="result-box"></div>
+</div>
+
+<script>
+    // 替换为您部署的 Cloudflare Worker 域名
+    const WORKER_URL = "https://unity-auto-api.YOUR_SUBDOMAIN.workers.dev";
+
+    async function generatePlacements() {
+        const appName = document.getElementById('appName').value.trim();
+        const platform = document.getElementById('platform').value;
+        const submitBtn = document.getElementById('submitBtn');
+        const resultBox = document.getElementById('resultBox');
+
+        if (!appName) {
+            alert('请填写应用名称');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = '正在生成中...';
+        resultBox.className = 'result-box active';
+        resultBox.innerHTML = '正在请求 Unity API...';
+
+        try {
+            const response = await fetch(WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ app_name: appName, platform: platform })
+            });
+
+            const resData = await response.json();
+
+            if (resData.code === 200) {
+                const data = resData.data;
+                resultBox.innerHTML = `
+                    <div style="color: #16a34a; font-weight: 600; margin-bottom: 12px;">✅ 配置成功！</div>
+                    <div class="item"><label>Unity Project ID:</label> ${data.unity_project_id}</div>
+                    <div class="item"><label>激励视频 (Reward):</label> ${data.placements.reward.id}</div>
+                    <div class="item"><label>插屏广告 (Inter):</label> ${data.placements.inter.id}</div>
+                    <div class="item"><label>Banner 广告:</label> ${data.placements.banner.id}</div>
+                `;
+            } else {
+                resultBox.innerHTML = `<div style="color: #dc2626;">❌ 接口错误：${resData.message}</div>`;
+            }
+        } catch (err) {
+            resultBox.innerHTML = `<div style="color: #dc2626;">❌ 请求失败：${err.message}</div>`;
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = '自动生成 Unity Project 及 Ad Units';
+        }
+    }
+</script>
+
+</body>
+</html>
