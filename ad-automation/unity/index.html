@@ -155,8 +155,8 @@
 </div>
 
 <script>
-    // 使用同源 API 代理路由，彻底避免 CORS 和跨域域名配错问题
-    const WORKER_URL = "/api/unity";
+    // 指向绑定好的自定义 Worker 二级域名
+    const WORKER_URL = "https://unity-api.hiyyk.com";
 
     async function generatePlacements() {
         const appName = document.getElementById('appName').value.trim();
@@ -180,6 +180,11 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ app_name: appName, platform: platform })
             });
+
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error(`Worker 返回了非 JSON 数据 (${response.status})。请检查自定义域名解析是否已就绪。`);
+            }
 
             const resData = await response.json();
 
