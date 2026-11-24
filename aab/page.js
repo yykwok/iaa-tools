@@ -1,4 +1,4 @@
-import {setupSheetImport} from "./sheet-import.js";
+import {setupSheetImport} from "./sheet-import.js?v=auto1";
 const byId=id=>document.getElementById(id);
 const games=byId("games"),form=byId("profile"),report=byId("report");
 const storageKey="yyk.aab.profiles.v1";

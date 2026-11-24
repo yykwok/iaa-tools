@@ -4,8 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/@e965/xlsx@0.20.3/dist/xlsx.full.min.js; worker-src 'self'; connect-src https://api.deepseek.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>AAB 传包预检 · yyk Console</title>
-<link rel="stylesheet" href="../console.css?v=nav4"><link rel="stylesheet" href="page.css">
-<script type="module" src="page.js?v=sheet1"></script>
+<link rel="stylesheet" href="../console.css?v=nav4"><link rel="stylesheet" href="page.css?v=auto1">
+<script type="module" src="page.js?v=auto1"></script>
 </head>
 <body class="console">
 <nav class="dock" aria-label="主导航"><a class="brand" href="../">yyk <span>Console</span></a><a href="../reconciliation/">收入对账</a><a href="../ad-automation/">广告建位</a><a aria-current="page" href="./">AAB 预检</a></nav>
@@ -17,10 +17,9 @@
 </div><button id="clear-old" type="button" hidden>移除旧包</button></section>
 <section class="sheet"><h2>游戏参数表校对</h2>
 <label>选择参数表（Excel 或 CSV）<input type="file" id="sheet-file" accept=".xlsx,.xls,.csv"></label>
-<div id="sheet-controls" hidden><fieldset id="tabs"><legend>选择工作表和参数区域</legend></fieldset>
-<details id="preview"><summary>预览将发送的单元格</summary><pre id="cell-preview"></pre></details>
+<div id="sheet-controls" hidden><details id="preview" open><summary>自动识别的参数</summary><div id="parameter-list"></div></details>
 <label>DeepSeek API Key<input id="ds-key" type="password" placeholder="仅用于当前页面" autocomplete="off" spellcheck="false"></label>
-<p>点击整理后，所选参数区域内预览的单元格将发送到 DeepSeek。AAB 在本机解析，API Key 仅在本页使用。</p>
+<p>点击整理后，上方勾选的参数及其字段名将发送到 DeepSeek。AAB 在本机解析，API Key 仅在本页使用。</p>
 <button type="button" id="organize">用 DeepSeek 整理</button></div>
 <p id="sheet-status" role="status"></p><div id="sheet-review" hidden>
 <label>选择要校对的游戏或 Android 配置<select id="candidate"></select></label>
