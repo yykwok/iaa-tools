@@ -5,16 +5,15 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/@e965/xlsx@0.20.3/dist/xlsx.full.min.js; worker-src 'self'; connect-src https://api.deepseek.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>AAB 传包预检 · yyk Console</title>
 <link rel="stylesheet" href="../console.css?v=nav4"><link rel="stylesheet" href="page.css?v=auto1">
-<script type="module" src="page.js?v=auto1"></script>
+<script type="module" src="page.js?v=single1"></script>
 </head>
 <body class="console">
 <nav class="dock" aria-label="主导航"><a class="brand" href="../">yyk <span>Console</span></a><a href="../reconciliation/">收入对账</a><a href="../ad-automation/">广告建位</a><a aria-current="page" href="./">AAB 预检</a></nav>
 <main class="workspace">
 <header><h1>AAB 传包预检</h1><p>在本机读取安装包，导入发行参数表，逐项核对表内预期值与包内实际值。</p></header>
-<section class="sheet"><h2>选择安装包</h2><div class="pair">
-<label class="picker">本次 AAB<input id="current" type="file" accept=".aab"><span id="current-state">选择或拖入新包</span></label>
-<label class="picker">上次 AAB · 可选<input id="previous" type="file" accept=".aab"><span id="previous-state">选择或拖入旧包</span></label>
-</div><button id="clear-old" type="button" hidden>移除旧包</button></section>
+<section class="sheet"><h2>选择安装包</h2>
+<label class="picker">点击选择或拖入 AAB<input id="current" type="file" accept=".aab"><span id="current-state" role="status">再次拖入即可更换安装包</span></label>
+</section>
 <section class="sheet"><h2>游戏参数表校对</h2>
 <label>选择参数表（Excel 或 CSV）<input type="file" id="sheet-file" accept=".xlsx,.xls,.csv"></label>
 <div id="sheet-controls" hidden><details id="preview" open><summary>自动识别的参数</summary><div id="parameter-list"></div></details>
