@@ -1,3 +1,4 @@
+import {setupSheetImport} from "./sheet-import.js";
 const byId=id=>document.getElementById(id);
 const games=byId("games"),form=byId("profile"),report=byId("report");
 const storageKey="yyk.aab.profiles.v1";
@@ -9,8 +10,15 @@ function options(selected="") {
   games.value=selected;
 }
 options();
-function selected() { return profiles.find(p=>p.game===games.value); }
+let imported=null;
+function selected() { return imported || profiles.find(p=>p.game===games.value); }
+const sheetImport=setupSheetImport(profile=>{
+  imported=profile;
+  if (profile) { games.value=""; form.reset(); }
+  render();
+});
 games.onchange=()=>{
+  imported=null; sheetImport.clearApplied();
   const profile=selected();
   for (const input of form.querySelectorAll("input")) input.value=profile?.[input.name]||"";
   byId("saved").textContent=""; render();
@@ -22,7 +30,7 @@ form.onsubmit=event=>{
   const next=[...profiles.filter(p=>p.game!==data.game),data];
   try { localStorage.setItem(storageKey,JSON.stringify(next)); }
   catch { byId("saved").textContent="浏览器未能保存配置。"; return; }
-  profiles=next; options(data.game); byId("saved").textContent="已保存到本机"; render();
+  imported=null; sheetImport.clearApplied(); profiles=next; options(data.game); byId("saved").textContent="已保存到本机"; render();
 };
 const bundles={},workers={};
 function load(slot,file) {
@@ -63,11 +71,14 @@ function render() {
     report.append(node);
   }
   line("包名与版本",false,"h2");
+  if (imported) line("本次校对基准 · "+imported.source+" ｜ "+imported.game);
   const match=(name,value,expected)=>{
     const state=expected ? (!value?"未读取，需核对":value===expected?"一致":"不一致") : "未设置预期";
     line(name+" · "+(value||"未读取")+" ｜ "+state+(expected?"（预期 "+expected+"）":""),Boolean(expected && expected!==value));
   };
   match("包名",now.pkg,profile?.pkg);
+  if (profile?.version) match("预期 versionName",now.version,profile.version);
+  if (profile?.code) match("预期 versionCode",now.code,profile.code);
   line("版本名称 "+(now.version||"未读取")+(old?" ｜ 旧包 "+(old.version||"未读取"):""));
   line("构建号 "+(now.code||"未读取"));
   const sameGame=Boolean(old && now.pkg && old.pkg===now.pkg);

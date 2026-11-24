@@ -2,20 +2,30 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/@e965/xlsx@0.20.3/dist/xlsx.full.min.js; worker-src 'self'; connect-src https://api.deepseek.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>AAB 传包预检 · yyk Console</title>
 <link rel="stylesheet" href="../console.css?v=nav4"><link rel="stylesheet" href="page.css">
-<script type="module" src="page.js"></script>
+<script type="module" src="page.js?v=sheet1"></script>
 </head>
 <body class="console">
 <nav class="dock" aria-label="主导航"><a class="brand" href="../">yyk <span>Console</span></a><a href="../reconciliation/">收入对账</a><a href="../ad-automation/">广告建位</a><a aria-current="page" href="./">AAB 预检</a></nav>
 <main class="workspace">
-<header><h1>AAB 传包预检</h1><p>选择新包即可查看包名、构建号和权限。加入游戏配置或旧包，可核对传包前的差异。文件仅在本机读取。</p></header>
+<header><h1>AAB 传包预检</h1><p>在本机读取安装包，导入发行参数表，逐项核对表内预期值与包内实际值。</p></header>
 <section class="sheet"><h2>选择安装包</h2><div class="pair">
 <label class="picker">本次 AAB<input id="current" type="file" accept=".aab"><span id="current-state">选择或拖入新包</span></label>
 <label class="picker">上次 AAB · 可选<input id="previous" type="file" accept=".aab"><span id="previous-state">选择或拖入旧包</span></label>
 </div><button id="clear-old" type="button" hidden>移除旧包</button></section>
-<section class="sheet"><label for="games">校对游戏</label><select id="games"><option value="">仅查看包信息</option></select>
+<section class="sheet"><h2>游戏参数表校对</h2>
+<label>选择参数表（Excel 或 CSV）<input type="file" id="sheet-file" accept=".xlsx,.xls,.csv"></label>
+<div id="sheet-controls" hidden><fieldset id="tabs"><legend>选择工作表和参数区域</legend></fieldset>
+<details id="preview"><summary>预览将发送的单元格</summary><pre id="cell-preview"></pre></details>
+<label>DeepSeek API Key<input id="ds-key" type="password" placeholder="仅用于当前页面" autocomplete="off" spellcheck="false"></label>
+<p>点击整理后，所选参数区域内预览的单元格将发送到 DeepSeek。AAB 在本机解析，API Key 仅在本页使用。</p>
+<button type="button" id="organize">用 DeepSeek 整理</button></div>
+<p id="sheet-status" role="status"></p><div id="sheet-review" hidden>
+<label>选择要校对的游戏或 Android 配置<select id="candidate"></select></label>
+<div id="mapped"></div><button id="apply-sheet" type="button">确认参数并校对</button></div></section>
+<section class="sheet"><label for="games">已保存的本机游戏配置</label><select id="games"><option value="">仅查看包信息</option></select>
 <details><summary>管理本机游戏配置</summary>
 <form id="profile"><div class="pair">
 <label>游戏名称<input name="game" required maxlength="100"></label><label>预期包名<input name="pkg" required placeholder="com.company.game"></label>
