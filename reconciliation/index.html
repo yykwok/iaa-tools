@@ -26,27 +26,26 @@
         .btn:hover { background: #004499; }
         #error-msg { margin-top: 15px; color: #dc3545; font-size: 13px; text-align: left; white-space: pre-wrap; display: none; background: #fdf2f2; padding: 10px; border-radius: 6px; border: 1px solid #fecdca; }
     </style>
+    <link rel='stylesheet' href='../console.css'>
 </head>
-<body>
+<body class='console'>
+<nav class='dock' aria-label='主导航'><a class='brand' href='../'>yyk <span>Console</span></a><a aria-current="page" href='../reconciliation/'>收入对账</a><a href='../ad-automation/'>广告建位</a></nav>
 
-<!-- 左上角返回控制台主页按钮 -->
-<div class="nav-header">
-    <a href="/" class="back-link">&larr; 返回控制台主页</a>
-</div>
 
-<div class="card">
+
+<main class="panel">
     <h2>MAX每月对账表格处理</h2>
     <p>拖入或一次性选择 <b>max.csv</b>, <b>tgaado.csv</b>, <b>find.xlsx</b></p>
     
-    <div class="drop-zone" id="dropZone">
+    <button type="button" class="drop-zone" id="dropZone">
         将 3 个文件拖到此处，或点击上传
+    </button>
         <input type="file" id="fileInput" multiple accept=".csv, .xlsx" style="display: none;">
-    </div>
 
     <div class="file-list" id="fileList"></div>
-    <div id="error-msg"></div>
+    <div aria-live="polite" id="error-msg"></div>
     <button class="btn" id="processBtn">处理并下载 Excel</button>
-</div>
+</main>
 
 <script>
     const dropZone = document.getElementById('dropZone');

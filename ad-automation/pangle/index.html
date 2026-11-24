@@ -20,24 +20,26 @@
         .badge-new { background: #e6f4ea; color: #137333; }
         .badge-exist { background: #feefc3; color: #b06000; }
     </style>
+    <link rel='stylesheet' href='../../console.css'>
 </head>
-<body>
+<body class='console'>
+<nav class='dock' aria-label='主导航'><a class='brand' href='../../'>yyk <span>Console</span></a><a href='../../reconciliation/'>收入对账</a><a aria-current="location" href='../../ad-automation/'>广告建位</a></nav>
 
-<div class="card">
+<main class="panel">
     <h2>Pangle广告位生成</h2>
     <form id="adForm" onsubmit="return false;">
         <input type="hidden" id="userId" value="5032451">
         
         <div class="form-group">
-            <label>应用名称 (App Name)</label>
+            <label for="appName">应用名称 (App Name)</label>
             <input type="text" id="appName" placeholder="项目代号" required>
         </div>
         <div class="form-group">
-            <label>商店链接 (Download URL)</label>
+            <label for="downloadUrl">商店链接 (Download URL)</label>
             <input type="text" id="downloadUrl" placeholder="https://apps.apple.com/us/app/..." required>
         </div>
         <div class="form-group">
-            <label>应用类别 (App Category)</label>
+            <label for="categoryCode">应用类别 (App Category)</label>
             <select id="categoryCode">
                 <option value="120403" selected>120403（游戏大厅）</option>
                 <option value="120401">120401（休闲游戏）</option>
@@ -46,7 +48,7 @@
             </select>
         </div>
         <div class="form-group">
-            <label>目标平台 (Platform)</label>
+            <label for="platform">目标平台 (Platform)</label>
             <select id="platform">
                 <option value="ios">iOS</option>
                 <option value="android">Android</option>
@@ -54,8 +56,8 @@
         </div>
         <button type="button" class="btn" id="submitBtn">一键自动化建位与校验</button>
     </form>
-    <div id="result-box"></div>
-</div>
+    <div aria-live="polite" id="result-box"></div>
+</main>
 
 <script>
     document.getElementById('submitBtn').onclick = async function() {

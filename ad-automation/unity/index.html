@@ -127,22 +127,23 @@
             font-weight: 600;
         }
     </style>
+    <link rel='stylesheet' href='../../console.css'>
 </head>
-<body>
+<body class='console'>
+<nav class='dock' aria-label='主导航'><a class='brand' href='../../'>yyk <span>Console</span></a><a href='../../reconciliation/'>收入对账</a><a aria-current="location" href='../../ad-automation/'>广告建位</a></nav>
 
-<div class="container">
+<main class="panel">
     <div class="header">
         <h2>Unity Ads 自动化生成</h2>
-        <a href="../index.html" class="back-link">← 返回平台选择</a>
     </div>
 
     <div class="form-group">
-        <label>应用名称 (App / Project Name)</label>
+        <label for="appName">应用名称 (App / Project Name)</label>
         <input type="text" id="appName" placeholder="例如: piggy_sort">
     </div>
 
     <div class="form-group">
-        <label>目标平台 (Platform)</label>
+        <label for="platform">目标平台 (Platform)</label>
         <select id="platform">
             <option value="ios">iOS</option>
             <option value="android">Android</option>
@@ -151,8 +152,8 @@
 
     <button id="submitBtn" onclick="generatePlacements()">自动生成 Unity Project 及 Ad Units</button>
 
-    <div id="resultBox" class="result-box"></div>
-</div>
+    <div aria-live="polite" id="resultBox" class="result-box"></div>
+</main>
 
 <script>
     // 指向绑定好的自定义 Worker 二级域名

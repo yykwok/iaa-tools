@@ -88,26 +88,27 @@
         .badge-new { background: #e6f4ea; color: #137333; }
         .badge-exist { background: #feefc3; color: #b06000; }
     </style>
+    <link rel='stylesheet' href='../../console.css'>
 </head>
-<body>
+<body class='console'>
+<nav class='dock' aria-label='主导航'><a class='brand' href='../../'>yyk <span>Console</span></a><a href='../../reconciliation/'>收入对账</a><a aria-current="location" href='../../ad-automation/'>广告建位</a></nav>
 
-<div class="card">
+<main class="panel">
     <div class="header-bar">
         <h2>Vungle 广告位自动化生成</h2>
-        <a href="../index.html" class="back-link">← 返回平台选择</a>
     </div>
 
     <form id="adForm" onsubmit="return false;">
         <div class="form-group">
-            <label>应用名称 (App Name)</label>
+            <label for="appName">应用名称 (App Name)</label>
             <input type="text" id="appName" placeholder="例如: PiggySort" required>
         </div>
         <div class="form-group">
-            <label>应用商店链接 (Download URL)</label>
+            <label for="downloadUrl">应用商店链接 (Download URL)</label>
             <input type="text" id="downloadUrl" placeholder="https://apps.apple.com/us/app/id..." required>
         </div>
         <div class="form-group">
-            <label>目标平台 (Platform)</label>
+            <label for="platform">目标平台 (Platform)</label>
             <select id="platform">
                 <option value="ios">iOS</option>
                 <option value="android">Android</option>
@@ -116,8 +117,8 @@
         <button type="button" class="btn" id="submitBtn">自动生成 Vungle App 及 Placement</button>
     </form>
     
-    <div id="result-box"></div>
-</div>
+    <div aria-live="polite" id="result-box"></div>
+</main>
 
 <script>
     // 已将 URL 替换为你在 Cloudflare Worker 上部署的真实域名
