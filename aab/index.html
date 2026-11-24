@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>AAB 传包预检 · yyk Console</title>
+<link rel="stylesheet" href="../console.css?v=003a551"><link rel="stylesheet" href="page.css">
+<script type="module" src="page.js"></script>
+</head>
+<body class="console">
+<nav class="dock" aria-label="主导航"><a class="brand" href="../">yyk <span>Console</span></a><a aria-current="page" href="./">AAB 预检</a></nav>
+<main class="workspace">
+<header><h1>AAB 传包预检</h1><p>选择新包即可查看包名、构建号和权限。加入游戏配置或旧包，可核对传包前的差异。文件仅在本机读取。</p></header>
+<section class="sheet"><h2>选择安装包</h2><div class="pair">
+<label class="picker">本次 AAB<input id="current" type="file" accept=".aab"><span id="current-state">选择或拖入新包</span></label>
+<label class="picker">上次 AAB · 可选<input id="previous" type="file" accept=".aab"><span id="previous-state">选择或拖入旧包</span></label>
+</div><button id="clear-old" type="button" hidden>移除旧包</button></section>
+<section class="sheet"><label for="games">校对游戏</label><select id="games"><option value="">仅查看包信息</option></select>
+<details><summary>管理本机游戏配置</summary>
+<form id="profile"><div class="pair">
+<label>游戏名称<input name="game" required maxlength="100"></label><label>预期包名<input name="pkg" required placeholder="com.company.game"></label>
+<label>上次已上传 versionCode<input name="last" type="number" min="0" max="2100000000" step="1"></label>
+<label>默认 Firebase App ID<input name="google_app_id"></label><label>默认 Firebase Project ID<input name="project_id"></label><label>默认 Firebase Sender ID<input name="gcm_defaultSenderId"></label>
+<label>推送实例 Sender ID（人工核对）<input name="push"></label><label>权限来源备注（人工记录）<input name="notes" placeholder="权限名及关联 SDK"></label>
+</div><p>填入新的游戏名称可另存配置。上传成功后，可在此更新基准构建号。</p><button type="submit">保存游戏配置</button><span id="saved" role="status"></span></form></details></section>
+<section id="report" class="sheet" aria-live="polite" hidden></section>
+</main></body></html>
