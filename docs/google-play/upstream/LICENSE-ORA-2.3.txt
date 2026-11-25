@@ -1,0 +1,981 @@
+========================================================================
+                        OpenRoots Agent License
+                              Version 2.3
+========================================================================
+
+Identifier:      ORA-2.3
+Canonical URL:   https://openroots.org/licenses/ora/2.3/
+Canonical text:  https://openroots.org/licenses/ora/2.3/legalcode.txt
+Effective:       2026-08-27
+Conversion:      None
+Fallback:        None
+Steward:         OpenRoots
+
+------------------------------------------------------------------------
+
+This plain-text file is the canonical form of this instrument. Where any
+rendering of this instrument differs from these bytes, these bytes
+govern. A published version is never edited. A correction is issued as a
+new version, and every earlier version remains reachable at its
+canonical address permanently.
+
+The name OpenRoots, the instrument names, and the tier names are marks
+of the steward. The text below is free for anyone to adopt unmodified.
+The names may not be placed on a different text.
+
+------------------------------------------------------------------------
+
+PREAMBLE
+
+  This Licence governs packaged agent expertise. Skills, system prompts,
+  tool definitions, workflow templates, and protocol servers are
+  presently released under licences drafted for source code, or under no
+  licence at all, because no instrument has previously distinguished
+  procedure and judgement from the code that executes them.
+
+  A deviation from the canonical published text forfeits the right to
+  describe the result as the OpenRoots Agent License or as ORA.
+
+------------------------------------------------------------------------
+
+1. DEFINITIONS
+
+  1.1  The Work means the agent skills, system prompts, tool
+       definitions, workflow templates, protocol server definitions, and
+       accompanying documentation made available by the Licensor under
+       this Licence, including every Modification the Licensor or a
+       Contributor distributes as part of it.
+
+  1.2  Licensor means the individual or entity that owns or controls the
+       rights in the Work and has published it under this Licence.
+
+  1.3  You, or Licensee, means any individual or Legal Entity exercising
+       rights granted here.
+
+  1.4  Legal Entity means the acting entity together with every entity
+       that controls it, is controlled by it, or shares common control
+       with it. Control means owning more than fifty percent of the
+       voting interest, or otherwise directing the management of that
+       entity.
+
+  1.5  Annual Gross Revenue means the total gross revenue of the Legal
+       Entity and every entity under common control with it, measured on
+       a trailing twelve month basis and converted to United States
+       Dollars at the rate published on the last day of the period.
+
+  1.6  Threshold Amount means Twenty Million United States Dollars,
+       unless the Licensor states a different figure in the project
+       schedule, in which case that figure governs every release the
+       schedule accompanies. A schedule may not state a Threshold Amount
+       below Two Million United States Dollars. The figure applying to a
+       release is adjusted each first of January by the change in the
+       United States Consumer Price Index for All Urban Consumers over
+       the preceding calendar year.
+
+  1.7  Root Licensee means a Licensee at or below the Threshold Amount,
+       and additionally any natural person, nonprofit organisation,
+       educational institution, or government body, provided that entity
+       is not acting as a reseller or intermediary for a Legal Entity
+       above the Threshold Amount.
+
+  1.8  Canopy Licensee means any Legal Entity that is not a Root
+       Licensee.
+
+  1.9  Production Use means using the Work, in whole or in part, in a
+       system made available to a third party, whether internally at
+       operating scope or externally to customers or the public.
+       Development, testing, evaluation, research, and personal
+       non-revenue use are not Production Use.
+
+  1.10  AI Training Use means using the Work, or any Derivative Work,
+        Corpus Inclusion, or Extracted Fragment of it, as input to the
+        training, fine-tuning, distillation, reinforcement, retrieval
+        augmentation, embedding generation, or evaluation of a machine
+        learning model, whether the Work is used directly by You or
+        reaches the model through a scraped, mirrored, aggregated, or
+        third-party dataset.
+
+  1.11  Corpus Inclusion means including the Work in any dataset,
+        archive, index, or corpus compiled, maintained, or distributed
+        for the purpose of AI Training Use, or with actual knowledge
+        that it will be used for AI Training Use.
+
+  1.12  Extracted Fragment means any portion of the Work reproduced,
+        word for word or substantially so, within a model's weights,
+        embeddings, or outputs, including by memorisation, and whether
+        or not the reproduction was intended by any party.
+
+  1.13  Competing Offering means a product or service, other than the
+        Licensee's larger independent product, that sells, sublicenses,
+        redistributes, hosts, ports, packages, or exposes the Work, or a
+        Derivative Work of it, in a manner whose value derives entirely
+        or substantially from the functionality, components, design,
+        corpus, weights, prompts, workflows, or other protected
+        substance of the Work, and that a reasonable buyer would treat
+        as a substitute for the Work or for a product or service
+        operated or authorized by the Licensor.
+
+  1.14  Commercialization means offering, selling, sublicensing,
+        reselling, distributing for consideration, hosting for
+        consideration, or otherwise monetizing access to the Work or to
+        a product or service whose value derives entirely or
+        substantially from the Work.
+
+  1.15  Substantial Independent Functionality means functionality,
+        content, data, model capability, workflow value, user
+        experience, or service value supplied by the Licensee that is
+        not merely configuration, restyling, renaming, format
+        conversion, wrapping, bundling, hosting, or porting of the Work.
+
+  1.16  Clearinghouse means the collection and metering body, whether
+        self-administered by the Licensor or a shared collecting body,
+        that receives Canopy Reports and Compute Fees and remits
+        payment. The Clearinghouse for this Work is named in Exhibit A.
+        Where no Clearinghouse is named, the Licensor is the
+        Clearinghouse and shall publish an address for reports and
+        payment at the canonical address of the Work. An obligation to
+        report or remit is suspended, and no default arises, for so long
+        as no address is published.
+
+  1.17  Canopy Report means the quarterly self-certified revenue
+        disclosure described in Section 5.
+
+  1.18  Modification means any addition to, deletion from, or change in
+        the substance or structure of the Work, and agent packages
+        derived from the Work.
+
+  1.19  Contributor means the Licensor and any person or Legal Entity
+        that intentionally submits a Modification for inclusion in the
+        Work, whether by pull request, patch, or any other means, and
+        whose Modification is incorporated by the Licensor. The Licensor
+        is a Contributor in respect of the Work as first released.
+
+  1.20  Derivative Work means a work based on the Work that incorporates
+        a Modification, and that would infringe copyright in the Work if
+        made without permission. Mere aggregation with a separate and
+        independent work on the same medium or in the same distribution
+        is not a Derivative Work.
+
+  1.21  High-Risk Use has the meaning given in Section 18.1.
+
+  1.22  Affiliate has the meaning given in Section 22.1, and revenue is
+        measured across a Licensee and its Affiliates on the combined
+        basis stated in Section 22.2.
+
+2. ROOT GRANT
+
+  2.1  Subject to Sections 4, 6, 8, 10, 17, 19, 21, 22, and 23, the
+       Licensor grants each Root Licensee a worldwide, royalty-free,
+       non-exclusive, irrevocable licence to use, execute, reproduce,
+       modify, merge, publish, distribute, and sublicense the Work, and
+       to make Production Use of the Work, for any purpose, without
+       payment of any fee under this Licence.
+
+  2.2  Except for the Competing Offering restriction in Section 4 and
+       the separately licensed AI Training Use in Section 6, Root rights
+       are not conditioned on field of endeavour, industry, geography,
+       or number of users. Root status removes the Section 5 royalty; it
+       does not remove the obligations that this Licence applies to
+       every Licensee.
+
+  2.3  A Root Licensee that later exceeds the Threshold Amount becomes a
+       Canopy Licensee from that date forward. Rights already exercised
+       are unaffected, and no payment is owed in respect of any period
+       before the threshold was crossed.
+
+3. CANOPY GRANT
+
+  3.1  Subject to Sections 4, 5, 6, 8, 10, 17, 19, 21, 22, and 23, the
+       Licensor grants each Canopy Licensee the rights described in
+       Section 2.1, conditioned on compliance with Sections 4 and 5.
+
+  3.2  No negotiation, bespoke term, side letter, or discretionary
+       waiver shall alter the rate or the mechanism stated in Section 5,
+       for any Canopy Licensee, of any size, in any jurisdiction, save
+       as provided in Section 3.3.
+
+  3.3  The Licensor may grant a specific Canopy Licensee a full waiver
+       of the royalty under Section 5, provided that waiver is published
+       publicly, is dated, and identifies the Canopy Licensee by name,
+       so that the terms available to any Canopy Licensee remain a
+       matter of public record and never a private arrangement.
+
+4. COMPETING OFFERING RESTRICTION
+
+  4.1  A Licensee may not offer the Work, or a Derivative Work of it, as
+       a Competing Offering unless it has first entered into a separate
+       written commercial agreement with the Licensor for that purpose.
+
+  4.2  This Section does not restrict any of the following.
+
+       Running the Work inside the Licensee's own agent, assistant, or
+       automation, at any scope.
+
+       Adapting the prompt, the procedure, or the tool definitions for
+       the Licensee's own use.
+
+       Chaining the Work with other skills, servers, or workflows.
+
+       Deploying the Work in the course of delivering services to the
+       Licensee's own clients.
+
+  4.3  This Section applies to every Licensee, including Root Licensees.
+       The Root tier permits ordinary commercial use inside the
+       Licensee's own larger product; it does not permit selling,
+       relicensing, repackaging, porting, hosting, or redistributing the
+       Work itself as the thing being commercialized.
+
+5. CANOPY ROYALTY
+
+  5.1  A Canopy Licensee making Production Use of the Work shall pay a
+       royalty equal to zero point five percent of the amount by which
+       its Attributable Revenue, computed under Sections 5.6 to 5.8,
+       exceeds the Threshold Amount, subject to a maximum of Two Hundred
+       and Fifty Thousand United States Dollars per Legal Entity per
+       calendar year. Revenue at or below the Threshold Amount bears no
+       royalty under this Section.
+
+  5.2  A Canopy Licensee shall submit a Canopy Report to the
+       Clearinghouse within thirty days of the end of each calendar
+       quarter, stating in good faith its Annual Gross Revenue, the
+       attribution methodology it applied under Section 5.1, and the
+       amount remitted.
+
+  5.3  Good faith self-certification is the default compliance mechanism
+       under this Licence.
+
+       The Licensor or the Clearinghouse may request supporting
+       documentation no more than once in any twelve month period per
+       Canopy Licensee, absent a documented reason to suspect
+       misstatement. Where such a reason is documented, an independent
+       auditor may review the relevant financial records under a mutual
+       non-disclosure agreement, at the requesting party's expense,
+       unless the audit establishes an underpayment exceeding five
+       percent of amounts properly due, in which case the audited
+       Licensee shall bear the reasonable cost of that audit.
+
+  5.4  A royalty obligation does not attach retroactively. It begins to
+       accrue on the date a Licensee first crosses the Threshold Amount
+       and applies from that date forward only.
+
+  5.5  The Licensor may change the Clearinghouse without the consent of
+       any Licensee, provided ninety days advance notice is published at
+       the canonical address of this Licence and the rate stated in
+       Section 5.1 is unchanged.
+
+  5.6  Attributable Revenue means the revenue of the specific product or
+       service that incorporates or depends on the Work, and not the
+       revenue of the Licensee generally. It is computed as amounts
+       invoiced for that product or service, less refunds, credits and
+       chargebacks actually granted, less sales, use, value added and
+       similar transaction taxes collected on behalf of a taxing
+       authority, and less amounts contractually remitted to a reseller,
+       distributor or payment processor. It is recognised under the
+       accounting standard the Licensee ordinarily applies to its own
+       financial statements, applied consistently from period to period.
+       Where the Work does not appear in any product or service the
+       Licensee sells, Attributable Revenue is zero and no royalty is
+       payable under this Section.
+
+  5.7  Where the product or service is sold only as part of a bundle,
+       Attributable Revenue is the bundle price multiplied by the ratio
+       of the standalone list price of that product or service to the
+       sum of the standalone list prices of every component of the
+       bundle. Where no standalone list price is published for a
+       component, the Licensee shall apply a reasonable allocation,
+       state the method it applied in its Canopy Report, and apply that
+       method consistently. A method stated in good faith and applied
+       consistently satisfies this Section, and the Licensee bears no
+       further burden of proof absent a documented reason to suspect
+       misstatement.
+
+  5.8  The same revenue bears the royalty once. Where a single product
+       or service incorporates more than one instrument published by the
+       same Licensor, one royalty is payable on that revenue, not one
+       per instrument. Where it incorporates works of different
+       Licensors, each Licensor's royalty is computed separately against
+       the same Attributable Revenue, and neither reduces the other. The
+       maximum in Section 5.1 applies per Licensor.
+
+6. COMPUTE LICENCE FOR AI TRAINING USE
+
+  6.1  No right to perform AI Training Use is granted under Section 2 or
+       Section 3. AI Training Use is licensed only under this Section 6,
+       and requires payment of a Compute Fee regardless of the tier a
+       Licensee otherwise occupies.
+
+  6.2  A party wishing to perform AI Training Use shall pay a Compute
+       Fee to the Clearinghouse, computed as set out in Exhibit B,
+       charged per one thousand skill or prompt files included in the
+       training corpus, and remitted before or at the same time as the
+       training run in which the Work is included.
+
+  6.3  A party holding a licence under this Section 6 shall, as a
+       condition of that licence, implement reasonable technical
+       measures such that any output of the resulting model which
+       reproduces an Extracted Fragment above the threshold stated in
+       Exhibit B carries a provenance disclosure identifying the Work
+       and this Licence.
+
+  6.4  Nothing in this Section restricts a natural person reading,
+       studying, or learning from the Work. Nothing in this Section
+       restricts general purpose search indexing that does not meet the
+       definition of AI Training Use in Section 1.10.
+
+  6.5  A party that performs AI Training Use on the Work, whether
+       directly or by Corpus Inclusion, without a licence under this
+       Section 6, receives no rights under this Licence with respect to
+       that use. Whether the conduct infringes an exclusive right, falls
+       within a statutory exception or limitation, or gives rise to any
+       remedy is determined by applicable law and the facts; this
+       Licence does not eliminate any exception or limitation that
+       cannot lawfully be waived.
+
+7. NO FALLBACK LICENCE OR SUNSET CONVERSION
+
+  7.1  No release of the Work converts automatically to any other
+       licence by lapse of time.
+
+  7.2  The rights granted under this Licence continue under this Licence
+       only, subject to its conditions. A later version may be offered
+       by the Licensor, but a later version does not replace the version
+       attached to a release unless the Licensor expressly applies that
+       later version to that release.
+
+  7.3  A Licensee may not assert that any deadline, review date,
+       publication date, version date, or period of non-enforcement
+       creates a right to use the Work under any licence other than this
+       Licence.
+
+  7.4  The Licensor may publish replacement terms or a new version for
+       future releases. Those terms apply only according to Section 16.
+
+8. MANIFEST ATTRIBUTION AND RUNTIME DISCLOSURE
+
+  8.1  Every copy of the Work must retain the copyright notice, a copy
+       of or reference to this Licence, and an entry sufficient to
+       identify the original Licensor and the applicable licence
+       version, recorded inside the package manifest rather than only in
+       accompanying documentation.
+
+  8.2  A Licensee distributing a Modification shall state which model,
+       runtime, or protocol version the Modification was validated
+       against, and shall not represent the Licensor as having validated
+       it.
+
+  8.3  A Licensee bundling the Work into a larger collection of agent
+       packages shall preserve the manifest attribution of each
+       constituent package, and shall not present the collection in a
+       manner implying the Licensor endorses the deployment.
+
+  8.4  A person submitting a Modification, an issue, or a defect report
+       to the Licensor represents that it is their own original work, or
+       is appropriately licensed and identified as such, or, where
+       produced with the assistance of an artificial intelligence tool,
+       is disclosed as such together with the tool used.
+
+9. PATENT GRANT AND PATENT PEACE
+
+  9.1  Subject to the conditions of this Licence, each Contributor
+       grants each Licensee a worldwide, royalty-free, non-exclusive,
+       irrevocable patent licence to make, have made, use, offer to
+       sell, sell, import, and otherwise transfer the Work, limited to
+       those patent claims licensable by that Contributor which are
+       necessarily infringed by that Contributor's Modification alone,
+       by the combination of that Modification with the Work to which it
+       was contributed, or, in the case of the Licensor, by the Work as
+       first released. This licence is perpetual and extends to the
+       Licensee's affiliates and to every downstream recipient of the
+       Work.
+
+  9.2  If a Licensee institutes patent litigation against any entity
+       alleging that the Work, or a Modification incorporated in the
+       Work, constitutes direct or contributory patent infringement,
+       then the patent licences granted to that Licensee under this
+       Licence for the Work terminate as of the date such litigation is
+       filed.
+
+  9.3  This Licence grants no rights in a Licensee's own patents, and
+       nothing in it obliges a Licensee to grant a patent licence to any
+       other person except as Section 9.1 provides in respect of that
+       Licensee's own Modifications. The patent licence granted under
+       Section 9.1 does not extend to a combination of the Work with
+       anything not supplied by the Contributor, where the infringement
+       arises only from that combination.
+
+  9.4  Termination under Section 9.2 applies only to the patent licences
+       granted under this Licence, and does not terminate the copyright
+       licence granted under Section 2 or Section 3. A Licensee whose
+       patent licence has terminated under that Section may not
+       distribute the Work or a Derivative Work of it without first
+       obtaining a patent licence from the affected Contributor.
+
+10. TERMINATION AND REINSTATEMENT
+
+  10.1  This Licence and the rights granted under it terminate
+        automatically if a Licensee breaches Section 4, 5, 6, or 8 and
+        fails to cure that breach within thirty days of receiving
+        written notice of it from the Licensor or the Clearinghouse.
+
+  10.2  A Licensee whose rights have terminated under this Section may
+        have them reinstated on curing the breach and paying any amounts
+        that would have been due had the breach not occurred, together
+        with interest at the lesser of one and one half percent per
+        month or the maximum rate permitted by applicable law, provided
+        that Licensee has not previously had rights terminated under
+        this Section in respect of the same Work within the preceding
+        twenty-four months.
+
+  10.3  Termination under this Section does not affect rights already
+        vested in third parties who received the Work from the
+        terminated Licensee before termination, provided those third
+        parties remain in compliance with this Licence.
+
+  10.4  A breach of Section 17, 19, 21, 22, or 23 is subject to the same
+        notice, cure, reinstatement, and downstream provisions as
+        Sections 10.1 to 10.3. A breach of any other Section gives the
+        Licensor the remedies available at law, and does not of itself
+        terminate this Licence.
+
+11. TRADEMARK AND NOMINATIVE FAIR USE
+
+  11.1  This Licence does not grant permission to use the trade names,
+        trademarks, service marks, or product names of the Licensor,
+        except as required for reasonable and customary attribution
+        under Section 8.1.
+
+  11.2  A Canopy Licensee in good standing on its obligations under
+        Section 5 holds an irrevocable right to nominative fair use of
+        the Licensor's name and marks, meaning a truthful statement such
+        as built on, compatible with, or powered by, used to describe an
+        actual technical relationship. That right may not be revoked,
+        may not be conditioned on payment of any separate fee, and may
+        not be used to apply pressure to a Canopy Licensee that is
+        current on the Canopy Royalty.
+
+  11.3  The name of this Licence, its version number, its identifiers,
+        and any badge published by the licensor of this Licence to
+        indicate its use may be applied only to an unmodified text of
+        this Licence and to a Work actually licensed under it. A
+        modified text may be published freely, and may not be published
+        under this name or under a name confusingly similar to it.
+
+  11.4  A Licensee whose rights under this Licence have terminated shall
+        cease to state or imply that the Work it distributes is licensed
+        under this Licence, and shall remove any badge that says so. The
+        right in Section 11.2 does not survive termination, and a
+        terminated Licensee may make only the nominative use that
+        applicable law independently permits.
+
+12. DISCLAIMER OF WARRANTY
+
+  12.1  THE WORK IS PROVIDED ON AN AS IS BASIS, WITHOUT WARRANTY OF ANY
+        KIND, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY
+        WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+        TITLE, OR NON-INFRINGEMENT. THE ENTIRE RISK AS TO THE QUALITY
+        AND PERFORMANCE OF THE WORK RESTS WITH THE LICENSEE.
+
+  12.2  The Licensor is under no obligation to provide support,
+        maintenance, updates, security patches, migration assistance, or
+        a service level of any kind, and is under no obligation to
+        continue publishing the Work. Where the Licensor does provide
+        any of these, it does so voluntarily and without creating an
+        obligation to continue.
+
+  12.3  Where applicable law confers a warranty or a right that cannot
+        lawfully be excluded, Section 12.1 applies to the fullest extent
+        that law permits and no further, and nothing in this Licence
+        affects the statutory rights of a Licensee that deals as a
+        consumer.
+
+13. LIMITATION OF LIABILITY
+
+  13.1  IN NO EVENT AND UNDER NO LEGAL THEORY SHALL THE LICENSOR OR ANY
+        CONTRIBUTOR BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL,
+        INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING FROM, OUT OF, OR IN
+        CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS IN THE
+        WORK, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+  13.2  Nothing in this Licence excludes or limits liability that cannot
+        lawfully be excluded or limited under applicable law, including
+        liability for death or personal injury caused by negligence, or
+        for fraud.
+
+  13.3  Where liability cannot lawfully be excluded but may lawfully be
+        limited, the total aggregate liability of the Licensor and every
+        Contributor, taken together, for all claims arising under or in
+        connection with this Licence, is limited to the greater of the
+        total amount paid by the Licensee under Sections 5 and 6 in the
+        twelve months preceding the event giving rise to the claim, or
+        one hundred United States dollars.
+
+  13.4  Sections 13.1 and 13.3 do not apply to liability arising from a
+        party's fraud, wilful misconduct, or gross negligence, nor to a
+        Licensee's obligation to pay an amount due under Section 5 or
+        Section 6, nor to a Licensee's indemnity under Section 18.3.
+
+14. GOVERNING LAW, VENUE, AND DISPUTE RESOLUTION
+
+  14.1  This Licence is governed by the laws of the jurisdiction stated
+        by the Licensor in Exhibit A, without regard to its conflict of
+        law principles. Where the Licensor has stated no jurisdiction,
+        the laws of the State of Delaware, United States of America,
+        apply.
+
+  14.2  A dispute concerning an amount owed under Section 5 or Section 6
+        shall first be submitted to non-binding mediation under the
+        Mediation Rules of the International Chamber of Commerce, each
+        party bearing its own costs and the parties sharing the
+        mediator's fee equally. Where the mediation has not resolved the
+        dispute within sixty days of a written request to mediate,
+        either party may commence litigation, and the limitation period
+        is tolled for that sixty day period. The courts of the
+        jurisdiction whose law governs under Section 14.1 have
+        non-exclusive jurisdiction, and each party consents to service
+        of process at the notice address it has published.
+
+  14.3  The United Nations Convention on Contracts for the International
+        Sale of Goods does not apply to this Licence.
+
+  14.4  Nothing in Section 14.2 prevents either party from seeking
+        interim or injunctive relief from a court of competent
+        jurisdiction to restrain an actual or threatened breach of
+        Section 4, Section 6, Section 11, or Section 21.
+
+  14.5  A dispute under this Licence is brought in an individual
+        capacity. Neither party may bring a claim as a representative or
+        class member, or consolidate a claim with that of another
+        Licensee, except where applicable law makes such a restriction
+        unenforceable.
+
+15. SEVERABILITY AND ENTIRE AGREEMENT
+
+  15.1  If any provision of this Licence is held unenforceable, the
+        remaining provisions remain in full force, and the unenforceable
+        provision shall be reformed only to the minimum extent necessary
+        to make it enforceable while preserving its original intent,
+        with particular regard to the intent of Sections 6 and 7.
+
+  15.2  This Licence, its Exhibits, and the accompanying documentation
+        this Licence expressly requires the Licensor to provide,
+        constitute the entire agreement between the parties with respect
+        to the Work and supersede any prior or contemporaneous
+        understanding, whether written or oral.
+
+  15.3  A failure or delay in exercising a right under this Licence is
+        not a waiver of it, and a single or partial exercise of a right
+        does not prevent its further exercise. A waiver is effective
+        only if given in writing, and only for the instance and the
+        purpose for which it was given.
+
+  15.4  The rights and remedies in this Licence are cumulative and in
+        addition to any right or remedy available at law or in equity,
+        except where this Licence expressly states otherwise.
+
+16. VERSIONING
+
+  16.1  The Licensor may publish new numbered versions of this Licence.
+        A given release of the Work remains governed by the version of
+        this Licence under which it was first published, unless the
+        Licensor expressly states at the time of that release that a
+        later version applies.
+
+  16.2  A published version of this Licence is never edited. A
+        correction is issued as a new version, and every earlier version
+        remains reachable at its canonical address permanently.
+
+  16.3  The authoritative text of a given version is the text published
+        at the canonical address for that version, and a digest of that
+        text is published alongside it. A copy of this Licence whose
+        digest matches the published digest is the authoritative text.
+        Where a copy and the published text differ, the published text
+        governs.
+
+  16.4  A Licensor that wishes a release to be governed by a later
+        version states so expressly at the time of that release. Silence
+        is not adoption, and no later version reaches a release
+        published before it.
+
+  16.5  The per-project schedule contemplated by Sections 1 and 6 is
+        published by the Licensor alongside the Work. It is not part of
+        the text to which Section 16.3 applies, so completing it does
+        not modify this Licence, does not alter the published digest,
+        and does not affect the right to state under Section 11.3 that
+        the Work is licensed under this Licence.
+
+17. COMPLIANCE WITH LAW, EXPORT CONTROL, AND SANCTIONS
+
+  17.1  Each Licensee is responsible for its own compliance with every
+        law that applies to its use of the Work, including export
+        control, sanctions, competition, consumer protection,
+        employment, tax, and sector-specific regulation. This Licence
+        grants rights in the Work. It does not grant permission to do
+        anything that law forbids, and it does not relieve a Licensee of
+        any licence, registration, clearance, or approval that law
+        separately requires.
+
+  17.2  The Work may be subject to export control and economic sanctions
+        law in one or more jurisdictions. A Licensee may not export,
+        re-export, transfer, or make the Work available, directly or
+        indirectly, to any person, entity, or destination where doing so
+        would breach applicable export control or sanctions law, and may
+        not use the Work for any end use those laws prohibit.
+
+  17.3  A Licensee represents that it is not, and is not owned or
+        controlled by, a person or entity subject to sanctions that
+        would prohibit the grant made here, and that it is not acting on
+        behalf of such a person or entity. If that representation ceases
+        to be true, the rights granted under this Licence are suspended
+        for so long as the prohibition applies.
+
+  17.4  Nothing in this Licence requires the Licensor to furnish, and
+        the Licensor is not obliged to furnish, any export
+        classification, commodity code, or licence determination for the
+        Work. A Licensee that needs such a determination is responsible
+        for obtaining it.
+
+18. HIGH-RISK AND SAFETY-CRITICAL USE
+
+  18.1  High-Risk Use means any use in which failure, error, inaccuracy,
+        or unavailability of the Work could reasonably be expected to
+        lead to death, personal injury, serious damage to property, or
+        severe environmental harm. It includes medical devices and
+        clinical decision support, diagnosis, triage, and treatment;
+        life support and patient monitoring; the operation of aircraft,
+        spacecraft, rail, marine, or autonomous road vehicles; nuclear
+        facilities; weapons and munitions systems; the control of
+        critical infrastructure including energy, water, and
+        telecommunications; and emergency dispatch and response.
+
+  18.2  The Work is general-purpose agent skills and their manifests. It
+        is not designed, tested, validated, certified, or supplied for
+        High-Risk Use, and no representation to the contrary is made
+        anywhere in this Licence or in any accompanying documentation.
+
+  18.3  A Licensee that puts the Work to High-Risk Use does so on its
+        own responsibility, and is solely responsible for the design,
+        validation, verification, clinical or safety evaluation,
+        regulatory clearance, certification, monitoring, incident
+        reporting, and human oversight that its use requires. That
+        Licensee shall indemnify and hold harmless the Licensor and
+        every Contributor against claims, losses, and costs arising from
+        its High-Risk Use.
+
+  18.4  Nothing in this Section constitutes medical, clinical, legal,
+        engineering, financial, or safety advice, and nothing in it
+        certifies the Work as fit for any purpose or grants any
+        regulatory approval. Where applicable law limits the effect of a
+        disclaimer of this kind, this Section applies to the fullest
+        extent that law permits and no further.
+
+  18.5  The indemnity in Section 18.3 is conditional on the Licensor
+        notifying the Licensee promptly of a claim, allowing the
+        Licensee to control the defence and any settlement with counsel
+        of its choosing, and giving reasonable assistance at the
+        Licensee's cost. It does not extend to loss caused by the fraud,
+        wilful misconduct, or gross negligence of the Licensor or a
+        Contributor, and it does not apply to a Licensee that deals as a
+        consumer, or to a public body that lacks authority to give it.
+
+19. PERSONAL DATA AND SUBJECT RIGHTS
+
+  19.1  Publishing the Work under this Licence is not, by itself, an act
+        that determines the purposes or the means of any processing a
+        Licensee carries out with the Work, and creates no data
+        processing relationship between the parties. A Licensee
+        determines its own purposes and means, and is responsible for
+        its own lawful basis, notices, records, transfers, retention,
+        and security. Where the Licensor separately operates a service,
+        receives data, or otherwise takes part in processing, the
+        Licensor role under applicable law is fixed by that activity and
+        not by this Section.
+
+  19.2  Where the Work itself contains or encodes personal data, the
+        Licensor states what it knows about the source and lawful basis
+        of that data in the accompanying documentation, and a Licensee
+        shall not use the Work in a way that exceeds the basis so
+        stated.
+
+  19.3  A Licensee shall not attempt to re-identify any individual from
+        the Work, from a Derivative Work, or from the output of a system
+        built with it, except where re-identification is itself the
+        lawful and disclosed purpose of the processing and is permitted
+        by the documentation accompanying the Work.
+
+  19.4  A request from a data subject is answered by the party that
+        holds the data to which the request relates. A Licensee that
+        receives a request concerning data it holds shall not forward it
+        to the Licensor as though the Licensor were responsible for it,
+        and the Licensor is under no obligation to act on such a request
+        in respect of a Licensee's own processing.
+
+20. THIRD-PARTY COMPONENTS AND UPSTREAM TERMS
+
+  20.1  The Work may include, depend on, or be distributed alongside
+        components owned by third parties and licensed on their own
+        terms. Those terms govern those components. This Licence applies
+        only to what the Licensor is entitled to license, and grants no
+        rights in a third-party component beyond what the third party
+        itself grants.
+
+  20.2  The Licensor shall identify each third-party component it knows
+        to be included in the Work, and the terms on which that
+        component is supplied, in the accompanying documentation. A
+        Licensee is responsible for reviewing those terms and for
+        complying with them, including any obligation that is more
+        restrictive than this Licence.
+
+  20.3  Nothing in this Licence obliges the Licensor to obtain,
+        maintain, or renew any third-party right, or to continue
+        distributing any third-party component. If an upstream right
+        lapses or is withdrawn, the Licensor may remove the affected
+        component from later releases of the Work without that removal
+        being a breach of this Licence.
+
+21. SECURITY, INTEGRITY, AND VULNERABILITY DISCLOSURE
+
+  21.1  A Licensee shall not remove, disable, obscure, or circumvent any
+        security control, integrity check, digital signature, watermark,
+        provenance record, or safety mitigation present in the Work,
+        except as Section 21.2 permits, or where the Licensee states
+        clearly in the documentation accompanying any Derivative Work it
+        distributes what was removed or disabled and why. Where this
+        Section and Section 21.2 both reach the same conduct, Section
+        21.2 governs.
+
+  21.2  This Section takes priority over Section 21.1. A Licensee that
+        discovers a security vulnerability in the Work is encouraged to
+        report it to the Licensor at the address in Exhibit A before
+        disclosing it publicly, and to allow a reasonable period for a
+        fix. Nothing in this Licence prohibits, restricts, or penalises
+        good-faith security research, coordinated disclosure, or the
+        publication of findings after a reasonable period has passed.
+
+  21.3  The Licensor does not warrant that the Work is free of
+        vulnerabilities, and is under no obligation to provide a patch,
+        a fix, a backport, or a support period of any length. Where the
+        Licensor does publish a fix, it does so under this same Licence
+        unless it states otherwise at the time.
+
+22. ASSIGNMENT, AFFILIATES, AND CHANGE OF CONTROL
+
+  22.1  Affiliate means an entity that controls, is controlled by, or is
+        under common control with a Licensee, where control means
+        holding more than fifty percent of the voting interests or the
+        power to direct management. Rights granted to a Licensee extend
+        to its Affiliates for so long as they remain Affiliates, and the
+        Licensee is responsible for their compliance.
+
+  22.2  Annual Gross Revenue, and Attributable Revenue as defined in
+        Section 5.6, are each measured across a Licensee and its
+        Affiliates on a combined basis. A Licensee may not divide,
+        restructure, or allocate revenue, entities, or use of the Work
+        among Affiliates or related parties for the purpose or with the
+        effect of remaining below the Threshold Amount.
+
+  22.3  A Licensee may not assign or transfer this Licence, in whole or
+        in part, without the Licensor's prior written consent, except
+        that a Licensee may assign it in its entirety to a successor in
+        connection with a merger, acquisition, or sale of substantially
+        all of its assets, on written notice to the Licensor, provided
+        the successor assumes every obligation under it.
+
+  22.4  On a change of control, the tier of the surviving or acquiring
+        entity is determined from that entity's own Annual Gross
+        Revenue, measured across it and its Affiliates from the date the
+        change takes effect. Rights already exercised are unaffected,
+        and no payment is owed in respect of any period before that
+        date.
+
+  22.5  The Licensor may assign this Licence freely, including to a
+        successor entity or to a body established to steward the Work.
+        Assignment by the Licensor does not alter the terms that apply
+        to any release already published.
+
+23. RECORDS, REPORTING, AND AUDIT
+
+  23.1  A Canopy Licensee shall keep records sufficient to verify the
+        amounts reported and paid under Section 5, and a Licensee making
+        AI Training Use shall keep records sufficient to verify the
+        metric reported under Section 6. Records shall be kept for three
+        years from the end of the period to which they relate.
+
+  23.2  This Section supplements Section 5.3, and where both reach the
+        same payments the examination limit in this Section governs
+        while the confidentiality protection in Section 5.3 applies in
+        addition. On not less than thirty days written notice, and not
+        more than once in any twelve-month period, the Licensor or the
+        Clearinghouse may appoint an independent auditor bound by
+        confidentiality to examine those records during normal business
+        hours, for the sole purpose of verifying amounts due. The
+        auditor reports only whether the amounts were correct and, if
+        not, by how much.
+
+  23.3  The Licensor bears the cost of the audit, except that if the
+        audit shows an underpayment of more than five percent for the
+        period examined, the Licensee shall bear the reasonable cost of
+        the audit and pay the shortfall with interest at the rate stated
+        in Section 10.2.
+
+  23.4  A Licensee is not required to disclose, and an auditor may not
+        require, information subject to legal privilege, information
+        whose disclosure would breach a confidentiality obligation owed
+        to a third party, or personal data beyond what is strictly
+        necessary to verify the amount due. A Licensee that withholds
+        information on the ground of a confidentiality obligation owed
+        to a third party shall use reasonable efforts to obtain consent
+        to disclose it to the auditor, and shall supply a redacted
+        extract sufficient to verify the amount due.
+
+24. REGULATORY ROLES AND COOPERATION
+
+  24.1  Role under applicable regulation is fixed by what each party
+        actually does, and this Section records that conduct rather than
+        deciding the question. A Licensee that places the Work, a
+        Derivative Work, or a system incorporating either on the market,
+        puts it into service, or deploys it under its own name or mark
+        takes on the obligations that regulation attaches to that role.
+        The Licensor's role is limited to publishing the Work under this
+        Licence, and publication alone does not make the Licensor a
+        provider, manufacturer, importer, distributor, or deployer of
+        any system a Licensee builds.
+
+  24.2  On reasonable written request from a Licensee that is subject to
+        a regulatory obligation in respect of the Work, the Licensor
+        shall provide such technical documentation about the Work as it
+        already holds and is free to share, on terms including
+        confidentiality where appropriate. The Licensor is not obliged
+        to create documentation it does not hold, to conduct a
+        conformity assessment, or to bear the cost of a Licensee's
+        compliance.
+
+  24.3  A Licensee shall not represent, in a regulatory filing, a
+        conformity declaration, a market submission, or a public
+        statement, that the Licensor has assessed, approved, certified,
+        or accepted responsibility for the Licensee's system, unless the
+        Licensor has agreed in writing to that statement.
+
+25. NOTICES
+
+  25.1  A notice under this Licence is given in writing to the Licensor
+        contact stated in Exhibit A, or to the Licensee at the address
+        it has given for the purpose or, failing that, at its registered
+        office or its published contact address. Notice by electronic
+        mail is effective if a delivery confirmation is received or if
+        the recipient acknowledges it.
+
+  25.2  A notice is effective on receipt, or on the fifth business day
+        after despatch by a tracked delivery service, whichever is
+        earlier. A cure period under Section 10.1 runs from the date the
+        notice is effective.
+
+26. SURVIVAL
+
+  26.1  Sections 1, 8, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 23, 24,
+        25, 26, 27, and 28 survive termination or expiry of this
+        Licence, together with any obligation to pay an amount that
+        accrued before termination, and any provision that by its nature
+        is intended to survive.
+
+  26.2  Termination does not entitle a Licensee to a refund of any
+        amount already paid, and does not discharge an amount already
+        due.
+
+  26.3  The rights granted under Sections 2 and 3 are perpetual and last
+        for the duration of the rights in the Work. They do not lapse
+        with time, and a reference in this Section to expiry is a
+        reference to the expiry of those underlying rights and to
+        nothing else.
+
+27. INTERPRETATION AND CONSTRUCTION
+
+  27.1  Headings are for convenience and do not affect interpretation.
+        The singular includes the plural and the plural the singular.
+        The words including, includes, and in particular introduce
+        examples and do not limit what precedes them. A reference to a
+        statute includes any successor to it.
+
+  27.2  The English text published at the canonical address is the
+        operative text of this Licence. A translation is provided for
+        understanding and, in the event of a conflict, the English text
+        governs.
+
+  27.3  No rule of construction that resolves ambiguity against the
+        party that drafted an instrument applies to this Licence, which
+        is published as a standard form for general adoption rather than
+        negotiated between the parties to any particular release.
+
+  27.4  Where a term used in this Licence is also defined in applicable
+        law, the definition in Section 1 governs the meaning of that
+        term in this Licence, and the statutory definition governs the
+        application of that law.
+
+28. RELATIONSHIP OF THE PARTIES
+
+  28.1  This Licence does not create a partnership, joint enterprise,
+        agency, franchise, employment, or fiduciary relationship between
+        the Licensor and any Licensee, and neither may bind the other or
+        hold itself out as able to do so.
+
+  28.2  This Licence is not exclusive. The Licensor may license the Work
+        to any other person, on these or on different terms, and may
+        itself use and commercialise the Work without restriction.
+
+  28.3  There is no third-party beneficiary of this Licence other than a
+        Contributor in respect of Sections 9, 12, 13, and 18, each of
+        whom may rely on those Sections directly.
+
+29. FORCE MAJEURE AND EXCUSED PERFORMANCE
+
+  29.1  Neither party is liable for a failure or delay in performing a
+        non-monetary obligation under this Licence to the extent it is
+        caused by an event beyond that party's reasonable control,
+        including natural disaster, war, civil unrest, epidemic,
+        industrial action, failure of a public network or utility, and
+        an act of government. The affected party shall notify the other
+        and resume performance as soon as it reasonably can.
+
+  29.2  This Section does not excuse an obligation to pay an amount that
+        is due, and does not extend a cure period under Section 10.1 by
+        more than ninety days.
+
+30. GOVERNMENT AND PUBLIC-SECTOR USE
+
+  30.1  Where the Work was in fact developed at private expense, it is
+        commercial in character and a government or public-sector
+        Licensee acquires only the rights granted by this Licence, and
+        no greater rights arise by operation of a procurement rule, a
+        standard contract clause, or an unlimited-rights provision,
+        except to the extent applicable law makes that outcome mandatory
+        and unwaivable.
+
+  30.2  Where the funding history of the Work brings mandatory
+        government data rights into play, those rights apply according
+        to their own terms and this Section does not displace them.
+        Where mandatory law prevents a government Licensee from agreeing
+        to a term of this Licence, that term applies to the fullest
+        extent the law permits, the remainder continues in force under
+        Section 15, and the Licensor may decline to supply the Work on
+        any other basis.
+
+  30.3  A public-sector Licensee that is required to publish the terms
+        on which it acquired the Work may publish this Licence and the
+        canonical address at which it is held. It may not publish a
+        modified text under the name of this Licence.
+
+------------------------------------------------------------------------
+
+PROJECT SCHEDULE
+
+  This instrument is completed by a project schedule carrying the
+  per-project values named in Section 1 and Section 6. The schedule is
+  published by the Licensor alongside the Work, and is not part of the
+  text digested here, so completing it never changes these bytes. The
+  blank template is published at the canonical address.
+
+  A. Exhibit A. Threshold, Clearinghouse and Governing Law
+  B. Exhibit B. Compute Fee Schedule
+
+------------------------------------------------------------------------
+
+END OF ORA-2.3

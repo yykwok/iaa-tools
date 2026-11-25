@@ -1,0 +1,27 @@
+{
+  "name": "app-store-compliance-google-play-snapshot",
+  "upstream": "https://github.com/mjmirza/app-store-compliance",
+  "commit": "6257b0fddb811476ed2ba1eaf7f439658e992ecf",
+  "upstream_version": "2.5.1",
+  "retrieved_on": "2026-11-25",
+  "author": "Mirza Iqbal (mjmirza)",
+  "copyright": "Copyright (c) 2026 Mirza Iqbal (mjmirza)",
+  "license": "LicenseRef-OpenRoots-ORA-2.3",
+  "license_url": "https://openroots.org/licenses/ora/2.3/legalcode.txt",
+  "credit_file": "docs/CREDITS.md",
+  "selection": {
+    "data/rejection-patterns.json": "Upstream entries with platform 'google' or 'both'. Entries unchanged.",
+    "data/regulatory-deadlines.json": "Upstream entries with GOOGLE- IDs or referencing docs/GOOGLE-PLAY.md. Entries unchanged."
+  },
+  "validation": "Snapshot file integrity and JSON selection validated with Python 3. No upstream agent, hooks, or guard bundled.",
+  "file_sha256": {
+    "data/regulatory-deadlines.json": "69d789631ff1b85ced8184f79d16866f8ba0555b58fda5d070c34cfe24eafdaa",
+    "data/rejection-patterns.json": "a35a77e761001db663519038b58e535adaa08b34715e6ed53f7dc18dac0fa018",
+    "docs/CREDITS.md": "d1919b75b247f194d7b43a73cae9eb53c14572d6b224e7eb9ec6aafb1d45c653",
+    "docs/GOOGLE-PLAY.md": "9fa4869e65942d68f6fef5c9cc0617ca661bb55152c399c3d0a3bba6616a04fc",
+    "docs/PRE-SUBMISSION-CHECKLIST.md": "4898e17347f82ab746f556e7f3715d9bf64851318c33addfa4b7b730eee21843",
+    "LICENSE": "051105554c75e13b4a8217140312022a7c88889a6efbc1341617c7ceac019fd8",
+    "LICENSE-ORA-2.3.txt": "57d4c3b8ac2f3c6fcea0d02bb2e507a3775beeb2301c585be3ad119720642deb",
+    "NOTICE": "c022f72aab65473e40ee81dc17199ba3c3a53c67258416c15fadf3ad3f9e577b"
+  }
+}

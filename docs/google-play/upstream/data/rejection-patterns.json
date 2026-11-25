@@ -1,0 +1,943 @@
+{
+  "version": "2.5.1",
+  "updated": "2026-11-21",
+  "description": "Machine readable taxonomy of App Store and Google Play rejection patterns. Drives the pre submission guard. Each pattern carries a platform, the cited guideline or policy, a severity, an automatable detection signal, and the fix.",
+  "sources": [
+    "https://developer.apple.com/app-store/review/guidelines/",
+    "https://developer.apple.com/app-store/review/",
+    "https://play.google/developer-content-policy/",
+    "https://support.google.com/googleplay/android-developer/answer/9899234"
+  ],
+  "patterns": [
+    {
+      "id": "ANDROID-ACCESSIBILITY-FONTSCALING",
+      "platform": "google",
+      "guideline": "User Experience - Accessibility",
+      "title": "Font scaling disabled due to dp text sizing",
+      "severity": "medium",
+      "detection": "Hardcoded text sizes specified in dp instead of sp in Android XML layouts or Jetpack Compose files.",
+      "signals": [
+        "textSize",
+        "dp"
+      ],
+      "fix": "Always define text sizes in sp (scale-independent pixels) rather than dp to allow the system font scaling to work correctly."
+    },
+    {
+      "id": "ANDROID-ACCESSIBILITY-HIGHCONTRAST",
+      "platform": "google",
+      "guideline": "User Experience - Accessibility",
+      "title": "Hardcoded colors ignoring high contrast settings",
+      "severity": "medium",
+      "detection": "Hardcoded hex color strings in layout files or hardcoded Color objects in Compose without using theme attributes.",
+      "signals": [
+        "color",
+        "textColor",
+        "Color(0xFF"
+      ],
+      "fix": "Reference semantic colors or color resources so the app automatically respects high contrast themes."
+    },
+    {
+      "id": "ANDROID-ACCESSIBILITY-SCANNER",
+      "platform": "google",
+      "guideline": "User Experience - Accessibility",
+      "title": "Touch target sizes below 48dp",
+      "severity": "medium",
+      "detection": "Clickable items or buttons defined with layout_width, layout_height, or padding that results in touch targets smaller than 48dp.",
+      "signals": [
+        "clickable",
+        "onClick",
+        "48dp",
+        "48.dp"
+      ],
+      "fix": "Ensure all interactive elements have a minimum touch target area of 48dp x 48dp by using padding, minWidth, and minHeight."
+    },
+    {
+      "id": "ANDROID-ACCESSIBILITY-TALKBACK",
+      "platform": "google",
+      "guideline": "User Experience - Accessibility",
+      "title": "TalkBack support missing or disabled",
+      "severity": "medium",
+      "detection": "Views or graphic components missing contentDescription or setting importantForAccessibility inappropriately.",
+      "signals": [
+        "contentDescription",
+        "importantForAccessibility"
+      ],
+      "fix": "Provide meaningful contentDescription values for all informative images and interactive views, and ensure importantForAccessibility is set correctly."
+    },
+    {
+      "id": "ANDROID-ACCOUNT-DELETION-URL",
+      "platform": "google",
+      "guideline": "User Data",
+      "title": "Account creation without in app deletion and a data deletion URL",
+      "severity": "high",
+      "detection": "Account creation present but no in app delete path and no web data deletion URL.",
+      "signals": [
+        "signUp",
+        "createAccount",
+        "register"
+      ],
+      "counterSignals": [
+        "deleteAccount",
+        "delete_account",
+        "account deletion"
+      ],
+      "fix": "Provide in app account deletion and set a public data deletion URL in the Play Console listing."
+    },
+    {
+      "id": "ANDROID-ADVERTISING-ID",
+      "platform": "google",
+      "guideline": "User Data",
+      "title": "Google Play Advertising ID usage without disclosure or opt-out",
+      "severity": "high",
+      "detection": "Using com.google.android.gms.permission.AD_ID permission or querying GAID but lacking opt-out support or user deletion pathways in code/privacy policy.",
+      "signals": [
+        "com.google.android.gms.permission.AD_ID",
+        "AD_ID",
+        "getAdvertisingIdInfo"
+      ],
+      "counterSignals": [
+        "opt-out",
+        "reset AD_ID",
+        "advertisingIdConsent",
+        "delete AD_ID"
+      ],
+      "fix": "Declare the AD_ID permission in AndroidManifest.xml and handle user opt-out or deletion requests in full compliance with Google Play policy."
+    },
+    {
+      "id": "ANDROID-DYNAMIC-CODE-LOADING",
+      "platform": "google",
+      "guideline": "Device and Network Abuse",
+      "title": "Dynamic code loading at runtime",
+      "severity": "high",
+      "detection": "DexClassLoader, PathClassLoader from a downloaded file, or downloading and executing code at runtime. For apps targeting API 37, every native library loaded with System.load() must be read-only or the system throws UnsatisfiedLinkError.",
+      "signals": [
+        "DexClassLoader",
+        "PathClassLoader",
+        "loadDex",
+        "createPackageContext"
+      ],
+      "fix": "Ship all code in the package. Server side changes must be data, not executable code."
+    },
+    {
+      "id": "ANDROID-HEALTH-PERMISSIONS",
+      "platform": "google",
+      "guideline": "Permissions and APIs",
+      "title": "Health or fitness data access without Health Connect declaration",
+      "severity": "critical",
+      "detection": "Accessing Health Connect client or querying health permissions (e.g. steps, heart rate) without proper declaration or dedicated health privacy policy.",
+      "signals": [
+        "HealthConnectClient",
+        "com.google.android.gms.permission.HealthConnect",
+        "READ_STEPS",
+        "READ_HEART_RATE"
+      ],
+      "counterSignals": [
+        "healthConnectConsent",
+        "healthPrivacyPolicy",
+        "Health Connect"
+      ],
+      "fix": "Declare Health Connect permissions, complete the console Health Connect form, and maintain a dedicated health privacy policy."
+    },
+    {
+      "id": "ANDROID-INSECURE-BACKUP",
+      "platform": "google",
+      "guideline": "Device and Network Abuse",
+      "title": "Android backup is enabled without filtering sensitive data",
+      "severity": "high",
+      "detection": "android:allowBackup is set to true in AndroidManifest.xml without setting data extraction rules to exclude credentials/databases.",
+      "signals": [
+        "allowBackup=\"true\""
+      ],
+      "counterSignals": [
+        "dataExtractionRules",
+        "fullBackupContent",
+        "allowBackup=\"false\""
+      ],
+      "fix": "Disable backups with allowBackup=\"false\", or configure dataExtractionRules / fullBackupContent to exclude sensitive credentials and SQLite databases."
+    },
+    {
+      "id": "ANDROID-OVERLAY-TAPJACKING",
+      "platform": "google",
+      "guideline": "Permissions and APIs",
+      "title": "System overlay permission, a tapjacking and malware signal",
+      "severity": "high",
+      "detection": "SYSTEM_ALERT_WINDOW or application overlay declared, especially combined with AccessibilityService.",
+      "signals": [
+        "SYSTEM_ALERT_WINDOW",
+        "TYPE_APPLICATION_OVERLAY"
+      ],
+      "fix": "Remove overlay abuse. The overlay plus accessibility combination is a strong malware signal Google enforces against."
+    },
+    {
+      "id": "ANDROID-QUERY-ALL-PACKAGES",
+      "platform": "google",
+      "guideline": "Package visibility",
+      "title": "QUERY_ALL_PACKAGES without a permitted use case",
+      "severity": "high",
+      "detection": "QUERY_ALL_PACKAGES declared in AndroidManifest.",
+      "signals": [
+        "QUERY_ALL_PACKAGES"
+      ],
+      "fix": "Declare specific packages with a queries element, or qualify for a permitted use case."
+    },
+    {
+      "id": "ANDROID-RUNTIME-PERMISSIONS",
+      "platform": "google",
+      "guideline": "Permissions and APIs",
+      "title": "Sensitive runtime permissions requested without validation",
+      "severity": "high",
+      "detection": "Requesting critical permissions (camera, contacts, storage) without dynamic checks or explicit explanation/rationale to the user.",
+      "signals": [
+        "requestPermissions",
+        "checkSelfPermission",
+        "shouldShowRequestPermissionRationale"
+      ],
+      "counterSignals": [
+        "permission explanation",
+        "showPermissionRationale",
+        "explainPermission"
+      ],
+      "fix": "Check permissions dynamically at runtime, show a clear rationale if denied, and handle denials gracefully."
+    },
+    {
+      "id": "GOOGLE-PHOTO-VIDEO-PERMISSIONS-DECLARATION",
+      "platform": "google",
+      "guideline": "Photo and Video Permissions",
+      "title": "READ_MEDIA_IMAGES or READ_MEDIA_VIDEO declared without the Android photo picker",
+      "severity": "high",
+      "detection": "Apps targeting API 33 or higher may only request READ_MEDIA_IMAGES and READ_MEDIA_VIDEO when the system photo picker is not sufficient for core functionality, and every app that keeps them must complete the Photo and Video Permissions declaration in Play Console. A manifest that declares them with no photo picker usage in source is the usual rejection shape.",
+      "signals": [
+        "READ_MEDIA_IMAGES",
+        "READ_MEDIA_VIDEO"
+      ],
+      "counterSignals": [
+        "PickVisualMedia",
+        "ACTION_PICK_IMAGES",
+        "PhotoPicker",
+        "photo_picker"
+      ],
+      "fix": "Use the Android photo picker for one-off selection. Keep broad access only for a core gallery-style feature and complete the Photo and Video Permissions declaration in Play Console. Reference https://support.google.com/googleplay/android-developer/answer/14115180"
+    },
+    {
+      "id": "ANDROID-USER-DATA-DISCLOSURE",
+      "platform": "google",
+      "guideline": "User Data",
+      "title": "Missing prominent disclosure for sensitive user data",
+      "severity": "critical",
+      "detection": "A declared permission that reads contacts, SMS, call logs, device accounts, or all files (the surface Play enforces prominent disclosure on) with no disclosure or consent flow in the app.",
+      "signals": [
+        "READ_CONTACTS",
+        "WRITE_CONTACTS",
+        "READ_SMS",
+        "SEND_SMS",
+        "RECEIVE_SMS",
+        "READ_CALL_LOG",
+        "WRITE_CALL_LOG",
+        "GET_ACCOUNTS",
+        "MANAGE_EXTERNAL_STORAGE"
+      ],
+      "counterSignals": [
+        "prominent disclosure",
+        "user consent",
+        "privacy consent",
+        "accept policy",
+        "prominentDisclosure",
+        "disclosureDialog",
+        "consentDialog",
+        "showDisclosure",
+        "requestConsent"
+      ],
+      "fix": "Provide a prominent in-app disclosure before collecting sensitive personal data, and obtain explicit user consent."
+    },
+    {
+      "id": "BOTH-AI-GENERATED-CONTENT",
+      "platform": "both",
+      "guideline": "Apple 1.2, Google AI Generated Content",
+      "title": "Generative AI output without moderation or safeguards",
+      "severity": "high",
+      "detection": "A generative AI or image generation integration is present without content filtering, reporting, blocking, age rating, or abuse safeguards. Apple applies UGC rules to AI output. Google has a dedicated AI Generated Content policy. Since 16 October 2026 Apple 1.2 names AI content creation apps explicitly and requires them to prevent and remove nonconsensual intimate imagery, including AI-generated imagery (https://developer.apple.com/news/?id=vvzx6cul).",
+      "signals": [
+        "openai",
+        "anthropic",
+        "stable diffusion",
+        "image generation",
+        "chat/completions",
+        "text-to-image"
+      ],
+      "counterSignals": [
+        "moderation",
+        "report",
+        "block user",
+        "content filter"
+      ],
+      "fix": "Add moderation, reporting, blocking, an accurate age rating, and abuse safeguards. Prevent NSFW, deepfake, face swap, and undress generation."
+    },
+    {
+      "id": "BOTH-E-EVIDENCE-COMPLIANCE-MISSING",
+      "platform": "both",
+      "guideline": "Regulation (EU) 2023/1543 & Directive (EU) 2023/1544 (EU e-Evidence Package)",
+      "title": "Missing legal representative or emergency data-production response procedures for the EU e-Evidence Package",
+      "severity": "high",
+      "detection": "Apps/services processing user data in the EU that fail to designate a legal representative or lack internal procedures to respond to European Production/Preservation Orders within 10 days (or 8 hours for emergencies).",
+      "signals": [
+        "e-Evidence",
+        "European Production Order",
+        "European Preservation Order",
+        "emergency data production",
+        "law enforcement request",
+        "legal representative"
+      ],
+      "fix": "Designate an establishment or appoint a legal representative in the EU, notify contact details by August 18, 2026, and establish internal protocols to deliver user data securely within 8 hours in emergency situations."
+    },
+    {
+      "id": "BOTH-FINGERPRINTING",
+      "platform": "both",
+      "guideline": "Apple 5.1.2, Google Device and Network Abuse",
+      "title": "Device fingerprinting to track users",
+      "severity": "high",
+      "detection": "Building a persistent device fingerprint from hardware or settings to identify users. Apple bans this regardless of ATT consent.",
+      "signals": [
+        "fingerprint",
+        "deviceFingerprint",
+        "canvas fingerprint",
+        "identifierForVendor cross app"
+      ],
+      "fix": "Do not fingerprint. Use the platform advertising identifier with consent where tracking is genuinely needed."
+    },
+    {
+      "id": "BOTH-GPSR-COMPLIANCE-MISSING",
+      "platform": "both",
+      "guideline": "Regulation (EU) 2023/988 (EU General Product Safety Regulation)",
+      "title": "Missing EU GPSR manufacturer info or product safety warning disclosures",
+      "severity": "high",
+      "detection": "E-commerce or digital product listing present but missing manufacturer email, postal address, or product safety warnings on the interface.",
+      "signals": [
+        "productListing",
+        "buyProduct",
+        "checkout",
+        "e-commerce",
+        "manufacturerInfo",
+        "safetyWarning"
+      ],
+      "counterSignals": [
+        "manufacturerEmail",
+        "manufacturerAddress",
+        "safetyLabel",
+        "productSafety",
+        "responsiblePerson"
+      ],
+      "fix": "Provide prominent manufacturer contact details (email and postal address) and any applicable product safety warnings directly on the product listing or online interface for any consumer goods distributed in the EU."
+    },
+    {
+      "id": "BOTH-LOOTBOX-ODDS",
+      "platform": "both",
+      "guideline": "Apple 3.1.1, Google gambling",
+      "title": "Random reward mechanic without disclosed odds",
+      "severity": "high",
+      "detection": "Loot box, gacha, or random reward purchase present without odds disclosed before purchase.",
+      "signals": [
+        "lootbox",
+        "loot box",
+        "gacha",
+        "random reward",
+        "mystery box"
+      ],
+      "fix": "Disclose the odds for every random reward before the user purchases."
+    },
+    {
+      "id": "BOTH-METADATA-DECORATION",
+      "platform": "both",
+      "guideline": "Apple 2.3.7, Google Store Listing",
+      "title": "Metadata field overflow or banned decoration",
+      "severity": "medium",
+      "detection": "App name over the limit (Apple 30, Google 30), emoji in the title, all caps, or ranking and price claims such as number one, best, top, or free in the title or icon.",
+      "signals": [],
+      "fix": "Keep each metadata field within its limit and remove emoji, all caps, and ranking or price claims from the title and icon."
+    },
+    {
+      "id": "BOTH-SDK-SUPPLY-CHAIN",
+      "platform": "both",
+      "guideline": "SDK responsibility",
+      "title": "Third party SDK violates policy on the developer's behalf",
+      "severity": "high",
+      "detection": "A bundled SDK requests permissions, tracks users, or behaves in ways the app does not declare. The developer is responsible for SDK behavior.",
+      "signals": [],
+      "fix": "Vet every SDK, keep them current, and remove any that collect or share data the app does not declare."
+    },
+    {
+      "id": "BOTH-SECURE-STORAGE",
+      "platform": "both",
+      "guideline": "Data Security",
+      "title": "Sensitive tokens or credentials stored in insecure unencrypted formats",
+      "severity": "high",
+      "detection": "Sensitive session credentials or tokens are saved directly to unencrypted plist, UserDefaults, or SharedPreferences instead of Keychain or Android Keystore / EncryptedSharedPreferences.",
+      "signals": [
+        "UserDefaults.standard.set",
+        "getSharedPreferences"
+      ],
+      "fix": "Store all sensitive data and access tokens in iOS Keychain or Android EncryptedSharedPreferences."
+    },
+    {
+      "id": "BOTH-SUBSCRIPTION-HARD-CANCEL",
+      "platform": "both",
+      "guideline": "Apple 3.1.2 subscription terms, US FTC Section 5 / ROSCA, state subscription-cancellation statutes (California, New York, Massachusetts)",
+      "title": "Subscription cancellation requires a phone call, mail, or in-person visit while sign-up is a single tap",
+      "severity": "high",
+      "detection": "A subscription billed outside Apple in-app purchase or Google Play Billing (a web or account-settings cancellation path) directs the person to call, mail, or visit in person to cancel, instead of a self-service in-app or web cancel action. The federal FTC click-to-cancel rule was vacated in 2025 but California, New York, and Massachusetts have their own negative-option statutes in force, and the FTC retains Section 5 and ROSCA authority regardless.",
+      "signals": [
+        "call us to cancel",
+        "call to cancel",
+        "cancel your subscription by calling",
+        "mail a letter to cancel",
+        "write to cancel",
+        "cancel in person",
+        "visit a store to cancel"
+      ],
+      "fix": "Provide a self-service cancellation path (in-app button or account-settings web page) that is at least as easy as sign-up. Never require a phone call, a mailed letter, or an in-person visit to cancel a subscription billed outside the app stores' own billing."
+    },
+    {
+      "id": "BOTH-UNREACHABLE-METADATA-URL",
+      "platform": "both",
+      "guideline": "Apple 1.5 and 2.1, Google User Data",
+      "title": "Broken support, marketing, or privacy URL in the listing",
+      "severity": "high",
+      "detection": "A support URL, marketing URL, or privacy policy URL in the listing does not load. Mirrors the fastlane precheck unreachable_urls rule.",
+      "signals": [],
+      "fix": "Confirm every listing URL is public and loads during the entire review window."
+    },
+    {
+      "id": "BOTH-UNSAFE-DEEPLINK",
+      "platform": "both",
+      "guideline": "Data Security",
+      "title": "Unsafe or unvalidated custom deep link URL schemes used for sensitive operations",
+      "severity": "high",
+      "detection": "Relying on custom URL schemes for sensitive routing, navigation, or passing tokens, without strict input validation.",
+      "signals": [
+        "CFBundleURLSchemes",
+        "android:scheme"
+      ],
+      "counterSignals": [
+        "apple-app-site-association",
+        "assetlinks.json"
+      ],
+      "fix": "Use Universal Links (iOS) and App Links (Android) for secure domain-validated link routing, and sanitize all deep link parameters."
+    },
+    {
+      "id": "BOTH-WITHDRAWAL-BUTTON-MISSING",
+      "platform": "both",
+      "guideline": "Apple Guideline 3.1.2, Directive (EU) 2023/2673 Distance Marketing of Financial Services Directive",
+      "title": "Prominent contract withdrawal button or function missing for EU consumer contracts",
+      "severity": "high",
+      "detection": "Apps offering digital subscriptions or distance contracts to EU consumers that fail to provide a prominent, easily accessible 'withdrawal button' or 'withdrawal function' on their online user interface to cancel/withdraw within 14 days.",
+      "signals": [
+        "withdrawal button",
+        "withdrawal function",
+        "withdraw from contract",
+        "distance contract withdrawal",
+        "revoke contract",
+        "cancel subscription"
+      ],
+      "fix": "Add a prominent, dedicated, and easily accessible withdrawal button or function on the user interface, allowing consumers to withdraw from contracts/subscriptions without undue friction."
+    },
+    {
+      "id": "GOOGLE-12-TESTER-RULE",
+      "platform": "google",
+      "guideline": "Closed testing requirement",
+      "title": "New personal account without the closed test",
+      "severity": "high",
+      "detection": "Manual check. New personal developer accounts need at least 12 testers for 14 consecutive days of closed testing before production.",
+      "signals": [],
+      "fix": "Run the closed test with at least 12 testers over 14 consecutive days, or use an organization account where appropriate."
+    },
+    {
+      "id": "GOOGLE-DATASAFETY-MISMATCH",
+      "platform": "google",
+      "guideline": "Data Safety",
+      "title": "Data Safety form does not match runtime behavior",
+      "severity": "critical",
+      "detection": "Analytics, ads, or tracking SDKs are present that collect or share data not declared in the Data Safety section. This is the number one Google rejection cause.",
+      "signals": [
+        "firebase-analytics",
+        "com.google.android.gms.ads",
+        "facebook",
+        "appsflyer",
+        "adjust"
+      ],
+      "fix": "Audit every SDK and runtime data flow and declare every collection, sharing, and security practice accurately in the Data Safety form."
+    },
+    {
+      "id": "GOOGLE-FAMILIES-AD-SDK",
+      "platform": "google",
+      "guideline": "Families",
+      "title": "Non compliant ad SDK in a child targeted app",
+      "severity": "critical",
+      "detection": "An app declared for children uses an ad SDK that is not Families certified, or shows behavioral ads to minors.",
+      "signals": [
+        "children",
+        "Designed for Families",
+        "kids"
+      ],
+      "fix": "Use only Families certified ad SDKs and remove behavioral advertising to minors."
+    },
+    {
+      "id": "GOOGLE-MISLEADING-LISTING",
+      "platform": "google",
+      "guideline": "Store Listing and Promotion",
+      "title": "Listing claims a feature the app lacks",
+      "severity": "high",
+      "detection": "Manual check. The store listing, screenshots, and description must match the app's actual functionality.",
+      "signals": [],
+      "fix": "Make the listing match the build exactly, with screenshots of real in app screens."
+    },
+    {
+      "id": "GOOGLE-MISSING-PRIVACY-POLICY",
+      "platform": "google",
+      "guideline": "User Data",
+      "title": "Missing privacy policy",
+      "severity": "critical",
+      "detection": "No privacy policy URL set in the Play Console store listing while the app collects user data.",
+      "signals": [
+        "privacyPolicy",
+        "privacy-policy"
+      ],
+      "fix": "Publish a privacy policy and set its URL in the Play Console store listing."
+    },
+    {
+      "id": "GOOGLE-PERM-ACCESSIBILITY-MISUSE",
+      "platform": "google",
+      "guideline": "Permissions and APIs",
+      "title": "AccessibilityService used for non accessibility purposes",
+      "severity": "critical",
+      "detection": "BIND_ACCESSIBILITY_SERVICE declared in an app that is not an accessibility tool.",
+      "signals": [
+        "BIND_ACCESSIBILITY_SERVICE",
+        "AccessibilityService"
+      ],
+      "fix": "Use accessibility APIs only for genuine accessibility features and declare the use, or remove the service."
+    },
+    {
+      "id": "GOOGLE-PERM-ALL-FILES",
+      "platform": "google",
+      "guideline": "Permissions and APIs",
+      "title": "All files access without a qualifying use case",
+      "severity": "critical",
+      "detection": "MANAGE_EXTERNAL_STORAGE declared in AndroidManifest.",
+      "signals": [
+        "MANAGE_EXTERNAL_STORAGE"
+      ],
+      "fix": "Use scoped storage. Request all files access only for a qualifying use case with the required declaration."
+    },
+    {
+      "id": "GOOGLE-PERM-BACKGROUND-LOCATION",
+      "platform": "google",
+      "guideline": "Permissions and APIs",
+      "title": "Background location without a qualifying core feature",
+      "severity": "critical",
+      "detection": "ACCESS_BACKGROUND_LOCATION declared in AndroidManifest with no clear core feature or prominent disclosure.",
+      "signals": [
+        "ACCESS_BACKGROUND_LOCATION"
+      ],
+      "fix": "Use foreground location where possible, or justify background use with a core feature and a prominent disclosure and the permission declaration."
+    },
+    {
+      "id": "GOOGLE-PERM-SMS-CALLLOG",
+      "platform": "google",
+      "guideline": "Permissions and APIs",
+      "title": "SMS or Call Log without an approved core use case",
+      "severity": "critical",
+      "detection": "READ_SMS, SEND_SMS, RECEIVE_SMS, READ_CALL_LOG, or WRITE_CALL_LOG declared without an approved use case. From 27 January 2027 account verification via phone call is no longer a permitted use case for READ_CALL_LOG (Play Console Help answers 10208820 and 18100766). Until that date the exceptions table still lists it. Use the Digital Credentials API, either directly or through a verification provider built upon it, the SMS Retriever API, or the SMS User Consent API.",
+      "signals": [
+        "READ_SMS",
+        "SEND_SMS",
+        "RECEIVE_SMS",
+        "READ_CALL_LOG",
+        "WRITE_CALL_LOG"
+      ],
+      "fix": "Use the permissions declaration form for an approved core use case, or drop the permission. From 27 January 2027, phone-call account verification is not a permitted use case for READ_CALL_LOG (Play Console Help answers 10208820 and 18100766). Use the Digital Credentials API, either directly or through a verification provider built upon it, the SMS Retriever API, or the SMS User Consent API."
+    },
+    {
+      "id": "GOOGLE-PLAY-AGE-SIGNALS-MISUSE",
+      "platform": "google",
+      "guideline": "User Data",
+      "title": "Misuse of Play Age Signals API",
+      "severity": "critical",
+      "detection": "Usage of the Play Age Signals API (com.google.android.play:age-signals) in conjunction with advertising, marketing, user profiling, or analytics libraries, which violates Google Play's strict Terms of Service.",
+      "signals": [
+        "com.google.android.play:age-signals",
+        "AgeSignalsManager",
+        "AgeSignalsRequest"
+      ],
+      "fix": "Ensure that information from the Play Age Signals API is solely used to provide age-appropriate content and experiences in compliance with laws. Do not use the API or its returned signals for advertising, marketing, user profiling, or analytics."
+    },
+    {
+      "id": "GOOGLE-PLAY-BILLING",
+      "platform": "google",
+      "guideline": "Payments",
+      "title": "Digital goods sold without Play Billing",
+      "severity": "critical",
+      "detection": "A web checkout or third party payment SDK is used for in app digital goods rather than Play Billing.",
+      "signals": [
+        "Stripe",
+        "PayPal",
+        "checkout",
+        "razorpay"
+      ],
+      "counterSignals": [
+        "BillingClient",
+        "Play Billing",
+        "com.android.billingclient"
+      ],
+      "fix": "Use Play Billing for in app digital goods, with regional alternatives only where Google permits."
+    },
+    {
+      "id": "GOOGLE-TARGET-API",
+      "platform": "google",
+      "guideline": "Target API level",
+      "title": "App does not target the current required API level",
+      "severity": "critical",
+      "detection": "targetSdkVersion in build.gradle is below the current Google Play requirement. From 31 August 2026, new apps and updates must target Android 16, API level 36, or higher. A Play Console extension to 1 November 2026 is available. Wear OS and Automotive OS must target API 35 or higher, TV and XR API 34 or higher.",
+      "signals": [
+        "targetSdkVersion",
+        "targetSdk"
+      ],
+      "fix": "Build against the current required Android target API level. From 31 August 2026 that is API 36 or higher. Submissions below the threshold are rejected automatically."
+    },
+    {
+      "id": "GOOGLE-PLAY-BILLING-V8-REQUIRED",
+      "platform": "google",
+      "guideline": "Payments",
+      "title": "Play Billing Library below version 8",
+      "severity": "critical",
+      "detection": "A com.android.billingclient:billing dependency with a major version below 8. New apps and updates must use Play Billing Library 8 or later from 31 August 2026 (deprecation ladder), with a Play Console extension available until 1 November 2026. Already published v7 binaries keep transacting until the 2027 all-apps deadline.",
+      "signals": [
+        "com.android.billingclient:billing:7",
+        "com.android.billingclient:billing-ktx:7",
+        "com.android.billingclient:billing:6"
+      ],
+      "fix": "Upgrade to com.android.billingclient:billing 8.x, or request the Play Console extension before 1 November 2026. Reference https://developer.android.com/google/play/billing/deprecation-faq"
+    },
+    {
+      "id": "BOTH-US-ASAA-AGE-SIGNALS-MISSING",
+      "platform": "both",
+      "guideline": "US state App Store Accountability Acts (Utah SB 142, Texas SB 2420, and successor state acts). See docs/GLOBAL-REGULATORY-2026.md section 2.2",
+      "title": "Missing store age-signal integration for US state ASAA duties",
+      "severity": "high",
+      "detection": "Heuristic, not a certification. An app with accounts or age-gated features shows no integration with the store age signal surfaces (Declared Age Range on iOS, Play Age Signals API on Android) and no verifiable parental consent handling for minor accounts. Store-side duties began 6 May 2026 (Utah) and are documented with primary sources in docs/GLOBAL-REGULATORY-2026.md section 2.2.",
+      "signals": [
+        "ageCategory",
+        "minorUser",
+        "parentalConsent",
+        "DeclaredAgeRange",
+        "age-signals"
+      ],
+      "counterSignals": [
+        "verifyParentalConsent",
+        "handleAgeCategorySignal",
+        "rescindConsent",
+        "deleteAgeVerificationData"
+      ],
+      "fix": "Integrate the store age signal APIs, confirm verifiable parental consent for minor accounts before use, re-request consent on significant changes, and delete raw age verification data after verification."
+    },
+    {
+      "id": "GOOGLE-PAYMENTS-DONATION-LINK",
+      "platform": "google",
+      "guideline": "Payments policy (support.google.com/googleplay/android-developer/answer/9992660). Donations outside Play billing are permitted only as tax-exempt donations",
+      "title": "In-app donation link to a payment page outside Play billing",
+      "severity": "high",
+      "detection": "An in-app link or button routes to Open Collective, Ko-fi, Patreon, Buy Me a Coffee, GitHub Sponsors, Liberapay, or a PayPal donate page. Google enforces the Payments policy exception literally. only donations to a tax-exempt charity (a 501(c)(3)-class body, not a 501(c)(6) trade association or an unincorporated project) may bypass Play billing. Everything else is treated as a digital-goods payment. Open-source apps are the most common casualty (AnkiDroid, August 2026, Hacker News 921 points).",
+      "signals": [
+        "opencollective.com",
+        "ko-fi.com",
+        "patreon.com",
+        "buymeacoffee.com",
+        "github.com/sponsors",
+        "liberapay.com",
+        "paypal.com/donate",
+        "Donate"
+      ],
+      "counterSignals": [
+        "BillingClient",
+        "com.android.billingclient",
+        "501(c)(3)"
+      ],
+      "fix": "Either remove the donation entry point from the Play build (a build flavor is enough), route it through Play billing as a one-time product, or, if the recipient is a tax-exempt charity, keep proof of that status in the review notes. Do not argue the case in the appeal, Google has already stated 501(c)(6) does not qualify."
+    },
+    {
+      "id": "GOOGLE-PLAY-CHARGEBACK-LIABILITY",
+      "platform": "google",
+      "guideline": "Play Console. Updates to refund protection and chargeback cost responsibility (support.google.com/googleplay/android-developer/answer/17068375)",
+      "title": "Play billing without chargeback dispute handling (developer now bears the cost)",
+      "severity": "medium",
+      "detection": "For orders placed after 3 August 2026 Google Play no longer absorbs chargebacks. the developer bears the purchase price less the service fee plus the card-network chargeback fee (typically USD 15 to 25 per dispute). An app uses Play billing but never handles the PendingRefundReviewNotification real-time developer notification or calls the Review Refund API, so every fraudulent dispute is lost by default. Not a rejection cause, a revenue-and-fraud exposure that lands on the developer's account.",
+      "signals": [
+        "BillingClient",
+        "com.android.billingclient",
+        "purchases.subscriptions",
+        "purchases.products"
+      ],
+      "counterSignals": [
+        "PendingRefundReviewNotification",
+        "ReviewRefund",
+        "reviewrefund",
+        "pendingRefundReviewNotification"
+      ],
+      "fix": "Subscribe to real-time developer notifications, handle PendingRefundReviewNotification, and call the Review Refund API within 24 hours with the refund preference and purchase-usage evidence so Google Play can contest illegitimate chargebacks. Reconcile chargeback fees in your revenue model."
+    },
+    {
+      "id": "GOOGLE-ORG-REGISTRATION-REQUIRED",
+      "platform": "google",
+      "guideline": "Play Console requirements. organization account for regulated categories (Play Console Help answers 10788890 and 17125096)",
+      "title": "Regulated-category app published from a personal developer account",
+      "severity": "critical",
+      "detection": "From 30 September 2026 financial products and services (banking, loans, trading, investment funds, crypto wallets and exchanges), health apps (medical, human subjects research), apps approved to use VpnService, and government apps must be published from an organization account with a D-U-N-S number consistent with the Dun and Bradstreet profile. Detection is heuristic on VpnService, Health Connect, and finance signals.",
+      "signals": [
+        "VpnService",
+        "HealthConnect",
+        "health.connect",
+        "BankAccount",
+        "loan",
+        "cryptocurrency",
+        "wallet"
+      ],
+      "counterSignals": [],
+      "fix": "Convert or create an organization developer account, obtain a D-U-N-S number, keep the account details identical to the Dun and Bradstreet profile, and transfer the app through the official Transfer ownership workflow before 30 September 2026.",
+      "added": "2026-09-05"
+    },
+    {
+      "id": "GOOGLE-PLAY-APP-REGISTRATION-MISSING",
+      "platform": "google",
+      "guideline": "Android developer verification, Play leg (Play Console Help answers 17125096 and 17134731)",
+      "title": "Play app package name not registered for developer verification",
+      "severity": "critical",
+      "detection": "Every Play app package name must be registered in Play Console for Android developer verification by 30 September 2026. This leg is global. Unregistered apps risk global removal from Google Play. Detection is manual in Play Console. Development-build package names that are never distributed do not need registration.",
+      "signals": [
+        "applicationId"
+      ],
+      "counterSignals": [],
+      "fix": "Open Play Console, complete developer verification, register every distributed package name, and re-check after adding a new applicationId or product flavor.",
+      "added": "2026-09-05"
+    },
+    {
+      "id": "GOOGLE-CONTACTS-PICKER-REQUIRED",
+      "platform": "google",
+      "guideline": "Contacts Permissions policy for apps targeting Android 17, API level 37 (Play Console Help answer 16909972)",
+      "title": "READ_CONTACTS requested where the Contact Picker is sufficient",
+      "severity": "high",
+      "detection": "Apps targeting API 37 or later may only request READ_CONTACTS when the Android Contact Picker is not sufficient for core functionality, and must complete the Play Console declaration. Enforcement 27 January 2027, pre-review checks from 27 October 2026.",
+      "signals": [
+        "READ_CONTACTS",
+        "targetSdk 37",
+        "targetSdkVersion 37"
+      ],
+      "counterSignals": [
+        "ContactsContract.Intents.Insert",
+        "ACTION_PICK",
+        "ContactPicker"
+      ],
+      "fix": "Replace READ_CONTACTS with the Contact Picker for one-off selection. Keep the permission only for a genuine core use (a dialer, a contacts manager) and file the declaration.",
+      "added": "2026-09-05"
+    },
+    {
+      "id": "GOOGLE-LOCATION-BUTTON-SCOPE",
+      "platform": "google",
+      "guideline": "Location Permissions policy for apps targeting API 37 (Play Console Help answer 16909972)",
+      "title": "Location requested without the Android location button scope",
+      "severity": "high",
+      "detection": "Apps targeting API 37 or later must implement the Android location button using the onlyForLocationButton permission flag in the manifest when location is only needed at a user-triggered moment. A blanket ACCESS_FINE_LOCATION request for a tap-to-locate feature is a policy violation from 27 January 2027.",
+      "signals": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "targetSdk 37"
+      ],
+      "counterSignals": [
+        "onlyForLocationButton"
+      ],
+      "fix": "Scope one-shot location use to the location button with the onlyForLocationButton flag and keep the broad permission only for continuous features that justify it.",
+      "added": "2026-09-05"
+    },
+    {
+      "id": "GOOGLE-FGS-GEOFENCE-REMOVED",
+      "platform": "google",
+      "guideline": "Foreground service requirements for apps targeting API 37 (Play Console Help answer 16965181)",
+      "title": "Foreground service used for geofencing",
+      "severity": "high",
+      "detection": "Geofencing is removed as an approved foreground service use case for apps targeting API 37. An app declaring FOREGROUND_SERVICE_LOCATION whose only location use is geofencing is rejected from 27 January 2027.",
+      "signals": [
+        "FOREGROUND_SERVICE_LOCATION",
+        "geofence",
+        "Geofence"
+      ],
+      "counterSignals": [
+        "GeofencingClient",
+        "addGeofences"
+      ],
+      "fix": "Move to the Geofence API (GeofencingClient) and drop FOREGROUND_SERVICE_LOCATION if geofencing was its only use.",
+      "added": "2026-09-05"
+    },
+    {
+      "id": "ANDROID-LOCAL-NETWORK-PERMISSION",
+      "platform": "google",
+      "guideline": "Android 17 behavior changes for apps targeting API 37 (developer.android.com/about/versions/17/behavior-changes-17)",
+      "title": "Local network access without the ACCESS_LOCAL_NETWORK runtime permission",
+      "severity": "high",
+      "detection": "From Android 17 enforcement is mandatory for apps targeting API 37 or later. mDNS, NSD discovery, multicast, and direct LAN connections fail with a security exception unless the app declares and requests ACCESS_LOCAL_NETWORK.",
+      "signals": [
+        "NsdManager",
+        "MulticastSocket",
+        "_tcp.local",
+        "mDNS",
+        "192.168."
+      ],
+      "counterSignals": [
+        "ACCESS_LOCAL_NETWORK"
+      ],
+      "fix": "Declare android.permission.ACCESS_LOCAL_NETWORK, request it at runtime before any LAN discovery or connection, and degrade gracefully when denied.",
+      "added": "2026-09-05"
+    },
+    {
+      "id": "ANDROID-R8-OPTIMIZATION-MISSING",
+      "platform": "google",
+      "guideline": "Play Console technical quality requirements, DEX optimization (Play Console Help answer 17492799)",
+      "title": "Release build not optimized, shrunk, or obfuscated",
+      "severity": "high",
+      "detection": "From February 2027 apps must be optimized with a minimum of 25 percent coverage across optimization, shrinking, and obfuscation using a tool such as R8. A release build with minifyEnabled false, or with no minifyEnabled at all, falls below the bar and loses visibility and publishing capabilities.",
+      "signals": [
+        "minifyEnabled false",
+        "isMinifyEnabled = false"
+      ],
+      "counterSignals": [
+        "minifyEnabled true",
+        "isMinifyEnabled = true"
+      ],
+      "fix": "Enable R8 in the release build type (isMinifyEnabled = true, isShrinkResources = true), fix keep rules, and verify the Play Console optimization report before February 2027.",
+      "added": "2026-09-05"
+    },
+    {
+      "id": "ANDROID-RESTORE-CREDENTIALS-REQUIRED",
+      "platform": "google",
+      "guideline": "Play Console technical quality requirements, Zero-Tap Sign-In (Play Console Help answer 17492799)",
+      "title": "Sign-in state not restored on a new device",
+      "severity": "medium",
+      "detection": "From April 2027 any app with user sign-in, optional or mandatory, must restore the sign-in state when the user moves to a new Android device using the Restore Credentials API. Games are currently out of scope. An app with a login flow and no RestoreCredential integration will miss the requirement.",
+      "signals": [
+        "signInWith",
+        "CredentialManager",
+        "FirebaseAuth",
+        "LoginActivity"
+      ],
+      "counterSignals": [
+        "RestoreCredential",
+        "createRestoreCredential"
+      ],
+      "fix": "Create a restore credential on successful sign-in through Credential Manager, restore it on first launch after device transfer, and clear it on sign-out.",
+      "added": "2026-09-05"
+    },
+    {
+      "id": "GOOGLE-GENAI-NCII-CONTROLS",
+      "platform": "google",
+      "guideline": "Generative AI policy enforcement, non-consensual intimate content (Android Developers Blog, 25 August 2026)",
+      "title": "Generative image or video app without NCII safeguards and a full-access test account",
+      "severity": "critical",
+      "detection": "Apps that generate or edit images or video of people must integrate customized input and output moderation, document the safety prompts and edge cases tested, and give the reviewer a test account with full unpaywalled access to every AI feature. Suspended apps are blocked from monetization and advertising across Google platforms.",
+      "signals": [
+        "generateImage",
+        "imageGeneration",
+        "text-to-image",
+        "faceSwap",
+        "face swap",
+        "undress",
+        "stable-diffusion"
+      ],
+      "counterSignals": [
+        "moderation",
+        "safetyClassifier",
+        "contentFilter"
+      ],
+      "fix": "Add input and output moderation for intimate and deepfake content, keep a written test record of safety prompts and edge cases, and provide a full-access test account in the Play Console review notes.",
+      "added": "2026-09-05"
+    },
+    {
+      "id": "GOOGLE-ANON-CHAT-MINOR-BLOCK",
+      "platform": "google",
+      "guideline": "Age-Restricted Content, Families, and Child Safety Standards policies (Play Console Help answers 17036597, 17122218, 14747720, effective 26 August 2026)",
+      "title": "Random or anonymous chat app without minor blocking and child-safety standards",
+      "severity": "critical",
+      "detection": "Apps whose core function is randomly connecting users to strangers, or anonymous communication with hidden identities, must use Play Console functionality to block minors, may not target children, and are in scope of the Child Safety Standards policy (published CSAE standards, in-app reporting, CSAM removal, child-safety contact).",
+      "signals": [
+        "random chat",
+        "anonymous chat",
+        "chat with strangers",
+        "Omegle",
+        "stranger"
+      ],
+      "counterSignals": [
+        "ageGate",
+        "minorBlock",
+        "csae"
+      ],
+      "fix": "Enable the Play Console minor-blocking tools, set the age rating and target audience to exclude children, publish CSAE standards, add in-app reporting, and designate a child-safety contact.",
+      "added": "2026-09-05"
+    },
+    {
+      "id": "GOOGLE-UNRATED-APP-BANNED",
+      "platform": "google",
+      "guideline": "Content Ratings policy clarification (Play Console Help answer 17134731, 26 August 2026)",
+      "title": "App published or updated with no content rating",
+      "severity": "high",
+      "detection": "Google clarified that unrated apps are not allowed on Google Play. An incomplete or expired IARC content rating questionnaire blocks publishing. Detection is manual in Play Console.",
+      "signals": [
+        "contentRating"
+      ],
+      "counterSignals": [],
+      "fix": "Complete the content rating questionnaire for every app and re-answer it when features change (chat, UGC, gambling, AI generation).",
+      "added": "2026-09-05"
+    },
+    {
+      "id": "ANDROID-DEBUGGABLE-RELEASE",
+      "platform": "google",
+      "guideline": "Play Console upload validation",
+      "title": "Debuggable build uploaded to Play",
+      "severity": "critical",
+      "detection": "Play Console refuses an APK or app bundle marked debuggable. Hardcoding android:debuggable=\"true\" in the manifest ships it in the release build.",
+      "signals": [
+        "android:debuggable=\"true\""
+      ],
+      "counterSignals": [],
+      "fix": "Remove android:debuggable from the manifest and let the release build type keep it false.",
+      "added": "2026-11-15"
+    },
+    {
+      "id": "ANDROID-FGS-SPECIAL-USE-UNDECLARED",
+      "platform": "google",
+      "guideline": "Foreground service types policy",
+      "title": "specialUse foreground service without a subtype",
+      "severity": "high",
+      "detection": "A foreground service of type specialUse must declare the PROPERTY_SPECIAL_USE_FGS_SUBTYPE property and be justified in the Play Console foreground service declaration. Without it Play review asks for the justification and can reject the update.",
+      "signals": [
+        "foregroundServiceType=\"specialUse\""
+      ],
+      "counterSignals": [
+        "PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+      ],
+      "fix": "Add the subtype property inside the service and complete the Play Console declaration, or move to a specific service type.",
+      "added": "2026-11-15"
+    },
+    {
+      "id": "ANDROID-64BIT-ABI-MISSING",
+      "platform": "google",
+      "guideline": "Google Play 64-bit requirement",
+      "title": "32-bit native ABI without a 64-bit build",
+      "severity": "high",
+      "detection": "Google Play requires a 64-bit version of every native library. An abiFilters list with armeabi-v7a but no arm64-v8a fails the requirement.",
+      "signals": [
+        "abiFilters",
+        "armeabi-v7a"
+      ],
+      "counterSignals": [
+        "arm64-v8a"
+      ],
+      "fix": "Add arm64-v8a, and x86_64 when x86 ships, to abiFilters.",
+      "added": "2026-11-15"
+    }
+  ]
+}
