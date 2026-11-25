@@ -1,4 +1,5 @@
 import {adFields} from "./ad-fields.js?v=adheaders1";
+import {inspectAdLayout, normalize} from "./ad-layout.js";
 
 // Only pair a known release-field label with a value of the expected shape.
 const formats = [
@@ -10,7 +11,7 @@ const firebaseId = /^1:\d+:android:[a-zA-Z0-9]+$/;
 const admobId = adFields[0].value;
 const genericAppId = /^(?:appid|应用id)$/;
 function kind(text) {
-  const label=text.normalize("NFKC").toLowerCase().replace(/[\s_./:()[\]·-]/g,"");
+  const label=normalize(text);
   const androidLabel=label.replace(/^android|android$/g,"");
   if (genericAppId.test(androidLabel)) return {test: value => firebaseId.test(value) || admobId.test(value), ad: true};
   const field=adFields.find(({header})=>header.test(androidLabel));
@@ -24,14 +25,16 @@ export function findParameters(book,utils) {
     if (book.Workbook?.Sheets?.[i]?.Hidden) continue;
     const sheet=book.Sheets[sheetName];
     const read=address=>String(sheet[address]?.w??sheet[address]?.v??"").trim();
-    for (const address of Object.keys(sheet)) {
-      if (!/^[A-Z]+\d+$/.test(address)) continue;
-      const text=read(address), inline=text.match(/^([\s\S]{1,64}?)\s*[:：=]\s*(.+)$/);
+    const cells=Object.keys(sheet).filter(address=>/^[A-Z]+\d+$/.test(address) && read(address))
+      .map(address=>({sheet:sheetName,address,text:read(address),...utils.decode_cell(address)}));
+    const adLayout=inspectAdLayout(cells);
+    for (const {address,text,r,c} of cells) {
+      if (adLayout.platformAt(r,c)==="ios") continue;
+      const inline=text.match(/^([\s\S]{1,64}?)\s*[:：=]\s*(.+)$/);
       const pattern=kind(text) || (inline && kind(inline[1]));
       if (!pattern) continue;
       const label={sheet:sheetName,address,text};
       if (inline && pattern.test(inline[2])) { pairs.push([label]);continue; }
-      const {r,c}=utils.decode_cell(address);
       function headerAt(row,col) { return row>=0 && col>=0 && kind(read(utils.encode_cell({r:row,c:col}))); }
       const down=headerAt(r,c+1)||headerAt(r,c-1);
       const right=headerAt(r+1,c)||headerAt(r-1,c);
@@ -39,7 +42,9 @@ export function findParameters(book,utils) {
       for (const [dr,dc] of directions) {
         let matched=false;
         for(let step=1;step<=500;step++) {
-          const target=utils.encode_cell({r:r+dr*step,c:c+dc*step}), value=read(target);
+          const targetRow=r+dr*step,targetCol=c+dc*step;
+          if (adLayout.platformAt(targetRow,targetCol)==="ios") break;
+          const target=utils.encode_cell({r:targetRow,c:targetCol}), value=read(target);
           if (!matched && step <= (pattern.ad ? 3 : 1) && (!value || (pattern.ad && /^android$/i.test(value)))) continue;
           if (!value || kind(value) || !pattern.test(value)) break;
           pairs.push([label,{sheet:sheetName,address:target,text:value}]);matched=true;
@@ -49,6 +54,10 @@ export function findParameters(book,utils) {
         if(matched) break;
       }
     }
+    for (const pair of adLayout.pairs) {
+      pairs.push(pair.map(({r,c,...cell})=>cell));
+    }
+    if (pairs.length>1500) throw Error("候选参数过多，请导入仅包含本次游戏的表格。");
   }
   return pairs;
 }
