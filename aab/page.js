@@ -1,5 +1,6 @@
+import {adFields} from "./ad-fields.js";
 import {bindFilePicker} from "./file-picker.js";
-import {setupSheetImport} from "./sheet-import.js?v=review1";
+import {setupSheetImport} from "./sheet-import.js?v=ads1";
 const byId=id=>document.getElementById(id);
 const games=byId("games"),form=byId("profile"),report=byId("report");
 const conclusion=byId("conclusion");
@@ -44,7 +45,7 @@ function load(file) {
   readError="";
   render();
   status.textContent="正在读取 "+file.name;
-  const worker=new Worker("./worker.js",{type:"module"});
+  const worker=new Worker("./worker.js?v=ads1",{type:"module"});
   activeWorker=worker;
   function finish(result,error) {
     if (activeWorker!==worker) return;
@@ -99,6 +100,43 @@ function render() {
   if (!profile?.google_app_id) rows.push(["待提供预期 Firebase App ID。"]);
   const firebase = rows.splice(0);
 
+  const pending = [];
+  const ads = bundle.ads;
+  const needsAds = adFields.some(({key}) => Boolean(profile?.[key]));
+  const showAds = ads.appId || ads.source || ads.note || needsAds;
+  if (showAds) {
+    if (ads.note) {
+      issues.push("广告配置");
+      rows.push([ads.note, true]);
+    }
+    match("AdMob App ID", ads.appId, profile?.admob_app_id);
+    if (ads.appId && !profile?.admob_app_id) pending.push("AdMob App ID");
+    for (const {key, label, type} of adFields.filter(field => field.type)) {
+      const codes = new Map();
+      for (const placement of ads.units.filter(item => item.type === type)) {
+        if (!codes.has(placement.code)) codes.set(placement.code, []);
+        codes.get(placement.code).push(placement.id);
+      }
+      const expected = profile?.[key];
+      if (!codes.size && !expected) continue;
+      if (codes.size <= 1) {
+        match(label, codes.keys().next().value, expected);
+        if (!expected) pending.push(label);
+      } else if (expected) {
+        comparisonCount++;
+        const found = codes.has(expected);
+        if (found) pending.push(label + "与触发点的对应关系");
+        else issues.push(label);
+        rows.push([label + " ｜ 预期 " + expected + " ｜ " + (found ? "已找到，需复核对应关系" : "未找到"), !found]);
+      } else {
+        pending.push(label);
+      }
+      for (const [code, placements] of codes) rows.push(["包内配置 " + code + " ｜ " + placements.join("、")]);
+    }
+    if (!ads.units.length) rows.push(["当前支持的包内配置未读到广告单元 ID。"]);
+  }
+  const adRows = rows.splice(0);
+
   const permissions = new Map(bundle.permissions.map(p => [JSON.stringify([p.module, p.name, p.min, p.max]), p]));
   let attentionCount = 0;
   for (const p of permissions.values()) {
@@ -110,7 +148,6 @@ function render() {
   if (!permissions.size) rows.push(["包内模块清单未声明权限。"]);
   if (profile?.notes) rows.push(["权限来源备注 · " + profile.notes]);
 
-  const pending = [];
   if (!profile?.pkg) pending.push("包名");
   if (!profile?.version && !profile?.code && !profile?.last) pending.push("版本");
   if (!profile?.google_app_id) pending.push("Firebase App ID");
@@ -148,5 +185,8 @@ function render() {
   }
   group("包名与版本", versions);
   group("Firebase 默认配置", firebase);
+  if (showAds) group("广告配置", adRows, ads.source
+    ? "游戏内触发点来源于 " + ads.source + "。AdMob App ID 来源于主模块清单。"
+    : "AdMob App ID 来源于主模块清单。");
   group("清单权限 · " + permissions.size + " 项声明", rows, "重点关注由工具的固定名单标记，覆盖电话状态、媒体与存储、定位、相机、麦克风、联系人、短信读取和通知。请按游戏与 SDK 的实际用途核对。");
 }

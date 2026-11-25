@@ -1,5 +1,6 @@
-// Read only the ZIP directory, module manifests and base resources from a local File.
+// Read selected manifests, resources and ad configuration from a local File.
 const utf8 = new TextDecoder();
+const adConfigPath = "base/assets/definit.sm";
 async function entries(file) {
   const tail = new Uint8Array(await file.slice(-65557).arrayBuffer());
   const view = new DataView(tail.buffer);
@@ -14,8 +15,8 @@ async function entries(file) {
     if (at+46>size || dir.getUint32(at,true)!==0x02014b50) throw Error("ZIP 文件目录损坏。");
     const u16 = n => dir.getUint16(at+n,true), u32 = n => dir.getUint32(at+n,true);
     const name = utf8.decode(bytes.subarray(at+46,at+46+u16(28)));
-    if (/^[^/]+\/manifest\/AndroidManifest\.xml$/.test(name) || name==="base/resources.pb") {
-      if (selected.has(name)) throw Error("包内存在重复的清单或资源表。");
+    if (/^[^/]+\/manifest\/AndroidManifest\.xml$/.test(name) || name==="base/resources.pb" || name===adConfigPath) {
+      if (selected.has(name)) throw Error("包内存在重复的清单、资源表或广告配置。");
       selected.set(name,{offset:u32(42),packed:u32(20),size:u32(24),method:u16(10)});
     }
     at += 46+u16(28)+u16(30)+u16(32);
@@ -116,11 +117,32 @@ function element(bytes,resolve) {
   }
   return {name:str(el,3),attr:key=>attrs.get(key)||"",children:el.get(5)||[]};
 }
+async function readAdConfig(file, entry, packageName, ads) {
+  if (!entry) return;
+  try {
+    if (entry.size > 1024 * 1024 || entry.packed > 1024 * 1024) throw Error("广告配置文件过大。");
+    const config = JSON.parse(utf8.decode(await extract(file,entry)));
+    if (!packageName || config.pack_name !== packageName) {
+      ads.note = adConfigPath + " 的包名与主清单不一致，请核对广告配置。";
+      return;
+    }
+    ads.source = adConfigPath;
+    if (Array.isArray(config.ad_params)) {
+      for (const placement of config.ad_params) {
+        const { type, id, code } = placement ?? {};
+        if (typeof id === "string" && typeof type === "string" && typeof code === "string"
+          && /^[0-9a-f]{16}$/i.test(code)) ads.units.push({ type, id, code });
+      }
+    }
+  } catch {
+    ads.note = "无法解析 " + adConfigPath + " 的广告配置。";
+  }
+}
 export async function inspect(file) {
   const dir=await entries(file), base="base/manifest/AndroidManifest.xml";
   if (!dir.has(base)) throw Error("未找到 base 模块清单，请选择 Android App Bundle（.aab）。");
   const table=dir.get("base/resources.pb"), resolve=resources(table && await extract(file,table));
-  const result={permissions:[],firebase:{},file:file.name};
+  const result={permissions:[],firebase:{},ads:{appId:"",units:[]},file:file.name};
   for (const [path,entry] of dir) {
     if (!path.endsWith("AndroidManifest.xml")) continue;
     const root=element(await extract(file,entry),resolve);
@@ -128,11 +150,20 @@ export async function inspect(file) {
     if (path===base) Object.assign(result,{pkg:root.attr("package"),code:root.attr("android:versionCode"),version:root.attr("android:versionName")});
     for (const bytes of root.children) {
       const child=element(bytes,resolve);
+      if (path===base && child.name==="application") {
+        for (const metaBytes of child.children) {
+          const meta=element(metaBytes,resolve);
+          if (meta.name==="meta-data" && meta.attr("android:name")==="com.google.android.gms.ads.APPLICATION_ID") {
+            result.ads.appId=meta.attr("android:value");
+          }
+        }
+      }
       if (["uses-permission","uses-permission-sdk-23","uses-permission-sdk-m"].includes(child.name)) {
         result.permissions.push({name:child.attr("android:name"),min:child.name==="uses-permission"?1:23,max:child.attr("android:maxSdkVersion"),module:path.split("/")[0]});
       }
     }
   }
   for (const key of ["google_app_id","project_id","gcm_defaultSenderId"]) result.firebase[key]=resolve({ref:"string/"+key});
+  await readAdConfig(file,dir.get(adConfigPath),result.pkg,result.ads);
   return result;
 }
