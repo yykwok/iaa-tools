@@ -4,32 +4,40 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/@e965/xlsx@0.20.3/dist/xlsx.full.min.js; worker-src 'self'; connect-src https://api.deepseek.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>AAB 传包预检 · yyk Console</title>
-<link rel="stylesheet" href="../console.css?v=nav5"><link rel="stylesheet" href="page.css?v=auto1">
-<script type="module" src="page.js?v=single1"></script>
+<script src="../theme.js?v=review1"></script>
+<link rel="stylesheet" href="../console.css?v=review1"><link rel="stylesheet" href="page.css?v=review1">
+<script type="module" src="page.js?v=review1"></script>
 </head>
 <body class="console">
 <nav class="dock" aria-label="主导航"><a class="brand" href="../" title="返回主页">yyk <span>Console</span></a><div class="dock-links"><a href="../reconciliation/">收入对账</a><a href="../ad-automation/">广告建位</a><a aria-current="page" href="./">AAB 预检</a></div></nav>
 <main class="workspace">
 <header><h1>AAB 传包预检</h1><p>在本机读取安装包，导入发行参数表，逐项核对表内预期值与包内实际值。</p></header>
+<section id="conclusion" class="sheet" role="status" hidden></section>
 <section class="sheet"><h2>选择安装包</h2>
 <label class="picker">点击选择或拖入 AAB<input id="current" type="file" accept=".aab"><span id="current-state" role="status">再次拖入即可更换安装包</span></label>
 </section>
 <section class="sheet"><h2>游戏参数表校对</h2>
-<label>选择参数表（Excel 或 CSV）<input type="file" id="sheet-file" accept=".xlsx,.xls,.csv"></label>
+<label class="picker">点击选择或拖入参数表<input type="file" id="sheet-file" accept=".xlsx,.xls,.csv"><span id="sheet-file-state">支持 .xlsx、.xls、.csv</span></label>
 <div id="sheet-controls" hidden><details id="preview" open><summary>自动识别的参数</summary><div id="parameter-list"></div></details>
-<label>DeepSeek API Key<input id="ds-key" type="password" placeholder="仅用于当前页面" autocomplete="off" spellcheck="false"></label>
-<p>点击整理后，上方勾选的参数及其字段名将发送到 DeepSeek。AAB 在本机解析，API Key 仅在本页使用。</p>
+<details id="vault"><summary>配置本机 API Key</summary>
+<form id="vault-form">
+<div class="pair"><label>DeepSeek API Key<input name="secret" type="password" required autocomplete="off" spellcheck="false"></label>
+<label>设置调用密码<input name="passphrase" type="password" required minlength="10" autocomplete="new-password"></label></div>
+<button type="submit">加密保存到此浏览器</button></form></details>
+<p id="vault-status" role="status"></p>
+<label>调用密码<input id="ds-password" type="password" autocomplete="current-password"></label>
+<p>点击整理后，勾选的字段名和参数值会发给 DeepSeek。AAB 在本机解析。</p>
 <button type="button" id="organize">用 DeepSeek 整理</button></div>
 <p id="sheet-status" role="status"></p><div id="sheet-review" hidden>
 <label>选择要校对的游戏或 Android 配置<select id="candidate"></select></label>
 <div id="mapped"></div><button id="apply-sheet" type="button">确认参数并校对</button></div></section>
-<section class="sheet"><label for="games">已保存的本机游戏配置</label><select id="games"><option value="">仅查看包信息</option></select>
+<section class="sheet"><label for="games">已保存的本机游戏配置</label><p id="profiles-help">保存常用参数后，可在这里直接选用。</p><select id="games"><option value="">仅查看包信息</option></select>
 <details><summary>管理本机游戏配置</summary>
 <form id="profile"><div class="pair">
 <label>游戏名称<input name="game" required maxlength="100"></label><label>预期包名<input name="pkg" required placeholder="com.company.game"></label>
 <label>上次已上传 versionCode<input name="last" type="number" min="0" max="2100000000" step="1"></label>
-<label>默认 Firebase App ID<input name="google_app_id"></label><label>默认 Firebase Project ID<input name="project_id"></label><label>默认 Firebase Sender ID<input name="gcm_defaultSenderId"></label>
-<label>推送实例 Sender ID（人工核对）<input name="push"></label><label>权限来源备注（人工记录）<input name="notes" placeholder="权限名及关联 SDK"></label>
+<label>默认 Firebase App ID<input name="google_app_id"></label>
+<label>权限来源备注（人工记录）<input name="notes" placeholder="权限名及关联 SDK"></label>
 </div><p>填入新的游戏名称可另存配置。上传成功后，可在此更新基准构建号。</p><button type="submit">保存游戏配置</button><span id="saved" role="status"></span></form></details></section>
-<section id="report" class="sheet" aria-live="polite" hidden></section>
+<section id="report" aria-live="polite" hidden></section>
 </main></body></html>

@@ -1,6 +1,8 @@
-import {setupSheetImport} from "./sheet-import.js?v=auto1";
+import {bindFilePicker} from "./file-picker.js";
+import {setupSheetImport} from "./sheet-import.js?v=review1";
 const byId=id=>document.getElementById(id);
 const games=byId("games"),form=byId("profile"),report=byId("report");
+const conclusion=byId("conclusion");
 const storageKey="yyk.aab.profiles.v1";
 let profiles=[];
 try { profiles=JSON.parse(localStorage.getItem(storageKey)||"[]"); if (!Array.isArray(profiles)) profiles=[]; } catch {}
@@ -8,6 +10,7 @@ function options(selected="") {
   games.length=1;
   for (const profile of profiles) games.add(new Option(profile.game,profile.game));
   games.value=selected;
+  byId("profiles-help").textContent=profiles.length ? "选择配置可复用包名、构建号基准与 Firebase App ID。" : "暂无已保存配置。展开下方表单可添加常用游戏。";
 }
 options();
 let imported=null;
@@ -32,12 +35,13 @@ form.onsubmit=event=>{
   catch { byId("saved").textContent="浏览器未能保存配置。"; return; }
   imported=null; sheetImport.clearApplied(); profiles=next; options(data.game); byId("saved").textContent="已保存到本机"; render();
 };
-let bundle=null,activeWorker=null;
-const input=byId("current"),zone=input.parentElement,status=byId("current-state");
+let bundle=null,activeWorker=null,readError="";
+const status=byId("current-state");
 function load(file) {
   if (!file) return;
   activeWorker?.terminate();
   bundle=null;
+  readError="";
   render();
   status.textContent="正在读取 "+file.name;
   const worker=new Worker("./worker.js",{type:"module"});
@@ -46,6 +50,7 @@ function load(file) {
     if (activeWorker!==worker) return;
     worker.terminate(); activeWorker=null;
     bundle=result;
+    readError=error;
     status.textContent=file.name+" · "+(error||"已读取");
     render();
   }
@@ -53,54 +58,95 @@ function load(file) {
   worker.onerror=()=>finish(null,"读取失败，请使用支持本地解压的新版浏览器。");
   worker.postMessage(file);
 }
-input.onchange=()=>{load(input.files[0]);input.value="";};
-zone.ondragover=e=>{ e.preventDefault(); zone.classList.add("over"); };
-zone.ondragleave=()=>zone.classList.remove("over");
-zone.ondrop=e=>{ e.preventDefault();zone.classList.remove("over");load(e.dataTransfer.files[0]); };
-const firebaseNames={google_app_id:"App ID",project_id:"Project ID",gcm_defaultSenderId:"Sender ID"};
+bindFilePicker(byId("current"),load);
 const attention=/^android\.permission\.(READ_PHONE_STATE|READ_PRIVILEGED_PHONE_STATE|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE|MANAGE_EXTERNAL_STORAGE|ACCESS_(FINE|COARSE|BACKGROUND)_LOCATION|CAMERA|RECORD_AUDIO|READ_CONTACTS|WRITE_CONTACTS|READ_SMS|POST_NOTIFICATIONS|READ_MEDIA_.*)$/;
 function render() {
-  const now=bundle,profile=selected();
-  report.replaceChildren(); report.hidden=!now;
-  if (!now) return;
-  function line(text,warn=false,tag="div") {
-    const node=document.createElement(tag); node.textContent=text;
-    if (tag==="div") node.className="row"+(warn?" warn":"");
-    report.append(node);
+  const profile = selected();
+  conclusion.replaceChildren();
+  report.replaceChildren();
+  conclusion.hidden = !bundle && !readError;
+  report.hidden = !bundle;
+  if (readError) {
+    conclusion.textContent = "预检未完成，AAB 读取失败。";
+    conclusion.dataset.result = "error";
   }
-  line("包名与版本",false,"h2");
-  if (imported) line("本次校对基准 · "+imported.source+" ｜ "+imported.game);
-  const match=(name,value,expected)=>{
-    const state=expected ? (!value?"未读取，需核对":value===expected?"一致":"不一致") : "未设置预期";
-    line(name+" · "+(value||"未读取")+" ｜ "+state+(expected?"（预期 "+expected+"）":""),Boolean(expected && expected!==value));
-  };
-  match("包名",now.pkg,profile?.pkg);
-  if (profile?.version) match("预期 versionName",now.version,profile.version);
-  if (profile?.code) match("预期 versionCode",now.code,profile.code);
-  line("版本名称 "+(now.version||"未读取"));
-  line("构建号 "+(now.code||"未读取"));
-  function compareCode(label,base) {
-    if (!/^\d+$/.test(base)||!/^\d+$/.test(now.code)) { line(label+" · 构建号缺失，无法比较",true); return; }
-    const higher=Number(now.code)>Number(base);
-    line(label+" "+base+" ｜ "+(higher?"已递增":"未递增，请核对"),!higher);
+  if (!bundle) return;
+
+  const issues = [];
+  const rows = [];
+  let comparisonCount = 0;
+
+  function match(title, actual, expected, required = false) {
+    const issue = (!actual && (required || expected)) || (expected && actual !== expected);
+    if (issue) issues.push(title);
+    if (expected) comparisonCount++;
+    const detail = expected ? " ｜ 预期 " + expected + " ｜ " + (issue ? (actual ? "不一致" : "未读取") : "一致") : "";
+    rows.push([title + " · " + (actual || "未读取") + detail, Boolean(issue)]);
   }
-  if (profile?.last) compareCode("上次已上传",profile.last);
-  line("Firebase 默认配置",false,"h3");
-  for (const [key,title] of Object.entries(firebaseNames)) {
-    match(title,now.firebase[key],profile?.[key]);
+
+  match("包名", bundle.pkg, profile?.pkg, true);
+  match("版本名称", bundle.version, profile?.version);
+  match("构建号", bundle.code, profile?.code, true);
+  if (profile?.last) {
+    const comparable = /^\d+$/.test(profile.last) && /^\d+$/.test(bundle.code);
+    const higher = comparable && BigInt(bundle.code) > BigInt(profile.last);
+    if (!higher) issues.push("构建号递增");
+    comparisonCount++;
+    rows.push(["上次已上传构建号 " + profile.last + " ｜ " + (higher ? "已递增" : comparable ? "未递增" : "无法比较"), !higher]);
   }
-  const projectNumber=/^1:(\d+):android:/.exec(now.firebase.google_app_id)?.[1];
-  if (projectNumber && now.firebase.gcm_defaultSenderId && projectNumber!==now.firebase.gcm_defaultSenderId) {
-    line("默认 App ID 中的项目编号 "+projectNumber+" 与默认 Sender ID 不一致，请核对是否指向预期项目。",true);
+  const versions = rows.splice(0);
+  match("App ID", bundle.firebase.google_app_id, profile?.google_app_id);
+  if (!profile?.google_app_id) rows.push(["待提供预期 Firebase App ID。"]);
+  const firebase = rows.splice(0);
+
+  const permissions = new Map(bundle.permissions.map(p => [JSON.stringify([p.module, p.name, p.min, p.max]), p]));
+  let attentionCount = 0;
+  for (const p of permissions.values()) {
+    const focus = attention.test(p.name);
+    if (focus) attentionCount++;
+    const range = p.min === 23 ? "API 23 起声明" : "普通声明";
+    rows.push([[focus ? "重点关注" : "", p.name, p.module, range, p.max ? "上限 API " + p.max : "未声明上限"].filter(Boolean).join(" ｜ "), focus]);
   }
-  if (profile?.push) line("推送实例 Sender ID 预期 "+profile.push+" ｜ 请人工核对运行时实例。");
-  const identity=p=>JSON.stringify([p.module,p.name,p.min,p.max]);
-  const current=new Map(now.permissions.map(p=>[identity(p),p]));
-  line("清单权限 · "+current.size+" 项声明",false,"h3");
-  for (const p of current.values()) {
-    const highlight=attention.test(p.name);
-    line([highlight?"重点关注":"",p.name,p.module,"API "+p.min+(p.max?"–"+p.max:" 起（未声明上限）")].filter(Boolean).join(" ｜ "),highlight);
+  if (!permissions.size) rows.push(["包内模块清单未声明权限。"]);
+  if (profile?.notes) rows.push(["权限来源备注 · " + profile.notes]);
+
+  const pending = [];
+  if (!profile?.pkg) pending.push("包名");
+  if (!profile?.version && !profile?.code && !profile?.last) pending.push("版本");
+  if (!profile?.google_app_id) pending.push("Firebase App ID");
+  const title = document.createElement("h2");
+  title.textContent = issues.length
+    ? "包体预检发现问题，需核对" + issues.join("、") + "。"
+    : "已检查项未发现异常"
+      + (attentionCount ? "，另有 " + attentionCount + " 项权限需人工确认" : "")
+      + (pending.length ? "，" + pending.join("、") + "待提供预期值" : "") + "。";
+  conclusion.dataset.result = issues.length ? "error" : (attentionCount || pending.length ? "review" : "ok");
+  conclusion.append(title);
+  const context = document.createElement("p");
+  context.textContent = bundle.file + (profile ? " ｜ " + profile.game : "") + (imported ? " ｜ " + imported.source : "")
+    + " ｜ " + comparisonCount + " 项预期值校对";
+  conclusion.append(context);
+
+  function group(name, entries, note) {
+    const section = document.createElement("section");
+    section.className = "sheet";
+    const heading = document.createElement("h2");
+    heading.textContent = name;
+    section.append(heading);
+    if (note) {
+      const description = document.createElement("p");
+      description.textContent = note;
+      section.append(description);
+    }
+    for (const [message, warn] of entries) {
+      const item = document.createElement("div");
+      item.className = warn ? "row warn" : "row";
+      item.textContent = message;
+      section.append(item);
+    }
+    report.append(section);
   }
-  if (!current.size) line("本次包的模块清单未声明权限。");
-  if (profile?.notes) line("权限来源备注 · "+profile.notes);
+  group("包名与版本", versions);
+  group("Firebase 默认配置", firebase);
+  group("清单权限 · " + permissions.size + " 项声明", rows, "重点关注由工具的固定名单标记，覆盖电话状态、媒体与存储、定位、相机、麦克风、联系人、短信读取和通知。请按游戏与 SDK 的实际用途核对。");
 }

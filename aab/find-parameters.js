@@ -4,8 +4,6 @@ const formats = [
   [/^(?:版本|版本名(?:称)?|版本号|version(?:name)?)$/, /^\d+(?:[.][\w-]+)*(?:[-+][\w.-]+)?$/],
   [/^(?:(?:上次(?:已上传)?|本次|当前|previous|last)?(?:构建号|内部版本号|versioncode|build(?:number|code)?))$/, /^\d{1,10}$/],
   [/^(?:googleappid|(?:默认)?firebase(?:应用id|appid)|appid)$/, /^1:\d+:android:[a-zA-Z0-9]+$/],
-  [/^(?:(?:默认)?firebase)?(?:projectid|项目id)$/, /^[a-z][a-z0-9-]{3,62}$/],
-  [/^(?:(?:默认|推送实例|推送|firebase|gcmdefault|fcm)*(?:senderid|发送者id|项目编号|projectnumber))$/, /^\d{5,20}$/],
   [/^(?:游戏名称|游戏名|项目名称|gamename|game|游戏|环境|environment)$/, /^[\p{L}\d][\p{L}\d ._()-]{0,63}$/u],
 ];
 function kind(text) {
