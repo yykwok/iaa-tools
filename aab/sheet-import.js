@@ -20,10 +20,12 @@ function loadExcel() {
 export function setupSheetImport(onApply) {
   const file=byId("sheet-file"),list=byId("parameter-list"),controls=byId("sheet-controls"),review=byId("sheet-review");
   const status=byId("sheet-status"),candidate=byId("candidate"),mapped=byId("mapped"),run=byId("organize");
+  const login=byId("sheet-login");
   let pairs=[],revision=0,request,choices=[],active=false,fileName="";
   function reset() {
     revision++;request?.abort();run.disabled=false;
     choices=[];review.hidden=true;status.textContent="";
+    login.hidden=true;
     if (active) { active=false; onApply(null); }
   }
   bindFilePicker(file,async source=>{
@@ -88,11 +90,15 @@ export function setupSheetImport(onApply) {
       request=new AbortController();
       const response = await fetch("/api/aab-deepseek", {
         method: "POST", headers: {"Content-Type": "application/json"}, redirect: "manual",
+        credentials: "same-origin",
         signal: AbortSignal.any([request.signal,AbortSignal.timeout(120000)]),
         body: JSON.stringify({cells}),
       });
-      if (response.type === "opaqueredirect" || response.status === 401 || response.status === 403) {
-        throw Error("请点「登录 Cloudflare」完成邮箱验证，再点一次整理。");
+      if (current!==revision) return;
+      if (response.type === "opaqueredirect" || response.status === 401) {
+        status.textContent="请完成邮箱验证，返回本页后再次点击整理。";
+        login.hidden=false;
+        return;
       }
       if (!response.headers.get("Content-Type")?.includes("application/json")) {
         throw Error("Cloudflare 整理接口暂不可用。");

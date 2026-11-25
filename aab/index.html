@@ -6,7 +6,7 @@
 <title>AAB 传包预检 · yyk Console</title>
 <script src="../theme.js?v=review1"></script>
 <link rel="stylesheet" href="../console.css?v=review1"><link rel="stylesheet" href="page.css?v=review1">
-<script type="module" src="page.js?v=cfds1"></script>
+<script type="module" src="page.js?v=cfds2"></script>
 </head>
 <body class="console">
 <nav class="dock" aria-label="主导航"><a class="brand" href="../" title="返回主页">yyk <span>Console</span></a><div class="dock-links"><a href="../reconciliation/">收入对账</a><a href="../ad-automation/">广告建位</a><a aria-current="page" href="./">AAB 预检</a></div></nav>
@@ -19,9 +19,11 @@
 <section class="sheet"><h2>游戏参数表校对</h2>
 <label class="picker">点击选择或拖入参数表<input type="file" id="sheet-file" accept=".xlsx,.xls,.csv"><span id="sheet-file-state">支持 .xlsx、.xls、.csv</span></label>
 <div id="sheet-controls" hidden><details id="preview" open><summary>自动识别的参数</summary><div id="parameter-list"></div></details>
-<p><a href="/api/aab-deepseek" target="_blank" rel="noopener"><u>登录 Cloudflare</u></a>后即可整理。勾选的表格参数会发给 DeepSeek，AAB 在本机解析。</p>
+<p>勾选的表格参数会发给 DeepSeek，AAB 在本机解析。</p>
 <button type="button" id="organize">用 DeepSeek 整理</button></div>
-<p id="sheet-status" role="status"></p><div id="sheet-review" hidden>
+<p id="sheet-status" role="status"></p>
+<p id="sheet-login" hidden><a href="/api/aab-deepseek" target="_blank" rel="noopener"><u>打开邮箱验证（新标签页）</u></a></p>
+<div id="sheet-review" hidden>
 <label>选择要校对的游戏或 Android 配置<select id="candidate"></select></label>
 <div id="mapped"></div><button id="apply-sheet" type="button">确认参数并校对</button></div></section>
 <section class="sheet"><label for="games">已保存的本机游戏配置</label><p id="profiles-help">保存常用参数后，可在这里直接选用。</p><select id="games"><option value="">仅查看包信息</option></select>
