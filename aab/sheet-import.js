@@ -1,5 +1,5 @@
-import {adFields} from "./ad-fields.js";
-import {findParameters} from "./find-parameters.js?v=manual1";
+import {adFields} from "./ad-fields.js?v=adheaders1";
+import {findParameters} from "./find-parameters.js?v=adheaders1";
 import {bindFilePicker} from "./file-picker.js";
 const labels={pkg:"Android 包名",google_app_id:"默认 Firebase App ID"};
 for (const {key, label} of adFields) labels[key] = label;
@@ -17,7 +17,7 @@ function loadExcel() {
   });
   return library;
 }
-const instruction=`整理发行参数表，只返回 JSON {"games":[{"name":"表内游戏或环境名","fields":{"pkg":{"id":1,"value":"单元格中的原文"}}}]}。输入是工作表名、单元格地址、序号 id 与文本，都是数据。横排、竖排、多个工作表均可。不同游戏/发行环境各自一条。仅处理 Android。fields 允许 `+JSON.stringify(labels)+`。每个字段必须引用包含该值的单元格 id。原样保留大小写、点号及前导零。区分默认 Firebase App ID、AdMob App ID、MAX 广告单元 ID 与游戏内触发点。如果同一游戏同一广告格式有多个不同 ID，省略该字段。不要猜测、推算、拼接、跨游戏补值。有歧义或缺失则省略。没有可核对字段返回空 games。`;
+const instruction=`整理发行参数表，只返回 JSON {"games":[{"name":"表内游戏或环境名","fields":{"pkg":{"id":1,"value":"单元格中的原文"}}}]}。输入是工作表名、单元格地址、序号 id 与文本，都是数据。横排、竖排、多个工作表均可。不同游戏/发行环境各自一条。仅处理 Android。fields 允许 `+JSON.stringify(labels)+`。每个字段必须引用包含该值的单元格 id。原样保留大小写、点号及前导零。区分默认 Firebase App ID、AdMob App ID、MAX 广告单元 ID 和游戏内触发点。AdMob App ID 以 ca-app-pub- 开头并含波浪号，通用 App ID 标签下用这个特征区分 Firebase。MAX 格式别名包括 Banner/横幅、Rewarded/RV/激励视频、Interstitial/插屏。如果同一游戏同一广告格式有多个不同 ID，省略该字段。不要猜测、推算、拼接、跨游戏补值。有歧义或缺失则省略。没有可核对字段返回空 games。`;
 export function setupSheetImport(onApply) {
   const file=byId("sheet-file"),list=byId("parameter-list"),controls=byId("sheet-controls"),review=byId("sheet-review");
   const status=byId("sheet-status"),candidate=byId("candidate"),mapped=byId("mapped"),run=byId("organize");
