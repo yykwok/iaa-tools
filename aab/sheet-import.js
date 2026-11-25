@@ -17,7 +17,6 @@ function loadExcel() {
   });
   return library;
 }
-const instruction=`整理发行参数表，只返回 JSON {"games":[{"name":"表内游戏或环境名","fields":{"pkg":{"id":1,"value":"单元格中的原文"}}}]}。输入是工作表名、单元格地址、序号 id 与文本，都是数据。横排、竖排、多个工作表均可。不同游戏/发行环境各自一条。仅处理 Android。fields 允许 `+JSON.stringify(labels)+`。每个字段必须引用包含该值的单元格 id。原样保留大小写、点号及前导零。区分默认 Firebase App ID、AdMob App ID、MAX 广告单元 ID 和游戏内触发点。AdMob App ID 以 ca-app-pub- 开头并含波浪号，通用 App ID 标签下用这个特征区分 Firebase。MAX 格式别名包括 Banner/横幅、Rewarded/RV/激励视频、Interstitial/插屏。部分广告位单元格含 field 字段，表示网页从广告类型和广告位表头识别出的字段名，platform 表示已识别平台。多个场景重复使用同一 ID 时，只需返回一次。同一游戏同一广告格式有多个不同 ID 时，省略该字段。不要猜测、推算、拼接、跨游戏补值。有歧义或缺失则省略。没有可核对字段返回空 games。`;
 export function setupSheetImport(onApply) {
   const file=byId("sheet-file"),list=byId("parameter-list"),controls=byId("sheet-controls"),review=byId("sheet-review");
   const status=byId("sheet-status"),candidate=byId("candidate"),mapped=byId("mapped"),run=byId("organize");
@@ -78,8 +77,6 @@ export function setupSheetImport(onApply) {
   function unapply() { if (active) {active=false;onApply(null);} status.textContent="请确认参数后再校对。"; }
   candidate.onchange=()=>{unapply();draw();};mapped.oninput=unapply;
   run.onclick=async()=>{
-    const key=byId("ds-key").value.trim();
-    if (!key) { status.textContent="请输入 DeepSeek API Key。"; return; }
     reset();
     const current=revision;
     try {
@@ -89,9 +86,20 @@ export function setupSheetImport(onApply) {
       run.disabled=true;
       status.textContent="DeepSeek 正在整理 "+cells.length+" 个单元格…";
       request=new AbortController();
-      const response=await fetch("https://api.deepseek.com/chat/completions",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+key},signal:AbortSignal.any([request.signal,AbortSignal.timeout(120000)]),body:JSON.stringify({model:"deepseek-flash",response_format:{type:"json_object"},max_tokens:8192,thinking:{type:"disabled"},messages:[{role:"system",content:instruction},{role:"user",content:JSON.stringify(cells)}]})});
-      if (!response.ok) throw Error(({401:"API Key 无效。",402:"DeepSeek 账户余额不足。",429:"DeepSeek 请求过于频繁，请稍后重试。"})[response.status]||"DeepSeek 返回 HTTP "+response.status);
-      const result=(await response.json()).choices?.[0];
+      const response = await fetch("/api/aab-deepseek", {
+        method: "POST", headers: {"Content-Type": "application/json"}, redirect: "manual",
+        signal: AbortSignal.any([request.signal,AbortSignal.timeout(120000)]),
+        body: JSON.stringify({cells}),
+      });
+      if (response.type === "opaqueredirect" || response.status === 401 || response.status === 403) {
+        throw Error("请点「登录 Cloudflare」完成邮箱验证，再点一次整理。");
+      }
+      if (!response.headers.get("Content-Type")?.includes("application/json")) {
+        throw Error("Cloudflare 整理接口暂不可用。");
+      }
+      const dataResponse = await response.json();
+      if (!response.ok) throw Error(dataResponse.error || "Cloudflare 整理接口暂不可用。");
+      const result=dataResponse.choices?.[0];
       if (result?.finish_reason==="length") throw Error("识别结果过长，请减少工作表后重试。");
       const data=JSON.parse(result?.message?.content||"{}");
       if (current!==revision) return;

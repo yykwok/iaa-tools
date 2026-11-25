@@ -1,6 +1,6 @@
 import {adFields} from "./ad-fields.js?v=adheaders1";
 import {bindFilePicker} from "./file-picker.js";
-import {setupSheetImport} from "./sheet-import.js?v=adlayout1";
+import {setupSheetImport} from "./sheet-import.js?v=cfds1";
 const byId=id=>document.getElementById(id);
 const games=byId("games"),form=byId("profile"),report=byId("report");
 const conclusion=byId("conclusion");
