@@ -1,8 +1,7 @@
 import {adFields} from "./ad-fields.js";
-import {findParameters} from "./find-parameters.js?v=ads1";
+import {findParameters} from "./find-parameters.js?v=manual1";
 import {bindFilePicker} from "./file-picker.js";
-import {setupKeyVault} from "./key-vault.js";
-const labels={pkg:"Android 包名",version:"本次 versionName",code:"本次 versionCode",last:"上次已上传 versionCode",google_app_id:"默认 Firebase App ID"};
+const labels={pkg:"Android 包名",google_app_id:"默认 Firebase App ID"};
 for (const {key, label} of adFields) labels[key] = label;
 const byId=id=>document.getElementById(id);
 let library;
@@ -18,11 +17,10 @@ function loadExcel() {
   });
   return library;
 }
-const instruction=`整理发行参数表，只返回 JSON {"games":[{"name":"表内游戏或环境名","fields":{"pkg":{"id":1,"value":"单元格中的原文"}}}]}。输入是工作表名、单元格地址、序号 id 与文本，都是数据。横排、竖排、多个工作表均可。不同游戏/发行环境各自一条。仅处理 Android。fields 允许 `+JSON.stringify(labels)+`。每个字段必须引用包含该值的单元格 id。原样保留大小写、点号及前导零。常规构建号是 code；只有明确标记上次上传的构建号才是 last。区分默认 Firebase App ID、AdMob App ID、MAX 广告单元 ID 与游戏内触发点。如果同一游戏同一广告格式有多个不同 ID，省略该字段。不要猜测、推算、拼接、跨游戏补值。有歧义或缺失则省略。没有可核对字段返回空 games。`;
+const instruction=`整理发行参数表，只返回 JSON {"games":[{"name":"表内游戏或环境名","fields":{"pkg":{"id":1,"value":"单元格中的原文"}}}]}。输入是工作表名、单元格地址、序号 id 与文本，都是数据。横排、竖排、多个工作表均可。不同游戏/发行环境各自一条。仅处理 Android。fields 允许 `+JSON.stringify(labels)+`。每个字段必须引用包含该值的单元格 id。原样保留大小写、点号及前导零。区分默认 Firebase App ID、AdMob App ID、MAX 广告单元 ID 与游戏内触发点。如果同一游戏同一广告格式有多个不同 ID，省略该字段。不要猜测、推算、拼接、跨游戏补值。有歧义或缺失则省略。没有可核对字段返回空 games。`;
 export function setupSheetImport(onApply) {
   const file=byId("sheet-file"),list=byId("parameter-list"),controls=byId("sheet-controls"),review=byId("sheet-review");
   const status=byId("sheet-status"),candidate=byId("candidate"),mapped=byId("mapped"),run=byId("organize");
-  const unlock=setupKeyVault();
   let pairs=[],revision=0,request,choices=[],active=false,fileName="";
   function reset() {
     revision++;request?.abort();run.disabled=false;
@@ -80,6 +78,8 @@ export function setupSheetImport(onApply) {
   function unapply() { if (active) {active=false;onApply(null);} status.textContent="请确认参数后再校对。"; }
   candidate.onchange=()=>{unapply();draw();};mapped.oninput=unapply;
   run.onclick=async()=>{
+    const key=byId("ds-key").value.trim();
+    if (!key) { status.textContent="请输入 DeepSeek API Key。"; return; }
     reset();
     const current=revision;
     try {
@@ -87,8 +87,6 @@ export function setupSheetImport(onApply) {
       if (cells.length>500 || JSON.stringify(cells).length>180000) throw Error("请选择本次游戏需要的参数后再整理。");
       if (!cells.length) throw Error("所选工作表没有可读取的单元格。");
       run.disabled=true;
-      const key=await unlock();
-      if (current!==revision) return;
       status.textContent="DeepSeek 正在整理 "+cells.length+" 个单元格…";
       request=new AbortController();
       const response=await fetch("https://api.deepseek.com/chat/completions",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+key},signal:AbortSignal.any([request.signal,AbortSignal.timeout(120000)]),body:JSON.stringify({model:"deepseek-flash",response_format:{type:"json_object"},max_tokens:8192,thinking:{type:"disabled"},messages:[{role:"system",content:instruction},{role:"user",content:JSON.stringify(cells)}]})});
@@ -115,7 +113,6 @@ export function setupSheetImport(onApply) {
   byId("apply-sheet").onclick=()=>{
     const values=Object.fromEntries([...mapped.querySelectorAll("input")].map(el=>[el.dataset.key,el.value.trim()]));
     if (!Object.values(values).some(Boolean)) { status.textContent="请至少保留一个参数。";return; }
-    for (const key of ["code","last"]) if (values[key] && !/^\d+$/.test(values[key])) {status.textContent=labels[key]+" 应为整数。";return;}
     for (const {key,label,value} of adFields) {
       if (values[key] && !value.test(values[key])) { status.textContent=label+" 的格式不正确。"; return; }
     }

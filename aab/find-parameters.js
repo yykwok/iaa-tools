@@ -3,8 +3,6 @@ import {adFields} from "./ad-fields.js";
 // Only pair a known release-field label with a value of the expected shape.
 const formats = [
   [/^(?:android)?(?:包名|应用包名|package(?:name)?|applicationid)$/, /^[a-zA-Z]\w*(?:\.[a-zA-Z]\w*)+$/],
-  [/^(?:版本|版本名(?:称)?|版本号|version(?:name)?)$/, /^\d+(?:[.][\w-]+)*(?:[-+][\w.-]+)?$/],
-  [/^(?:(?:上次(?:已上传)?|本次|当前|previous|last)?(?:构建号|内部版本号|versioncode|build(?:number|code)?))$/, /^\d{1,10}$/],
   [/^(?:googleappid|(?:默认)?firebase(?:应用id|appid)|appid)$/, /^1:\d+:android:[a-zA-Z0-9]+$/],
   [/^(?:游戏名称|游戏名|项目名称|gamename|game|游戏|环境|environment)$/, /^[\p{L}\d][\p{L}\d ._()-]{0,63}$/u],
   ...adFields.map(({header, value}) => [header, value]),

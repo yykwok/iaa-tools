@@ -1,6 +1,6 @@
 import {adFields} from "./ad-fields.js";
 import {bindFilePicker} from "./file-picker.js";
-import {setupSheetImport} from "./sheet-import.js?v=ads1";
+import {setupSheetImport} from "./sheet-import.js?v=manual1";
 const byId=id=>document.getElementById(id);
 const games=byId("games"),form=byId("profile"),report=byId("report");
 const conclusion=byId("conclusion");
@@ -86,8 +86,8 @@ function render() {
   }
 
   match("包名", bundle.pkg, profile?.pkg, true);
-  match("版本名称", bundle.version, profile?.version);
-  match("构建号", bundle.code, profile?.code, true);
+  match("版本名称", bundle.version);
+  match("构建号", bundle.code, null, true);
   if (profile?.last) {
     const comparable = /^\d+$/.test(profile.last) && /^\d+$/.test(bundle.code);
     const higher = comparable && BigInt(bundle.code) > BigInt(profile.last);
@@ -149,7 +149,6 @@ function render() {
   if (profile?.notes) rows.push(["权限来源备注 · " + profile.notes]);
 
   if (!profile?.pkg) pending.push("包名");
-  if (!profile?.version && !profile?.code && !profile?.last) pending.push("版本");
   if (!profile?.google_app_id) pending.push("Firebase App ID");
   const title = document.createElement("h2");
   title.textContent = issues.length
