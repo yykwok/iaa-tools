@@ -45,7 +45,7 @@ function load(file) {
   readError="";
   render();
   status.textContent="正在读取 "+file.name;
-  const worker=new Worker("./worker.js?v=ads1",{type:"module"});
+  const worker=new Worker("./worker.js?v=gp1",{type:"module"});
   activeWorker=worker;
   function finish(result,error) {
     if (activeWorker!==worker) return;
@@ -61,6 +61,55 @@ function load(file) {
 }
 bindFilePicker(byId("current"),load);
 const attention=/^android\.permission\.(READ_PHONE_STATE|READ_PRIVILEGED_PHONE_STATE|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE|MANAGE_EXTERNAL_STORAGE|ACCESS_(FINE|COARSE|BACKGROUND)_LOCATION|CAMERA|RECORD_AUDIO|READ_CONTACTS|WRITE_CONTACTS|READ_SMS|POST_NOTIFICATIONS|READ_MEDIA_.*)$/;
+const playPolicy = {
+  checkedOn: "2026-11-25",
+  phoneTargetApi: 36,
+  targetUrl: "https://support.google.com/googleplay/android-developer/answer/11926878",
+  pageSizeUrl: "https://developer.android.com/guide/practices/page-sizes",
+  dataSafetyUrl: "https://support.google.com/googleplay/android-developer/answer/10787469",
+  appContentUrl: "https://support.google.com/googleplay/android-developer/answer/9859455",
+};
+function playChecks(bundle, issues) {
+  const {minSdk,targetSdk,native}=bundle.play;
+  const rows=[];
+  const validApi=/^\d+$/.test(targetSdk || "");
+  const apiBelowMinimum=validApi && Number(targetSdk)<playPolicy.phoneTargetApi;
+  const target=validApi ? "API "+targetSdk : "未读取有效值";
+  if (apiBelowMinimum) issues.push("Google Play 目标 API");
+  rows.push(["目标 API · "+target+" ｜ 手机游戏新上架及更新要求 API "+playPolicy.phoneTargetApi
+    +" 起"+(minSdk ? " ｜ 最低支持 API "+minSdk : ""), apiBelowMinimum || !validApi, playPolicy.targetUrl]);
+
+  if (!native.nativeCount) rows.push(["16 KB · 包内未发现原生 .so 库。",false,playPolicy.pageSizeUrl]);
+  else {
+    const elfFailure=native.unaligned.length>0;
+    if (elfFailure) issues.push("原生库 16 KB ELF 对齐");
+    const passed=native.checked-native.unaligned.length;
+    rows.push(["16 KB ELF · "+(native.checked ? passed+"/"+native.checked+" 个可读 64 位库达到对齐要求"
+      : "未读取到可检查的 64 位 ELF 库"),elfFailure || !native.checked,playPolicy.pageSizeUrl]);
+    for (const path of native.unaligned) rows.push(["对齐不足 · "+path,true]);
+    for (const path of native.unreadable) rows.push(["无法核验 ELF · "+path,true]);
+
+    if (native.zipAlignment==="4K" && (native.checked || native.unreadable.length)) issues.push("16 KB 打包对齐");
+    const packaging={
+      "4K":"配置为 4 KB，请研发核对打包参数",
+      "16K":"配置为 16 KB",
+      "64K":"配置为 64 KB",
+      compressed:"配置为压缩原生库，请核对生成 APK",
+    };
+    rows.push(["APK 打包对齐 · "+(packaging[native.zipAlignment] || "未读取到显式设置，请核对生成 APK"),
+      native.zipAlignment==="4K",playPolicy.pageSizeUrl]);
+  }
+  const adId=bundle.permissions.some(p=>p.name==="com.google.android.gms.permission.AD_ID");
+  const adSignals=bundle.ads.appId || bundle.ads.units.length;
+  rows.push([adSignals ? "包含广告 · 包内发现广告配置，请核对 Play Console 申报。"
+    : "包含广告 · 按游戏实际投放情况核对 Play Console 申报。",false,playPolicy.appContentUrl]);
+  rows.push([adId ? "广告 ID · 清单声明了 AD_ID，请核对实际使用及申报。"
+    : "广告 ID · 清单未见 AD_ID 声明，请结合实际功能复核。",false,playPolicy.appContentUrl]);
+  rows.push(["数据安全 · 结合实际采集和第三方 SDK 行为核对申报。",false,playPolicy.dataSafetyUrl]);
+  const needsReview=!validApi || (native.nativeCount>0
+    && (!native.checked || native.unreadable.length>0 || !native.zipAlignment || native.zipAlignment==="compressed"));
+  return {rows,needsReview};
+}
 function render() {
   const profile = selected();
   conclusion.replaceChildren();
@@ -148,6 +197,7 @@ function render() {
   if (!permissions.size) rows.push(["包内模块清单未声明权限。"]);
   if (profile?.notes) rows.push(["权限来源备注 · " + profile.notes]);
 
+  const googlePlay=playChecks(bundle,issues);
   if (!profile?.pkg) pending.push("包名");
   if (!profile?.google_app_id) pending.push("Firebase App ID");
   const title = document.createElement("h2");
@@ -155,8 +205,9 @@ function render() {
     ? "包体预检发现问题，需核对" + issues.join("、") + "。"
     : "已检查项未发现异常"
       + (attentionCount ? "，另有 " + attentionCount + " 项权限需人工确认" : "")
+      + (googlePlay.needsReview ? "，部分 Google Play 检查需复核" : "")
       + (pending.length ? "，" + pending.join("、") + "待提供预期值" : "") + "。";
-  conclusion.dataset.result = issues.length ? "error" : (attentionCount || pending.length ? "review" : "ok");
+  conclusion.dataset.result = issues.length ? "error" : (attentionCount || pending.length || googlePlay.needsReview ? "review" : "ok");
   conclusion.append(title);
   const context = document.createElement("p");
   context.textContent = bundle.file + (profile ? " ｜ " + profile.game : "") + (imported ? " ｜ " + imported.source : "")
@@ -174,14 +225,25 @@ function render() {
       description.textContent = note;
       section.append(description);
     }
-    for (const [message, warn] of entries) {
+    for (const [message, warn, source] of entries) {
       const item = document.createElement("div");
       item.className = warn ? "row warn" : "row";
       item.textContent = message;
+      if (source) {
+        const link = document.createElement("a");
+        link.href = source;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        const label = document.createElement("u");
+        label.textContent = "官方说明";
+        link.append(label);
+        item.append(" ｜ ", link);
+      }
       section.append(item);
     }
     report.append(section);
   }
+  group("Google Play 上架预检", googlePlay.rows, "规则核验于 "+playPolicy.checkedOn+"。适用于普通 Android 手机游戏。发布前请在 Play Console 核对申报，并在 16 KB 设备上验证运行。");
   group("包名与版本", versions);
   group("Firebase 默认配置", firebase);
   if (showAds) group("广告配置", adRows, ads.source

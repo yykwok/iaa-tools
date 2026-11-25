@@ -15,7 +15,8 @@ async function entries(file) {
     if (at+46>size || dir.getUint32(at,true)!==0x02014b50) throw Error("ZIP 文件目录损坏。");
     const u16 = n => dir.getUint16(at+n,true), u32 = n => dir.getUint32(at+n,true);
     const name = utf8.decode(bytes.subarray(at+46,at+46+u16(28)));
-    if (/^[^/]+\/manifest\/AndroidManifest\.xml$/.test(name) || name==="base/resources.pb" || name===adConfigPath) {
+    if (/^[^/]+\/(?:manifest\/AndroidManifest\.xml|lib\/[^/]+\/[^/]+\.so)$/.test(name)
+        || name==="BundleConfig.pb" || name==="base/resources.pb" || name===adConfigPath) {
       if (selected.has(name)) throw Error("包内存在重复的清单、资源表或广告配置。");
       selected.set(name,{offset:u32(42),packed:u32(20),size:u32(24),method:u16(10)});
     }
@@ -23,15 +24,21 @@ async function entries(file) {
   }
   return selected;
 }
-async function extract(file, entry) {
-  const limit = 96*1024*1024;
-  if (entry.size>limit || entry.packed>limit) throw Error("单个清单或资源表超过 96 MB。");
+async function openEntry(file, entry) {
+  if (entry.offset+30>file.size) throw Error("包内文件头不完整。");
   const header = new DataView(await file.slice(entry.offset,entry.offset+30).arrayBuffer());
   if (header.getUint32(0,true)!==0x04034b50) throw Error("包内文件头无效。");
   const start = entry.offset+30+header.getUint16(26,true)+header.getUint16(28,true);
+  if (start+entry.packed>file.size) throw Error("包内文件不完整。");
   let stream = file.slice(start,start+entry.packed).stream();
   if (entry.method===8) stream=stream.pipeThrough(new DecompressionStream("deflate-raw"));
   else if (entry.method!==0) throw Error("当前浏览器不支持此包的压缩方式。");
+  return stream;
+}
+async function extract(file, entry) {
+  const limit = 96*1024*1024;
+  if (entry.size>limit || entry.packed>limit) throw Error("单个清单或资源表超过 96 MB。");
+  const stream=await openEntry(file,entry);
   const reader=stream.getReader(), output=new Uint8Array(entry.size);
   let pos=0;
   for (;;) {
@@ -73,6 +80,71 @@ function fields(bytes) {
 const one=(m,n)=>m.get(n)?.[0];
 const str=(m,n)=>utf8.decode(one(m,n));
 const nested=(m,n)=>fields(one(m,n));
+
+async function elfHeader(file, entry) {
+  const size=Math.min(entry.size,64*1024);
+  const output=new Uint8Array(size);
+  const reader=(await openEntry(file,entry)).getReader();
+  let position=0;
+  try {
+    while (position<size) {
+      const {value,done}=await reader.read();
+      if (done) throw Error("ELF 头部不完整。");
+      const chunk=value.subarray(0,size-position);
+      output.set(chunk,position);
+      position+=chunk.length;
+    }
+    return new DataView(output.buffer);
+  } finally {
+    await reader.cancel();
+  }
+}
+
+async function elfAlignment(file, entry) {
+  const header=await elfHeader(file,entry);
+  if (header.byteLength<64 || header.getUint32(0)!==0x7f454c46
+      || header.getUint8(4)!==2 || ![1,2].includes(header.getUint8(5))) return null;
+  const little=header.getUint8(5)===1;
+  const offset=Number(header.getBigUint64(32,little));
+  const stride=header.getUint16(54,little);
+  const count=header.getUint16(56,little);
+  if (offset<64 || stride<56 || !count || offset+stride*count>header.byteLength) return null;
+  let minimum=null;
+  for (let index=0;index<count;index++) {
+    const position=offset+index*stride;
+    if (header.getUint32(position,little)!==1) continue; // PT_LOAD
+    const alignment=header.getBigUint64(position+48,little);
+    if (minimum===null || alignment<minimum) minimum=alignment;
+  }
+  return minimum===null ? null : minimum>=16384n;
+}
+
+async function inspectNativeLibraries(file, entries) {
+  const report={nativeCount:0,checked:0,unaligned:[],unreadable:[],zipAlignment:""};
+  for (const [path,entry] of entries) {
+    if (!/\/lib\/[^/]+\/[^/]+\.so$/.test(path)) continue;
+    report.nativeCount++;
+    if (!/\/lib\/(?:arm64-v8a|x86_64)\//.test(path)) continue;
+    let compatible=null;
+    try { compatible=await elfAlignment(file,entry); } catch {}
+    if (compatible===null) report.unreadable.push(path);
+    else {
+      report.checked++;
+      if (!compatible) report.unaligned.push(path);
+    }
+  }
+  const config=entries.get("BundleConfig.pb");
+  if (!report.nativeCount || !config || config.size>1024*1024 || config.packed>1024*1024) return report;
+  try {
+    // BundleConfig.optimizations.uncompress_native_libraries, per bundletool config.proto.
+    const libraries=nested(nested(fields(await extract(file,config)),2),2);
+    const alignment=one(libraries,2);
+    const mode=one(libraries,1);
+    if (mode===0) report.zipAlignment="compressed";
+    else report.zipAlignment=({1:"4K",2:"16K",3:"64K"}[alignment] || "");
+  } catch {}
+  return report;
+}
 function itemValue(item) {
   for (const n of [2,3,4]) if (item.has(n)) return str(nested(item,n),1);
   const prim=nested(item,7);
@@ -142,7 +214,7 @@ export async function inspect(file) {
   const dir=await entries(file), base="base/manifest/AndroidManifest.xml";
   if (!dir.has(base)) throw Error("未找到 base 模块清单，请选择 Android App Bundle（.aab）。");
   const table=dir.get("base/resources.pb"), resolve=resources(table && await extract(file,table));
-  const result={permissions:[],firebase:{},ads:{appId:"",units:[]},file:file.name};
+  const result={permissions:[],firebase:{},ads:{appId:"",units:[]},play:{},file:file.name};
   for (const [path,entry] of dir) {
     if (!path.endsWith("AndroidManifest.xml")) continue;
     const root=element(await extract(file,entry),resolve);
@@ -150,6 +222,10 @@ export async function inspect(file) {
     if (path===base) Object.assign(result,{pkg:root.attr("package"),code:root.attr("android:versionCode"),version:root.attr("android:versionName")});
     for (const bytes of root.children) {
       const child=element(bytes,resolve);
+      if (path===base && child.name==="uses-sdk") {
+        result.play.minSdk=child.attr("android:minSdkVersion");
+        result.play.targetSdk=child.attr("android:targetSdkVersion");
+      }
       if (path===base && child.name==="application") {
         for (const metaBytes of child.children) {
           const meta=element(metaBytes,resolve);
@@ -165,5 +241,6 @@ export async function inspect(file) {
   }
   for (const key of ["google_app_id","project_id","gcm_defaultSenderId"]) result.firebase[key]=resolve({ref:"string/"+key});
   await readAdConfig(file,dir.get(adConfigPath),result.pkg,result.ads);
+  result.play.native=await inspectNativeLibraries(file,dir);
   return result;
 }
