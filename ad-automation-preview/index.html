@@ -3,162 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>广告位建位测试</title>
-    <style>
-        :root {
-            --bg: #f4f5f7;
-            --card-bg: #ffffff;
-            --text: #1d1d1f;
-            --border: #e2e8f0;
-            --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            --shadow-hover: 0 14px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 800px;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        p.subtitle {
-            text-align: center;
-            color: #64748b;
-            margin-bottom: 40px;
-            font-size: 15px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 24px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            text-decoration: none;
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: all 0.25s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-hover);
-            border-color: #cbd5e1;
-        }
-
-        .card-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 16px;
-        }
-
-        .pangle .card-icon { background: #e0f2fe; color: #0284c7; }
-        .vungle .card-icon { background: #f3e8ff; color: #7e22ce; }
-        .unity .card-icon { background: #f1f5f9; color: #0f172a; }
-        .console .mintegral .card-icon { background: linear-gradient(140deg,#536de3,#37378f); }
-        .console .ironsource .card-icon { background: linear-gradient(140deg,#6994f2,#2c467e); }
-        .console .admob .card-icon { background: linear-gradient(140deg,#df7a36,#aa3d38); }
-        .console .moloco .card-icon { background: linear-gradient(140deg,#388a94,#21506a); }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .card-desc {
-            font-size: 13px;
-            color: #64748b;
-            text-align: center;
-            line-height: 1.4;
-        }
-    </style>
-    <script src="../theme.js?v=review1"></script>
-<link rel='stylesheet' href='../console.css?v=review1'>
     <meta name="robots" content="noindex">
+    <title>广告位建位测试</title>
+    <script src="../theme.js?v=review1"></script>
+    <link rel="stylesheet" href="../console.css?v=review1">
+    <link rel="stylesheet" href="./form.css">
+    <link rel="stylesheet" href="./workspace.css?v=glass1">
+    <script type="module" src="./workspace.js?v=glass1"></script>
 </head>
-<body class='console'>
-<nav class='dock' aria-label='主导航'><a class='brand' href='../' title='返回主页'>yyk <span>Console</span></a><div class='dock-links'><a href='../reconciliation/'>收入对账</a><a aria-current="location" href='./'>广告建位</a><a href="../aab/">AAB 预检</a></div></nav>
-
-<main class="directory">
-    <h1>广告平台建位测试</h1>
-    <p class="subtitle">选择平台查看新版表单。建位接口将逐个平台启用。</p>
-
-    <div class="grid">
-        <a href="./setup/?provider=pangle" class="card pangle">
-            <div class="card-icon">P</div>
-            <div class="card-title">Pangle</div>
-            <div class="card-desc">创建 Pangle App 及代码位</div>
-        </a>
-
-        <a href="./setup/?provider=liftoff" class="card vungle">
-            <div class="card-icon" aria-hidden="true">L</div>
-            <div class="card-title">Liftoff Monetize（Vungle）</div>
-            <div class="card-desc">创建 Liftoff App 及 Placement</div>
-        </a>
-
-        <a href="./setup/?provider=unity" class="card unity">
-            <div class="card-icon">U</div>
-            <div class="card-title">Unity Ads</div>
-            <div class="card-desc">创建 Unity Ads 应用及广告位</div>
-        </a>
-
-        <a href="./setup/?provider=mintegral" class="card mintegral">
-            <div class="card-icon" aria-hidden="true">M</div>
-            <div class="card-title">Mintegral</div>
-            <div class="card-desc">创建 App、Placement 和 Unit</div>
-        </a>
-
-        <a href="./setup/?provider=ironsource" class="card ironsource">
-            <div class="card-icon" aria-hidden="true">iS</div>
-            <div class="card-title">ironSource Ads</div>
-            <div class="card-desc">获取 App Key 和广告实例 ID</div>
-        </a>
-
-        <a href="./setup/?provider=admob" class="card admob">
-            <div class="card-icon" aria-hidden="true">A</div>
-            <div class="card-title">AdMob</div>
-            <div class="card-desc">创建 App 和 Ad Units</div>
-        </a>
-
-        <a href="./moloco/" class="card moloco">
-            <div class="card-icon" aria-hidden="true">M</div>
-            <div class="card-title">Moloco</div>
-            <div class="card-desc">后台创建并整理 App Key 和 Ad Unit ID</div>
-        </a>
+<body class="console ad-workspace">
+<nav class="dock" aria-label="主导航">
+    <a class="brand" href="../" title="返回主页">yyk <span>Console</span></a>
+    <div class="dock-links">
+        <a href="../reconciliation/">收入对账</a>
+        <a aria-current="page" href="./">广告建位</a>
+        <a href="../aab/">AAB 预检</a>
     </div>
+</nav>
+
+<main class="build-workspace">
+    <header class="build-heading">
+        <h1>广告位建位</h1>
+        <p>填写一次应用信息，再打开需要建位的平台。</p>
+    </header>
+
+    <section class="build-glass build-app" aria-labelledby="app-title">
+        <h2 id="app-title">应用信息</h2>
+        <form id="shared-app">
+            <label class="build-field">
+                <span>应用名称</span>
+                <input type="text" name="app_name" id="appName" placeholder="输入应用名称" maxlength="80" required>
+            </label>
+            <fieldset class="build-os">
+                <legend>目标系统</legend>
+                <div class="build-segments">
+                    <label><input type="radio" name="platform" value="ios" checked><span>iOS</span></label>
+                    <label><input type="radio" name="platform" value="android"><span>Android</span></label>
+                </div>
+            </fieldset>
+            <label class="build-field">
+                <span>商店链接 <small>未上架可留空</small></span>
+                <input type="url" name="download_url" id="downloadUrl" placeholder="App Store 或 Google Play 链接" maxlength="2048">
+            </label>
+            <label class="build-field">
+                <span>是否面向儿童（COPPA）</span>
+                <select name="coppa" id="coppa">
+                    <option value="">请选择</option>
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </select>
+            </label>
+        </form>
+    </section>
+
+    <section class="build-platforms" aria-labelledby="platforms-title">
+        <header class="build-section-heading">
+            <div>
+                <h2 id="platforms-title">广告平台</h2>
+                <p>激励视频、插屏和 Banner</p>
+            </div>
+            <p id="enabled-count" role="status">0 个已开启</p>
+        </header>
+        <div id="platform-list" class="build-platform-grid"></div>
+        <p class="build-note">测试页面。建位接口将逐个平台启用。</p>
+    </section>
 </main>
 
+<template id="platform-template">
+    <article class="build-glass build-platform">
+        <header class="build-platform-heading">
+            <span class="build-icon" aria-hidden="true"></span>
+            <div class="build-platform-name">
+                <h3></h3>
+                <p></p>
+            </div>
+            <label class="build-switch">
+                <input type="checkbox" role="switch">
+                <span aria-hidden="true"></span>
+            </label>
+        </header>
+        <div class="build-platform-body" hidden>
+            <form method="post">
+                <div class="build-platform-fields"></div>
+                <div class="build-platform-actions">
+                    <button type="submit"></button>
+                    <a class="build-platform-link" target="_blank" rel="noopener"></a>
+                </div>
+            </form>
+            <div class="result-box" aria-live="polite" hidden></div>
+        </div>
+    </article>
+</template>
+
+<template id="category-field">
+    <label class="build-field">
+        <span>应用类别</span>
+        <select name="app_category_code">
+            <option value="120403">游戏大厅</option>
+            <option value="120401">休闲游戏</option>
+            <option value="120402">益智解谜</option>
+            <option value="120400">通用游戏</option>
+        </select>
+    </label>
+</template>
+<template id="mode-field">
+    <label class="build-field">
+        <span>广告位类型</span>
+        <select name="mode">
+            <option value="bidding">竞价（Bidding）</option>
+            <option value="traditional">传统（Waterfall）</option>
+        </select>
+    </label>
+</template>
+<template id="taxonomy-field">
+    <label class="build-field">
+        <span>已上架应用的分类</span>
+        <input type="text" name="taxonomy" maxlength="100">
+    </label>
+</template>
+<template id="store-id-field">
+    <label class="build-field">
+        <span>未上架应用的 App Store ID 或 Android 包名</span>
+        <input type="text" name="store_id" maxlength="200" required>
+    </label>
+</template>
+<template id="ccpa-field">
+    <label class="build-field">
+        <span>CCPA 设置</span>
+        <select name="ccpa" required>
+            <option value="">请选择</option>
+            <option value="0">关闭</option>
+            <option value="1">开启</option>
+        </select>
+    </label>
+</template>
+<template id="link-store-field">
+    <label class="build-consent">
+        <input type="checkbox" name="link_store" value="yes" required>
+        <span>已核对链接，同意关联 AdMob 应用。关联后无法解除。</span>
+    </label>
+</template>
+<template id="moloco-fields">
+    <label class="build-field">
+        <span>Moloco App Key</span>
+        <input type="text" name="app_id" maxlength="128" required>
+    </label>
+    <label class="build-field">
+        <span>激励视频 Ad Unit ID</span>
+        <input type="text" name="reward_id" maxlength="128">
+    </label>
+    <label class="build-field">
+        <span>插屏 Ad Unit ID</span>
+        <input type="text" name="inter_id" maxlength="128">
+    </label>
+    <label class="build-field">
+        <span>Banner Ad Unit ID</span>
+        <input type="text" name="banner_id" maxlength="128">
+    </label>
+</template>
 </body>
 </html>
