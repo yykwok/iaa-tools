@@ -7,10 +7,11 @@
     <script src="../../theme.js?v=review1"></script>
     <link rel="stylesheet" href="../../console.css?v=review1">
     <link rel="stylesheet" href="../form.css">
-    <script type="module" src="../form.js"></script>
+    <link rel="stylesheet" href="../glass-controls.css?v=glass2">
+    <script type="module" src="../form.js?v=glass2"></script>
     <meta name="robots" content="noindex">
 </head>
-<body class="console">
+<body class="console ad-controls">
 <nav class="dock" aria-label="主导航"><a class="brand" href="../../" title="返回主页">yyk <span>Console</span></a><div class="dock-links"><a href="../../reconciliation/">收入对账</a><a aria-current="location" href="../">广告建位</a><a href="../../aab/">AAB 预检</a></div></nav>
 
 <main class="panel ad-panel">
@@ -26,13 +27,13 @@
             <label for="appName">应用名称</label>
             <input type="text" id="appName" name="app_name" maxlength="80" required>
         </div>
-        <div class="form-group">
-            <label for="platform">目标平台</label>
-            <select id="platform" name="platform">
-                <option value="ios">iOS</option>
-                <option value="android">Android</option>
-            </select>
-        </div>
+        <fieldset class="glass-os form-group">
+            <legend>目标系统</legend>
+            <div class="glass-segments">
+                <label><input type="radio" name="platform" value="ios" checked><span>iOS</span></label>
+                <label><input type="radio" name="platform" value="android"><span>Android</span></label>
+            </div>
+        </fieldset>
         <div class="form-group">
             <label for="appId">Moloco App Key</label>
             <input type="text" id="appId" name="app_id" maxlength="128" required>

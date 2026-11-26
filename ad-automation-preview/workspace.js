@@ -1,5 +1,6 @@
 import { providers, requestPlacements, workerEndpoint } from './providers.js';
 import { resultView } from './results.js';
+import { enhanceForm } from './glass-controls.js?v=glass2';
 
 const platforms = [
     { id: 'unity', name: 'Unity Ads', icon: 'U', detail: 'Game ID · Placement ID' },
@@ -51,11 +52,13 @@ function syncStoreFields() {
     }
 }
 
+enhanceForm(sharedForm);
 sharedForm.addEventListener('submit', event => event.preventDefault());
 sharedForm.addEventListener('input', event => {
     if (event.target !== storeUrl && event.target.name !== 'platform') return;
     const consent = list.querySelector('[name="link_store"]');
     consent.checked = false;
+    consent.dispatchEvent(new Event('change', { bubbles: true }));
     syncStoreFields();
 });
 
@@ -130,5 +133,6 @@ for (const platform of platforms) {
         }
     });
     list.append(card);
+    enhanceForm(form);
 }
 syncStoreFields();

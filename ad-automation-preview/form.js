@@ -1,9 +1,11 @@
 import { providers, requestPlacements, workerEndpoint } from './providers.js';
 import { resultView } from './results.js';
+import { enhanceForm } from './glass-controls.js?v=glass2';
 
 const form = document.getElementById('adForm');
 const result = document.getElementById('result-box');
 const button = document.getElementById('submitBtn');
+enhanceForm(form);
 const providerName = form.dataset.provider;
 const provider = form.dataset.worker === 'true'
     ? { ...providers[providerName], endpoint: workerEndpoint(providerName) }

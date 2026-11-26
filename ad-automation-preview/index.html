@@ -8,10 +8,11 @@
     <script src="../theme.js?v=review1"></script>
     <link rel="stylesheet" href="../console.css?v=review1">
     <link rel="stylesheet" href="./form.css">
-    <link rel="stylesheet" href="./workspace.css?v=glass1">
-    <script type="module" src="./workspace.js?v=glass1"></script>
+    <link rel="stylesheet" href="./glass-controls.css?v=glass2">
+    <link rel="stylesheet" href="./workspace.css?v=glass2">
+    <script type="module" src="./workspace.js?v=glass2"></script>
 </head>
-<body class="console ad-workspace">
+<body class="console ad-controls ad-workspace">
 <nav class="dock" aria-label="主导航">
     <a class="brand" href="../" title="返回主页">yyk <span>Console</span></a>
     <div class="dock-links">
@@ -34,9 +35,9 @@
                 <span>应用名称</span>
                 <input type="text" name="app_name" id="appName" placeholder="输入应用名称" maxlength="80" required>
             </label>
-            <fieldset class="build-os">
+            <fieldset class="glass-os">
                 <legend>目标系统</legend>
-                <div class="build-segments">
+                <div class="glass-segments">
                     <label><input type="radio" name="platform" value="ios" checked><span>iOS</span></label>
                     <label><input type="radio" name="platform" value="android"><span>Android</span></label>
                 </div>

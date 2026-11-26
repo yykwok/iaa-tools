@@ -66,6 +66,6 @@ if (Object.hasOwn(pages, name)) {
         storeUrl.required = true;
         document.querySelector('label[for="downloadUrl"]').textContent = 'App Store 或 Google Play 链接';
     }
-    await import('./form.js');
+    await import('./form.js?v=glass2');
     form.hidden = false;
 }
