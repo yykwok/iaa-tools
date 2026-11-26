@@ -25,3 +25,16 @@ form { margin-top: 12px; } .console button { padding: 8px 18px; cursor: pointer;
 #conclusion[data-result="error"] { border-left-color: var(--warning); }
 #conclusion[data-result="ok"] { border-left-color: var(--success); }
 #conclusion p { margin: 0; overflow-wrap: anywhere; }
+
+.console .section-result {
+  --result-color: var(--accent);
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-inline-start: 3px solid var(--result-color);
+  border-radius: 8px;
+  background: var(--base);
+  color: var(--ink);
+}
+.section-result[data-result="ok"] { --result-color: var(--success); }
+.section-result[data-result="error"] { --result-color: var(--warning); }
+.section-result strong { display: inline-block; margin-inline-end: .75em; color: var(--result-color); }

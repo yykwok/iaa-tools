@@ -69,16 +69,21 @@ const playPolicy = {
   dataSafetyUrl: "https://support.google.com/googleplay/android-developer/answer/10787469",
   appContentUrl: "https://support.google.com/googleplay/android-developer/answer/9859455",
 };
-function playChecks(bundle, issues) {
+function playChecks(bundle) {
   const {minSdk,targetSdk,native}=bundle.play;
+  const issues=[];
   const rows=[];
   const validApi=/^\d+$/.test(targetSdk || "");
   const apiBelowMinimum=validApi && Number(targetSdk)<playPolicy.phoneTargetApi;
   const target=validApi ? "API "+targetSdk : "未读取有效值";
+  const apiSummary = !validApi ? "目标 API 未读到，需复核"
+    : apiBelowMinimum ? "目标 API 低于上架要求" : "目标 API 达标";
   if (apiBelowMinimum) issues.push("Google Play 目标 API");
   rows.push(["目标 API · "+target+" ｜ 手机游戏新上架及更新要求 API "+playPolicy.phoneTargetApi
     +" 起"+(minSdk ? " ｜ 最低支持 API "+minSdk : ""), apiBelowMinimum || !validApi, playPolicy.targetUrl]);
 
+  let needsAlignmentReview = false;
+  let alignmentSummary = "包内未发现原生库";
   if (!native.nativeCount) rows.push(["16 KB · 包内未发现原生 .so 库。",false,playPolicy.pageSizeUrl]);
   else {
     const elfFailure=native.unaligned.length>0;
@@ -89,7 +94,8 @@ function playChecks(bundle, issues) {
     for (const path of native.unaligned) rows.push(["对齐不足 · "+path,true]);
     for (const path of native.unreadable) rows.push(["无法核验 ELF · "+path,true]);
 
-    if (native.zipAlignment==="4K" && (native.checked || native.unreadable.length)) issues.push("16 KB 打包对齐");
+    const packagingFailure = native.zipAlignment === "4K" && (native.checked || native.unreadable.length);
+    if (packagingFailure) issues.push("16 KB 打包对齐");
     const packaging={
       "4K":"配置为 4 KB，请研发核对打包参数",
       "16K":"配置为 16 KB",
@@ -98,6 +104,10 @@ function playChecks(bundle, issues) {
     };
     rows.push(["APK 打包对齐 · "+(packaging[native.zipAlignment] || "未读取到显式设置，请核对生成 APK"),
       native.zipAlignment==="4K",playPolicy.pageSizeUrl]);
+    needsAlignmentReview = !native.checked || native.unreadable.length > 0
+      || !native.zipAlignment || native.zipAlignment === "compressed";
+    alignmentSummary = elfFailure || packagingFailure ? "16 KB 对齐有问题"
+      : needsAlignmentReview ? "16 KB 对齐需复核" : "16 KB 包内对齐检查通过";
   }
   const adId=bundle.permissions.some(p=>p.name==="com.google.android.gms.permission.AD_ID");
   const adSignals=bundle.ads.appId || bundle.ads.units.length;
@@ -106,9 +116,10 @@ function playChecks(bundle, issues) {
   rows.push([adId ? "广告 ID · 清单声明了 AD_ID，请核对实际使用及申报。"
     : "广告 ID · 清单未见 AD_ID 声明，请结合实际功能复核。",false,playPolicy.appContentUrl]);
   rows.push(["数据安全 · 结合实际采集和第三方 SDK 行为核对申报。",false,playPolicy.dataSafetyUrl]);
-  const needsReview=!validApi || (native.nativeCount>0
-    && (!native.checked || native.unreadable.length>0 || !native.zipAlignment || native.zipAlignment==="compressed"));
-  return {rows,needsReview};
+  return {
+    rows, issues, needsReview: !validApi || needsAlignmentReview,
+    summary: apiSummary + "，" + alignmentSummary + "。Play Console 的包含广告、广告 ID 和数据安全申报待核对。",
+  };
 }
 function render() {
   const profile = selected();
@@ -145,21 +156,44 @@ function render() {
     rows.push(["上次已上传构建号 " + profile.last + " ｜ " + (higher ? "已递增" : comparable ? "未递增" : "无法比较"), !higher]);
   }
   const versions = rows.splice(0);
+  const versionIssues = issues.slice();
+  const versionChecks = [];
+  if (profile?.pkg) versionChecks.push("包名一致");
+  if (profile?.last) versionChecks.push("构建号已递增");
+  const versionPending = [];
+  if (!profile?.pkg) versionPending.push("预期包名");
+  if (!profile?.last) versionPending.push("上次已上传构建号");
+  const versionSummary = versionIssues.length
+    ? "需核对" + versionIssues.join("、") + "。"
+    : (versionChecks.length ? versionChecks.join("，") : "已读取包名和构建号")
+      + (versionPending.length ? "，待提供" + versionPending.join("和") + "后校对。" : "。");
+
+  const firebaseIssueStart = issues.length;
   match("App ID", bundle.firebase.google_app_id, profile?.google_app_id);
   if (!profile?.google_app_id) rows.push(["待提供预期 Firebase App ID。"]);
   const firebase = rows.splice(0);
+  const firebaseIssue = issues.length > firebaseIssueStart;
+  const firebaseSummary = profile?.google_app_id
+    ? bundle.firebase.google_app_id
+      ? (firebaseIssue ? "包内 Firebase App ID 与预期不一致。" : "包内 Firebase App ID 与预期一致。")
+      : "未读取到预期的 Firebase App ID，请核对打包配置。"
+    : (bundle.firebase.google_app_id ? "已读取包内 Firebase App ID" : "包内未读取到 Firebase App ID")
+      + "，待提供预期值后校对。";
 
-  const pending = [];
+  const adPending = [];
+  const placementReview = [];
   const ads = bundle.ads;
+  const adIssueStart = issues.length;
+  const adComparisonStart = comparisonCount;
   const needsAds = adFields.some(({key}) => Boolean(profile?.[key]));
-  const showAds = ads.appId || ads.source || ads.note || needsAds;
+  const showAds = ads.appId || ads.units.length || ads.source || ads.note || needsAds;
   if (showAds) {
     if (ads.note) {
       issues.push("广告配置");
       rows.push([ads.note, true]);
     }
     match("AdMob App ID", ads.appId, profile?.admob_app_id);
-    if (ads.appId && !profile?.admob_app_id) pending.push("AdMob App ID");
+    if (ads.appId && !profile?.admob_app_id) adPending.push("AdMob App ID");
     for (const {key, label, type} of adFields.filter(field => field.type)) {
       const codes = new Map();
       for (const placement of ads.units.filter(item => item.type === type)) {
@@ -170,21 +204,33 @@ function render() {
       if (!codes.size && !expected) continue;
       if (codes.size <= 1) {
         match(label, codes.keys().next().value, expected);
-        if (!expected) pending.push(label);
+        if (!expected) adPending.push(label);
       } else if (expected) {
         comparisonCount++;
         const found = codes.has(expected);
-        if (found) pending.push(label + "与触发点的对应关系");
+        if (found) placementReview.push(label);
         else issues.push(label);
         rows.push([label + " ｜ 预期 " + expected + " ｜ " + (found ? "已找到，需复核对应关系" : "未找到"), !found]);
       } else {
-        pending.push(label);
+        adPending.push(label);
       }
       for (const [code, placements] of codes) rows.push(["包内配置 " + code + " ｜ " + placements.join("、")]);
     }
     if (!ads.units.length) rows.push(["当前支持的包内配置未读到广告单元 ID。"]);
   }
   const adRows = rows.splice(0);
+  const adIssues = issues.slice(adIssueStart);
+  const adChecks = [];
+  const comparedAds = comparisonCount > adComparisonStart;
+  if (comparedAds) {
+    adChecks.push(placementReview.length ? "已在包内找到预期 ID" : "已校对的广告 ID 均一致");
+  }
+  if (adPending.length) adChecks.push(adPending.join("、") + "待提供预期值");
+  if (placementReview.length) adChecks.push(placementReview.join("、") + "需复核与触发点的对应关系");
+  const adSummary = adIssues.length
+    ? "需核对" + adIssues.join("、") + "。"
+    : adChecks.length ? adChecks.join("，") + "。" : "当前支持的包内配置未读到广告 ID。";
+  const adResult = adIssues.length ? "error" : comparedAds && !adPending.length && !placementReview.length ? "ok" : "review";
 
   const permissions = new Map(bundle.permissions.map(p => [JSON.stringify([p.module, p.name, p.min, p.max]), p]));
   let attentionCount = 0;
@@ -197,7 +243,9 @@ function render() {
   if (!permissions.size) rows.push(["包内模块清单未声明权限。"]);
   if (profile?.notes) rows.push(["权限来源备注 · " + profile.notes]);
 
-  const googlePlay=playChecks(bundle,issues);
+  const googlePlay=playChecks(bundle);
+  issues.push(...googlePlay.issues);
+  const pending = [...adPending];
   if (!profile?.pkg) pending.push("包名");
   if (!profile?.google_app_id) pending.push("Firebase App ID");
   const title = document.createElement("h2");
@@ -206,20 +254,28 @@ function render() {
     : "已检查项未发现异常"
       + (attentionCount ? "，另有 " + attentionCount + " 项权限需人工确认" : "")
       + (googlePlay.needsReview ? "，部分 Google Play 检查需复核" : "")
+      + (placementReview.length ? "，部分广告位需复核触发点" : "")
       + (pending.length ? "，" + pending.join("、") + "待提供预期值" : "") + "。";
-  conclusion.dataset.result = issues.length ? "error" : (attentionCount || pending.length || googlePlay.needsReview ? "review" : "ok");
+  conclusion.dataset.result = issues.length ? "error" : (attentionCount || pending.length || placementReview.length || googlePlay.needsReview ? "review" : "ok");
   conclusion.append(title);
   const context = document.createElement("p");
   context.textContent = bundle.file + (profile ? " ｜ " + profile.game : "") + (imported ? " ｜ " + imported.source : "")
     + " ｜ " + comparisonCount + " 项预期值校对";
   conclusion.append(context);
 
-  function group(name, entries, note) {
+  function group(name, entries, result, summary, note) {
     const section = document.createElement("section");
     section.className = "sheet";
     const heading = document.createElement("h2");
     heading.textContent = name;
     section.append(heading);
+    const overview = document.createElement("p");
+    overview.className = "section-result";
+    overview.dataset.result = result;
+    const label = document.createElement("strong");
+    label.textContent = {ok: "通过", review: "待核对", error: "发现问题"}[result];
+    overview.append(label, " ", summary);
+    section.append(overview);
     if (note) {
       const description = document.createElement("p");
       description.textContent = note;
@@ -243,11 +299,16 @@ function render() {
     }
     report.append(section);
   }
-  group("Google Play 上架预检", googlePlay.rows, "规则核验于 "+playPolicy.checkedOn+"。适用于普通 Android 手机游戏。发布前请在 Play Console 核对申报，并在 16 KB 设备上验证运行。");
-  group("包名与版本", versions);
-  group("Firebase 默认配置", firebase);
-  if (showAds) group("广告配置", adRows, ads.source
+  group("Google Play 上架预检", googlePlay.rows, googlePlay.issues.length ? "error" : "review", googlePlay.summary,
+    "规则核验于 "+playPolicy.checkedOn+"。适用于普通 Android 手机游戏。有原生库的游戏请在 16 KB 设备上验证运行。");
+  group("包名与版本", versions, versionIssues.length ? "error" : versionPending.length ? "review" : "ok", versionSummary);
+  group("Firebase 默认配置", firebase, firebaseIssue ? "error" : profile?.google_app_id ? "ok" : "review", firebaseSummary);
+  group("广告配置", adRows, adResult, adSummary, ads.source
     ? "游戏内触发点来源于 " + ads.source + "。AdMob App ID 来源于主模块清单。"
-    : "AdMob App ID 来源于主模块清单。");
-  group("清单权限 · " + permissions.size + " 项声明", rows, "重点关注由工具的固定名单标记，覆盖电话状态、媒体与存储、定位、相机、麦克风、联系人、短信读取和通知。请按游戏与 SDK 的实际用途核对。");
+    : showAds ? "AdMob App ID 来源于主模块清单。" : "");
+  const permissionSummary = attentionCount
+    ? "有 " + attentionCount + " 项重点关注权限，请核对游戏和 SDK 是否需要。"
+    : permissions.size ? "未发现重点关注权限。" : "各模块均未声明权限。";
+  group("清单权限 · " + permissions.size + " 项声明", rows, attentionCount ? "review" : "ok", permissionSummary,
+    "重点关注由工具的固定名单标记，覆盖电话状态、媒体与存储、定位、相机、麦克风、联系人、短信读取和通知。");
 }
