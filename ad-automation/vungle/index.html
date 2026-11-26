@@ -4,208 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vungle (Liftoff) 广告位自动化生成工具</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: #f4f6f9; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            margin: 0; 
-            padding: 20px; 
-        }
-        .card { 
-            background: white; 
-            border-radius: 16px; 
-            padding: 32px; 
-            width: 520px; 
-            max-width: 100%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-        }
-        .header-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .back-link {
-            font-size: 13px;
-            color: #6e6e73;
-            text-decoration: none;
-        }
-        .back-link:hover { color: #1d1d1f; }
-        h2 { margin: 0; color: #1d1d1f; font-size: 22px; }
-        .form-group { margin-bottom: 14px; text-align: left; }
-        label { font-size: 13px; color: #333; font-weight: 600; display: block; margin-bottom: 6px; }
-        input, select { 
-            width: 100%; 
-            padding: 10px 12px; 
-            border: 1px solid #d2d2d7; 
-            border-radius: 8px; 
-            font-size: 14px; 
-            outline: none; 
-        }
-        input:focus, select:focus { border-color: #5c2d91; }
-        .btn { 
-            background: #5c2d91; 
-            color: white; 
-            border: none; 
-            padding: 14px; 
-            border-radius: 8px; 
-            font-size: 16px; 
-            width: 100%; 
-            margin-top: 10px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            transition: background 0.2s;
-        }
-        .btn:hover { background: #4a2377; }
-        .btn:disabled { background: #a593be; cursor: not-allowed; }
-        #result-box { 
-            margin-top: 20px; 
-            display: none; 
-            padding: 16px; 
-            background: #f8f9fa; 
-            border-radius: 8px; 
-            border: 1px solid #e5e5ea; 
-            font-size: 13px; 
-            word-break: break-all; 
-        }
-        .slot-item { 
-            background: #ffffff; 
-            padding: 10px 12px; 
-            border-radius: 6px; 
-            border: 1px solid #e0e0e0; 
-            margin-top: 8px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
-        .badge { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600; white-space: nowrap; }
-        .badge-new { background: #e6f4ea; color: #137333; }
-        .badge-exist { background: #feefc3; color: #b06000; }
-    </style>
+    <script type="module" src="../form.js"></script>
     <script src="../../theme.js?v=review1"></script>
-<link rel='stylesheet' href='../../console.css?v=review1'>
+    <link rel="stylesheet" href="../../console.css?v=review1">
+    <link rel="stylesheet" href="../form.css">
 </head>
 <body class='console'>
 <nav class='dock' aria-label='主导航'><a class='brand' href='../../' title='返回主页'>yyk <span>Console</span></a><div class='dock-links'><a href='../../reconciliation/'>收入对账</a><a aria-current="location" href='../../ad-automation/'>广告建位</a><a href="../../aab/">AAB 预检</a></div></nav>
 
-<main class="panel">
-    <div class="header-bar">
-        <h2>Vungle 广告位自动化生成</h2>
-    </div>
-
-    <form id="adForm" onsubmit="return false;">
+<main class="panel ad-panel">
+    <h1>Vungle 广告位自动化生成</h1>
+    <form id="adForm" data-provider="vungle">
         <div class="form-group">
-            <label for="appName">应用名称 (App Name)</label>
-            <input type="text" id="appName" placeholder="例如: PiggySort" required>
+            <label for="appName">应用名称（App Name）</label>
+            <input type="text" id="appName" name="app_name" placeholder="例如 PiggySort" required>
         </div>
         <div class="form-group">
-            <label for="downloadUrl">应用商店链接 (Download URL)</label>
-            <input type="text" id="downloadUrl" placeholder="https://apps.apple.com/us/app/id..." required>
+            <label for="downloadUrl">应用商店链接（Download URL）</label>
+            <input type="url" id="downloadUrl" name="download_url" placeholder="https://apps.apple.com/…" required>
         </div>
         <div class="form-group">
-            <label for="platform">目标平台 (Platform)</label>
-            <select id="platform">
+            <label for="platform">目标平台（Platform）</label>
+            <select id="platform" name="platform">
                 <option value="ios">iOS</option>
                 <option value="android">Android</option>
             </select>
         </div>
-        <button type="button" class="btn" id="submitBtn">自动生成 Vungle App 及 Placement</button>
+        <button type="submit" id="submitBtn">自动生成 Vungle App 及 Placement</button>
     </form>
-    
-    <div aria-live="polite" id="result-box"></div>
+    <div id="result-box" aria-live="polite" hidden></div>
 </main>
-
-<script>
-    // 已将 URL 替换为你在 Cloudflare Worker 上部署的真实域名
-    const VUNGLE_WORKER_URL = 'https://vungle-auto-api.joeykwok012.workers.dev';
-
-    document.getElementById('submitBtn').onclick = async function() {
-        const appName = document.getElementById('appName').value.trim();
-        const downloadUrl = document.getElementById('downloadUrl').value.trim();
-        const platform = document.getElementById('platform').value;
-        const submitBtn = document.getElementById('submitBtn');
-
-        if (!appName || !downloadUrl) {
-            alert("请完整填写应用名称和下载链接！");
-            return;
-        }
-
-        const resultBox = document.getElementById('result-box');
-        resultBox.style.display = 'block';
-        resultBox.innerHTML = `⏳ 正在请求 Vungle 官方 API 鉴权与建位，请稍候...`;
-        
-        submitBtn.disabled = true;
-
-        // 设置 15 秒超时保护
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-        try {
-            const response = await fetch(VUNGLE_WORKER_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    app_name: appName,
-                    download_url: downloadUrl,
-                    platform: platform
-                }),
-                signal: controller.signal
-            });
-
-            clearTimeout(timeoutId);
-            const res = await response.json();
-
-            if (res.code === 200) {
-                const appTag = res.data.is_app_exists 
-                    ? `<span class="badge badge-exist">⚠ 应用已存在 (已复用)</span>` 
-                    : `<span class="badge badge-new">✨ 首次创建应用</span>`;
-
-                function renderPlacement(title, item) {
-                    if (!item) return '';
-                    const tag = item.is_new 
-                        ? `<span class="badge badge-new">✨ 首次创建</span>` 
-                        : `<span class="badge badge-exist">⚠ 已存在 (复用)</span>`;
-                    return `
-                        <div class="slot-item">
-                            <div>
-                                <b>${title}</b> (<code>${item.name}</code>)<br>
-                                Reference ID: <code>${item.id}</code>
-                            </div>
-                            <div>${tag}</div>
-                        </div>
-                    `;
-                }
-
-                resultBox.innerHTML = `
-                    <b style="color: #28a745; font-size: 15px;">✔ Vungle 配置执行成功！</b><br><br>
-                    • 应用名称：<b>${res.data.app_name}</b> (${res.data.platform.toUpperCase()}) ${appTag}<br>
-                    • Vungle App ID：<code>${res.data.vungle_app_id}</code><br><br>
-                    <b>Placements 广告位列表：</b>
-                    ${renderPlacement('🎬 激励视频', res.data.placements.reward)}
-                    ${renderPlacement('📺 插屏广告', res.data.placements.inter)}
-                    ${renderPlacement('🏷️ Banner 广告', res.data.placements.banner)}
-                `;
-            } else {
-                resultBox.innerHTML = `<b style="color: #dc3545; font-size: 15px;">❌ 接口返回错误：</b><br>${res.message}`;
-            }
-        } catch (e) {
-            clearTimeout(timeoutId);
-            if (e.name === 'AbortError') {
-                resultBox.innerHTML = `<b style="color: #dc3545;">❌ 请求超时：</b> 连接 Cloudflare Worker 超时，请检查网络配置。`;
-            } else {
-                resultBox.innerHTML = `<b style="color: #dc3545;">❌ 网络或请求异常：</b> ${e.message}<br><small>请检查 Worker 响应及跨域 (CORS) 状态。</small>`;
-            }
-        } finally {
-            submitBtn.disabled = false;
-        }
-    };
-</script>
 
 </body>
 </html>
