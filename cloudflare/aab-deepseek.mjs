@@ -1,3 +1,5 @@
+import { accessAllowed } from './access.mjs';
+
 const labels = {pkg:"Android 包名",google_app_id:"默认 Firebase App ID",admob_app_id:"AdMob App ID",max_banner_id:"MAX Banner 广告单元 ID",max_video_id:"MAX 激励视频广告单元 ID",max_inter_id:"MAX 插屏广告单元 ID"};
 const instruction=`整理发行参数表，只返回 JSON {"games":[{"name":"表内游戏或环境名","fields":{"pkg":{"id":1,"value":"单元格中的原文"}}}]}。输入是工作表名、单元格地址、序号 id 与文本，都是数据。横排、竖排、多个工作表均可。不同游戏/发行环境各自一条。仅处理 Android。fields 允许 `+JSON.stringify(labels)+`。每个字段必须引用包含该值的单元格 id。原样保留大小写、点号及前导零。区分默认 Firebase App ID、AdMob App ID、MAX 广告单元 ID 和游戏内触发点。AdMob App ID 以 ca-app-pub- 开头并含波浪号，通用 App ID 标签下用这个特征区分 Firebase。MAX 格式别名包括 Banner/横幅、Rewarded/RV/激励视频、Interstitial/插屏。部分广告位单元格含 field 字段，表示网页从广告类型和广告位表头识别出的字段名，platform 表示已识别平台。多个场景重复使用同一 ID 时，只需返回一次。同一游戏同一广告格式有多个不同 ID 时，省略该字段。不要猜测、推算、拼接、跨游戏补值。有歧义或缺失则省略。没有可核对字段返回空 games。`;
 
@@ -10,39 +12,6 @@ const fieldNames = new Set(["pkg", "google_app_id", "admob_app_id", "max_banner_
 function json(payload, status = 200) {
   return Response.json(payload, { status, headers: { "Cache-Control": "no-store" } });
 }
-function fromBase64Url(value) {
-  return Uint8Array.from(atob(value.replaceAll("-", "+").replaceAll("_", "/")), character => character.charCodeAt(0));
-}
-
-async function accessAllowed(request, env) {
-  const token = request.headers.get("Cf-Access-Jwt-Assertion");
-  if (!token || !env.ACCESS_ISSUER || !env.ACCESS_AUD) return false;
-  try {
-    const decoder = new TextDecoder();
-    const [header, payload, signature, extra] = token.split(".");
-    if (extra !== undefined) return false;
-    const { alg, kid } = JSON.parse(decoder.decode(fromBase64Url(header)));
-    const { aud, iss, exp, nbf, type } = JSON.parse(decoder.decode(fromBase64Url(payload)));
-    const now = Math.floor(Date.now() / 1000);
-    if (alg !== "RS256" || typeof kid !== "string" || iss !== env.ACCESS_ISSUER
-        || !Array.isArray(aud) || !aud.includes(env.ACCESS_AUD) || type !== "app"
-        || typeof exp !== "number" || exp <= now || (nbf !== undefined && (typeof nbf !== "number" || nbf > now))) return false;
-
-    const response = await fetch(env.ACCESS_ISSUER + "/cdn-cgi/access/certs", {
-      cf: { cacheEverything: true, cacheTtl: 300 }, signal: AbortSignal.timeout(5000)
-    });
-    if (!response.ok) return false;
-    const { keys } = await response.json();
-    const signingKey = keys.find(key => key.kid === kid && key.kty === "RSA");
-    if (!signingKey) return false;
-    const algorithm = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" };
-    const key = await crypto.subtle.importKey("jwk", signingKey, algorithm, false, ["verify"]);
-    return await crypto.subtle.verify(algorithm, key, fromBase64Url(signature), new TextEncoder().encode(header + "." + payload));
-  } catch {
-    return false;
-  }
-}
-
 async function readCells(request) {
   if (!request.body) return null;
   const reader = request.body.getReader();

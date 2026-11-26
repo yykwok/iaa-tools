@@ -9,6 +9,38 @@
     cursor: pointer;
 }
 
+.ad-fields {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.ad-fields .form-group:first-child { margin-top: 0; }
+
+.ad-check {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 18px;
+    font-size: .93rem;
+}
+
+.console .ad-check input[type="checkbox"] { width: auto; }
+
+.ad-panel .ad-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+}
+
+.ad-panel .ad-links[hidden] { display: none; }
+
+.ad-panel .ad-links a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: .2em;
+}
+
 .ad-panel #result-box {
     margin-top: 20px;
     padding: 16px;
