@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>广告位建位测试</title>
+    <style>
+        :root {
+            --bg: #f4f5f7;
+            --card-bg: #ffffff;
+            --text: #1d1d1f;
+            --border: #e2e8f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 14px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 40px;
+            font-size: 15px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.25s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: #cbd5e1;
+        }
+
+        .card-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        .pangle .card-icon { background: #e0f2fe; color: #0284c7; }
+        .vungle .card-icon { background: #f3e8ff; color: #7e22ce; }
+        .unity .card-icon { background: #f1f5f9; color: #0f172a; }
+        .console .mintegral .card-icon { background: linear-gradient(140deg,#536de3,#37378f); }
+        .console .ironsource .card-icon { background: linear-gradient(140deg,#6994f2,#2c467e); }
+        .console .admob .card-icon { background: linear-gradient(140deg,#df7a36,#aa3d38); }
+        .console .moloco .card-icon { background: linear-gradient(140deg,#388a94,#21506a); }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: #64748b;
+            text-align: center;
+            line-height: 1.4;
+        }
+    </style>
+    <script src="../theme.js?v=review1"></script>
+<link rel='stylesheet' href='../console.css?v=review1'>
+    <meta name="robots" content="noindex">
+</head>
+<body class='console'>
+<nav class='dock' aria-label='主导航'><a class='brand' href='../' title='返回主页'>yyk <span>Console</span></a><div class='dock-links'><a href='../reconciliation/'>收入对账</a><a aria-current="location" href='./'>广告建位</a><a href="../aab/">AAB 预检</a></div></nav>
+
+<main class="directory">
+    <h1>广告平台建位测试</h1>
+    <p class="subtitle">选择平台查看新版表单。建位接口将逐个平台启用。</p>
+
+    <div class="grid">
+        <a href="./setup/?provider=pangle" class="card pangle">
+            <div class="card-icon">P</div>
+            <div class="card-title">Pangle</div>
+            <div class="card-desc">创建 Pangle App 及代码位</div>
+        </a>
+
+        <a href="./setup/?provider=liftoff" class="card vungle">
+            <div class="card-icon" aria-hidden="true">L</div>
+            <div class="card-title">Liftoff Monetize（Vungle）</div>
+            <div class="card-desc">创建 Liftoff App 及 Placement</div>
+        </a>
+
+        <a href="./setup/?provider=unity" class="card unity">
+            <div class="card-icon">U</div>
+            <div class="card-title">Unity Ads</div>
+            <div class="card-desc">创建 Unity Ads 应用及广告位</div>
+        </a>
+
+        <a href="./setup/?provider=mintegral" class="card mintegral">
+            <div class="card-icon" aria-hidden="true">M</div>
+            <div class="card-title">Mintegral</div>
+            <div class="card-desc">创建 App、Placement 和 Unit</div>
+        </a>
+
+        <a href="./setup/?provider=ironsource" class="card ironsource">
+            <div class="card-icon" aria-hidden="true">iS</div>
+            <div class="card-title">ironSource Ads</div>
+            <div class="card-desc">获取 App Key 和广告实例 ID</div>
+        </a>
+
+        <a href="./setup/?provider=admob" class="card admob">
+            <div class="card-icon" aria-hidden="true">A</div>
+            <div class="card-title">AdMob</div>
+            <div class="card-desc">创建 App 和 Ad Units</div>
+        </a>
+
+        <a href="./moloco/" class="card moloco">
+            <div class="card-icon" aria-hidden="true">M</div>
+            <div class="card-title">Moloco</div>
+            <div class="card-desc">后台创建并整理 App Key 和 Ad Unit ID</div>
+        </a>
+    </div>
+</main>
+
+</body>
+</html>

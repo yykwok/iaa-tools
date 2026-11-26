@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moloco 广告位建位</title>
+    <script src="../../theme.js?v=review1"></script>
+    <link rel="stylesheet" href="../../console.css?v=review1">
+    <link rel="stylesheet" href="../form.css">
+    <script type="module" src="../form.js"></script>
+    <meta name="robots" content="noindex">
+</head>
+<body class="console">
+<nav class="dock" aria-label="主导航"><a class="brand" href="../../" title="返回主页">yyk <span>Console</span></a><div class="dock-links"><a href="../../reconciliation/">收入对账</a><a aria-current="location" href="../">广告建位</a><a href="../../aab/">AAB 预检</a></div></nav>
+
+<main class="panel ad-panel">
+    <h1>Moloco 广告位建位</h1>
+    <p>在 Moloco Publisher Portal 创建应用和广告位，再粘贴 App Key 和 Ad Unit ID。</p>
+    <p class="ad-links">
+        <a href="https://publisher.moloco.cloud/" target="_blank" rel="noopener">打开 Moloco 后台</a>
+        <a href="https://help.publisher.moloco.com/hc/en-us/articles/26774514524183-Create-and-manage-apps" target="_blank" rel="noopener">创建应用</a>
+        <a href="https://help.publisher.moloco.com/hc/en-us/articles/26774587841047-Create-and-manage-ad-units" target="_blank" rel="noopener">创建广告位</a>
+    </p>
+    <form id="adForm" method="post" data-provider="moloco">
+        <div class="form-group">
+            <label for="appName">应用名称</label>
+            <input type="text" id="appName" name="app_name" maxlength="80" required>
+        </div>
+        <div class="form-group">
+            <label for="platform">目标平台</label>
+            <select id="platform" name="platform">
+                <option value="ios">iOS</option>
+                <option value="android">Android</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="appId">Moloco App Key</label>
+            <input type="text" id="appId" name="app_id" maxlength="128" required>
+        </div>
+        <div class="form-group">
+            <label for="rewardId">激励视频 Ad Unit ID</label>
+            <input type="text" id="rewardId" name="reward_id" maxlength="128">
+        </div>
+        <div class="form-group">
+            <label for="interId">插屏 Ad Unit ID</label>
+            <input type="text" id="interId" name="inter_id" maxlength="128">
+        </div>
+        <div class="form-group">
+            <label for="bannerId">Banner Ad Unit ID</label>
+            <input type="text" id="bannerId" name="banner_id" maxlength="128">
+        </div>
+        <button type="submit" id="submitBtn">整理广告位 ID</button>
+    </form>
+    <div id="result-box" aria-live="polite" hidden></div>
+</main>
+</body>
+</html>

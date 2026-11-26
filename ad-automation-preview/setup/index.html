@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>广告位自动化建位</title>
+    <script src="../../theme.js?v=review1"></script>
+    <link rel="stylesheet" href="../../console.css?v=review1">
+    <link rel="stylesheet" href="../form.css">
+    <script type="module" src="../setup.js"></script>
+    <meta name="robots" content="noindex">
+</head>
+<body class="console">
+<nav class="dock" aria-label="主导航"><a class="brand" href="../../" title="返回主页">yyk <span>Console</span></a><div class="dock-links"><a href="../../reconciliation/">收入对账</a><a aria-current="location" href="../">广告建位</a><a href="../../aab/">AAB 预检</a></div></nav>
+
+<main class="panel ad-panel">
+    <h1 id="setup-title">广告位建位</h1>
+    <p id="setup-help">请选择建位平台。</p>
+    <p id="setup-links" class="ad-links" hidden>
+        <a id="access-link" target="_blank" rel="noopener">检查接口或登录 Access</a>
+        <a id="provider-doc" target="_blank" rel="noopener">平台接口说明</a>
+    </p>
+    <form id="adForm" method="post" hidden>
+        <div class="form-group">
+            <label for="appName">应用名称</label>
+            <input type="text" id="appName" name="app_name" maxlength="80" required>
+        </div>
+        <div class="form-group">
+            <label for="platform">目标平台</label>
+            <select id="platform" name="platform">
+                <option value="ios">iOS</option>
+                <option value="android">Android</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="downloadUrl">App Store 或 Google Play 链接（未上架可留空）</label>
+            <input type="url" id="downloadUrl" name="download_url" maxlength="2048">
+        </div>
+        <fieldset class="ad-fields" data-for="admob" hidden disabled>
+            <label class="ad-check"><input type="checkbox" name="link_store" value="yes"> 已核对商店链接，同意关联。AdMob 应用关联后无法解除。</label>
+        </fieldset>
+        <fieldset class="ad-fields" data-for="mintegral" hidden disabled>
+            <div class="form-group">
+                <label for="storeId">未上架应用的 App Store ID 或 Android 包名</label>
+                <input type="text" id="storeId" name="store_id" maxlength="200">
+            </div>
+        </fieldset>
+        <fieldset class="ad-fields" data-for="pangle" hidden disabled>
+            <div class="form-group">
+                <label for="categoryCode">应用类别</label>
+                <select id="categoryCode" name="app_category_code">
+                    <option value="120403">游戏大厅</option>
+                    <option value="120401">休闲游戏</option>
+                    <option value="120402">益智解谜</option>
+                    <option value="120400">通用游戏</option>
+                </select>
+            </div>
+        </fieldset>
+        <fieldset class="ad-fields" data-for="mintegral ironsource pangle liftoff unity" hidden disabled>
+            <div class="form-group">
+                <label for="coppa">COPPA（是否面向儿童）</label>
+                <select id="coppa" name="coppa" required>
+                    <option value="">请选择</option>
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </select>
+            </div>
+        </fieldset>
+        <fieldset class="ad-fields" data-for="mintegral ironsource liftoff" hidden disabled>
+            <div class="form-group">
+                <label for="mode">广告位类型</label>
+                <select id="mode" name="mode">
+                    <option value="bidding">竞价（Bidding）</option>
+                    <option value="traditional">传统（Waterfall）</option>
+                </select>
+            </div>
+        </fieldset>
+        <fieldset class="ad-fields" data-for="ironsource liftoff" hidden disabled>
+            <div class="form-group">
+                <label for="taxonomy">已上架应用的分类</label>
+                <input type="text" id="taxonomy" name="taxonomy" maxlength="100">
+            </div>
+        </fieldset>
+        <fieldset class="ad-fields" data-for="ironsource" hidden disabled>
+            <div class="form-group">
+                <label for="ccpa">CCPA 设置</label>
+                <select id="ccpa" name="ccpa" required>
+                    <option value="">请选择</option>
+                    <option value="0">关闭</option>
+                    <option value="1">开启</option>
+                </select>
+            </div>
+        </fieldset>
+        <button type="submit" id="submitBtn">创建或复用应用及广告位</button>
+    </form>
+    <div id="result-box" aria-live="polite" hidden></div>
+</main>
+</body>
+</html>

@@ -1,0 +1,85 @@
+.ad-panel h1 {
+    font-size: clamp(1.45rem, 4vw, 2rem);
+    margin: 0 0 22px;
+}
+
+.ad-panel button[type="submit"] {
+    width: 100%;
+    padding: 10px 16px;
+    cursor: pointer;
+}
+
+.ad-fields {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.ad-fields .form-group:first-child { margin-top: 0; }
+
+.ad-check {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 18px;
+    font-size: .93rem;
+}
+
+.console .ad-check input[type="checkbox"] { width: auto; }
+
+.ad-panel .ad-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+}
+
+.ad-panel .ad-links[hidden] { display: none; }
+
+.ad-panel .ad-links a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: .2em;
+}
+
+.ad-panel #result-box {
+    margin-top: 20px;
+    padding: 16px;
+    border: 1px solid var(--line);
+}
+
+.ad-panel .ad-status {
+    margin: 0;
+    font-weight: 650;
+}
+
+.ad-panel [data-state="success"] .ad-status { color: var(--success); }
+.ad-panel :is([data-state="partial"], [data-state="error"]) .ad-status { color: var(--warning); }
+
+.ad-results { margin: 12px 0 0; }
+
+.ad-result-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.ad-result-row dt { font-weight: 600; }
+.ad-result-row dd { margin: 0; }
+
+.ad-result-row small {
+    display: block;
+    color: var(--muted);
+}
+
+.ad-panel .ad-copy {
+    margin-top: 14px;
+    padding: 0 16px;
+    cursor: pointer;
+}
+
+.ad-copy-status {
+    margin-inline-start: 8px;
+    font-size: .875rem;
+}
