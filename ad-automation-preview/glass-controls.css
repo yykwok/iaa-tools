@@ -8,6 +8,7 @@
     --control-track: #8b9cb82b;
     --menu-surface: #f9fcffeb;
     --menu-shadow: 0 18px 48px -18px #223a626b, 0 3px 12px #223a6220;
+    -webkit-tap-highlight-color: transparent;
 }
 
 :root[data-theme="dark"] .ad-controls {
