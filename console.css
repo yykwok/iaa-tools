@@ -185,6 +185,7 @@ body.console {
 
 .home .dock { flex-wrap: wrap; justify-content: center; }
 .dock-actions { display: flex; align-items: center; gap: inherit; }
+.console .dock-actions .theme-toggle { min-height: 44px; }
 .console .dock .home-logout {
   place-items: center; padding-inline: 12px;
   border: 1px solid var(--glass-edge-soft); background: var(--glass);
