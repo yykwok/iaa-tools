@@ -1,0 +1,14 @@
+{
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^2.0.0-rc.5",
+    "cf": "^1.0.0-rc.6",
+    "vite": "^8.3.8"
+  },
+  "name": "iaa-ad-placements",
+  "type": "module",
+  "scripts": {
+    "build": "cf build",
+    "deploy": "cf deploy"
+  },
+  "private": true
+}
