@@ -168,7 +168,7 @@ async function serve(request, env) {
     }
     if (request.method !== 'POST') return new Response(null, { status: 405, headers });
     if (request.headers.get('Origin') !== origin) {
-      return page(loginPage('Oops!! Our little crew lost track of this request. Reopen the login page and try again.'), 403);
+      return page(loginPage('Oops!! Something went wrong, pls try it again.'), 403);
     }
     if (pathname === '/__auth/login') return startSession(request, env);
     const token = sessionToken(request);
