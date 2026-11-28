@@ -23,5 +23,10 @@
   };
   systemTheme.addEventListener("change", paint);
   paint();
-  document.addEventListener("DOMContentLoaded", () => document.querySelector(".dock")?.append(button));
+  document.addEventListener("DOMContentLoaded", () => {
+    const dock = document.querySelector(".dock");
+    const actions = dock?.querySelector(".dock-actions");
+    if (actions) actions.prepend(button);
+    else dock?.append(button);
+  });
 })();

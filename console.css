@@ -183,11 +183,11 @@ body.console {
   background: var(--glass); color: var(--ink); font-size: 1.1rem; cursor: pointer;
 }
 
-.home-account { display: flex; justify-content: flex-end; margin-top: 12px; }
-.console .home-logout {
-  display: inline-grid; place-items: center; min-height: 44px; padding: 0 16px;
-  border: 1px solid var(--line); border-radius: 24px; background: var(--glass);
-  color: var(--ink); font-size: .89rem; font-weight: 600;
+.home .dock { flex-wrap: wrap; justify-content: center; }
+.dock-actions { display: flex; align-items: center; gap: inherit; }
+.console .dock .home-logout {
+  place-items: center; padding-inline: 12px;
+  border: 1px solid var(--glass-edge-soft); background: var(--glass);
+  color: var(--ink);
 }
-.console .home-logout:hover { color: var(--accent); border-color: currentColor; }
-.console .home-logout:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.console .dock .home-logout:hover { color: var(--accent); border-color: currentColor; }
