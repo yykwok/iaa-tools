@@ -182,3 +182,12 @@ body.console {
   margin: 0; padding: 0; border: 1px solid var(--glass-edge-soft); border-radius: 50%;
   background: var(--glass); color: var(--ink); font-size: 1.1rem; cursor: pointer;
 }
+
+.home-account { display: flex; justify-content: flex-end; margin-top: 12px; }
+.console .home-logout {
+  display: inline-grid; place-items: center; min-height: 44px; padding: 0 16px;
+  border: 1px solid var(--line); border-radius: 24px; background: var(--glass);
+  color: var(--ink); font-size: .89rem; font-weight: 600;
+}
+.console .home-logout:hover { color: var(--accent); border-color: currentColor; }
+.console .home-logout:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
