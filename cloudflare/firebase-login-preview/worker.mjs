@@ -13,7 +13,14 @@ const headers = {
 function page(body, status = 200, extra = {}) {
   return new Response(body, {
     status,
-    headers: { ...headers, 'Content-Type': 'text/html; charset=utf-8', 'Content-Security-Policy': csp, ...extra },
+    headers: {
+      ...headers,
+      'Content-Type': 'text/html; charset=utf-8',
+      'Content-Security-Policy': csp,
+      // Browsers can set Origin to null for native form posts from no-referrer pages.
+      'Referrer-Policy': 'same-origin',
+      ...extra,
+    },
   });
 }
 
@@ -160,7 +167,9 @@ async function serve(request, env) {
       return await signedIn(request, env) ? redirect('/') : page(loginPage());
     }
     if (request.method !== 'POST') return new Response(null, { status: 405, headers });
-    if (request.headers.get('Origin') !== origin) return new Response(null, { status: 403, headers });
+    if (request.headers.get('Origin') !== origin) {
+      return page(loginPage('登录请求来源不匹配，请重新打开登录页后再试。'), 403);
+    }
     if (pathname === '/__auth/login') return startSession(request, env);
     const token = sessionToken(request);
     if (token) await env.SESSIONS.prepare('DELETE FROM session WHERE digest = ?').bind(await digest(token)).run();
